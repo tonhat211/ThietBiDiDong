@@ -1,6 +1,6 @@
 .footer {
     width: 100%;
-    background-color: var(--primary-bg-color);
+    background-color: var(--light-bg-color);
     margin-top: auto;
 }
 
@@ -45,3 +45,5 @@
 .footer__content img {
     width: 50%;
 }
+
+

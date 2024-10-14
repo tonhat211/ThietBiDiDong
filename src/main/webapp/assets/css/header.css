@@ -34,14 +34,17 @@
     text-decoration: none;
     color: black;
     width: fit-content;
-    padding: 10px;
+    padding: 7px;
 
 }
 
 .user:hover,
 .cart:hover {
+    cursor: pointer;
     background-color: var(--hover-color);
     border-radius: 25px;
+    text-decoration: none;
+    color: black;
 }
 
 .user p,
@@ -50,7 +53,7 @@
 }
 
 .header_bottom {
-    margin-top: 60px;
+    margin-top: 64px;
     width: 100%;
 
 }
@@ -73,8 +76,117 @@
 .main-menu li a:hover {
     background-color: var(--hover-color);
     border-radius: 10px;
+
 }
 
 .main-menu li a i {
     margin-right: 5px;
+}
+
+.user {
+    position: relative;
+}
+
+
+
+.sub-menu {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    list-style: none;
+    width: 120px;
+    background-color:  var(--hover-color);
+    border-radius: 10px;
+    box-shadow:  0 0 6px 6px rgb(179 179 179 / 30%);
+    display: none;
+}
+
+.sub-menu::after {
+    content: "";
+    position: absolute;
+    top: -20px;
+    left: 0;
+    width: 120px;
+    height: 22px;
+}
+
+.user:hover .sub-menu { display: block; }
+
+.sub-menu li {
+    padding: 4px 10px;
+}
+
+.sub-menu li a {
+    color: var(--text-color-2)
+}
+
+.sub-menu li:hover {
+    background-color:  var(--primary-bg-color);
+}
+
+.sub-menu li:first-child {
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+}
+
+.sub-menu li:last-child {
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.sub-menu li a:hover {
+    list-style-type: unset;
+}
+
+/* update info */
+.show-flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.show-flex-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.error {
+    color: red;
+    background-color: rgba(255, 0, 0, 0.22);
+    padding: 7px 20px;
+    margin: 4px;
+    border-radius: 4px;
+    font-size: 10px;
+    width: fit-content;
+    display: none;
+}
+
+.errorWrongPwd {
+    color: red;
+    background-color: rgba(255, 0,0, 0.22);
+    padding: 7px 20px;
+    margin: 4px;
+    border-radius: 4px;
+    font-size: 10px;
+    width: fit-content;
+    display: none;
+}
+
+.errorWrongPwd.active,
+.successful.active,
+.error.active {
+    display: block;
+}
+
+.successful {
+    color: green;
+    background-color: rgba(57, 203, 85, 0.22);
+    padding: 7px 20px;
+    margin: 4px;
+    border-radius: 4px;
+    font-size: 10px;
+    width: fit-content;
+    display: none;
+
 }

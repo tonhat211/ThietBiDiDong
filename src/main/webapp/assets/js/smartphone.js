@@ -22,6 +22,7 @@ function removeModal(modal) {
         if(!e.classList.contains('active')) return;
         e.classList.remove('active');
     });
+    document.body.style.overflow = 'auto';
 }
 
 function openModal(modal) {
@@ -35,4 +36,22 @@ function openModal(modal) {
         if(e.classList.contains('not-active')) return;
         e.classList.add('active');
     });
+    document.body.style.overflow = 'hidden';
+}
+
+function getPriceOf(event){
+    console.log("getPrice of event");
+}
+
+function getConfig() {
+    console.log("get config");
+    document.querySelector("#config-show").classList.add('active');
+    document.querySelector("#des-show").classList.remove('active');
+}
+
+function getDes() {
+    console.log("get des");
+    document.querySelector("#config-show").classList.remove('active');
+    document.querySelector("#des-show").classList.add('active');
+    // dung ajax truy van des
 }

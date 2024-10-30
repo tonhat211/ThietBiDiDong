@@ -14,11 +14,13 @@
 }
 
 .form-container {
-    margin-top: 0px;
-    width: 60%;
-    padding: 20px;
+    margin-top: 0 !important;
+    width: 60% !important;
+    padding: 20px !important;
 }
 
+.repwd-error,
+.email-error,
 .pwd-error {
     color: red;
     padding: 0 4px;
@@ -30,6 +32,8 @@
     display: none;
 }
 
+.repwd-error.active,
+.email-error.active,
 .pwd-error.active {
     display: block;
 }
@@ -54,4 +58,33 @@
 
 .btn-buy:hover {
     box-shadow:  0 0 4px 2px rgb(179 179 179 / 30%);
+}
+
+.btnShowPwd:focus-visible,
+.btnShowPwd {
+    background-color: #ffc1073b;
+    text-align: center;
+    border: none;
+}
+
+.btnShowPwd:hover {
+    background-color: #fc7600;
+    cursor: pointer;
+    border: none;
+}
+
+.btnShowPwd i {
+    display: block;
+    width: 37px;
+    height: 37px;
+    line-height: 37px;
+}
+
+
+.btrr0{
+    border-top-right-radius: 0
+}
+
+.bbrr0{
+    border-bottom-right-radius: 0
 }

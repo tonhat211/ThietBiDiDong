@@ -7,6 +7,7 @@
     <!-- thu vien jquery   -->
     <script type="text/javascript" src="../assets/js/jquery-3.7.1.min.js"></script>
     <script type="text/javascript" src="../assets/js/js_bootstrap4/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../assets/js/login.js"></script>
 
     <!-- Favicons -->
 
@@ -27,6 +28,7 @@
 
     <!-- css tu them   -->
     <link href="../assets/css/login.css" rel="stylesheet">
+    <link href="../assets/css/forgetPassword.css" rel="stylesheet">
 
 </head>
 <body>
@@ -75,7 +77,7 @@
     <div class="grid-col-6 flex-roww" style="justify-content: center;align-items: unset">
         <div class="sub-content form-container">
             <p style="font-size: 30px; font-weight: 700;text-align: center">Đăng ký</p>
-            <form action="" id="login-form" style="width: 100%">
+            <form action="" id="signup-form" style="width: 100%">
                 <div class="form-group">
                     <label for="name">Họ tên</label>
                     <input type="text" class="form-control" id="name" name="name" aria-describedby="emailHelp" placeholder="Nhập họ và tên" required>
@@ -83,16 +85,20 @@
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Nhập email" required>
+                    <span class="email-error">* Mật khẩu phải trên 8 ký tự</span>
                 </div>
+
                 <div class="form-group">
                     <label for="pwd">Mật khẩu</label>
-                    <input type="password" class="form-control" id="pwd" name="pwd" placeholder="Nhập mật khẩu" required>
-                    <span class="pwd-error active">* Mật khẩu phải trên 8 ký tự</span>
+                    <div class="flex-roww">
+                        <input type="password" class="form-control btrr0 bbrr0" id="pwd" name="pwd" placeholder="Nhập mật khẩu" required><button class="btnShowPwd" type="button"><i class="bi bi-eye-slash" onclick="showPassword(event);"></i></button>
+                    </div>
+                    <span class="pwd-error">* Mật khẩu phải trên 8 ký tự</span>
                 </div>
                 <div class="form-group">
                     <label for="repwd">Nhập lại mật khẩu</label>
                     <input type="password" class="form-control" id="repwd" name="repwd" placeholder="Nhập lại mật khẩu" required>
-                    <span class="pwd-error">Mật khẩu phải trên 8 ký tự</span>
+                    <span class="repwd-error">Mật khẩu phải trên 8 ký tự</span>
                 </div>
                 <div class="flex-roww" style="justify-content: space-between;margin: 20px 0">
                     <a href="" style="font-size: 13px">Đã có tài khoản. Đăng nhập</a>
@@ -106,6 +112,9 @@
                     </div>
                 </div>
             </form>
+            <script>
+                tellUsedEmail();
+            </script>
 
         </div>
     </div>

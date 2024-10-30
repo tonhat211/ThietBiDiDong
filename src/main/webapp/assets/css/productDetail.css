@@ -23,42 +23,48 @@
 .img-presentation {
 }
 
-.sub-content {
+.product-details-container .sub-content {
     width: 100%;
     padding: 15px;
     background-color: var(--content-bg-color);
     margin-top: 15px;
     border-radius: 10px;
+    /*box-shadow:  0 0 4px 2px rgb(179 179 179 / 30%);*/
+    box-shadow: 0 0 4px 2px rgb(179 179 179 / 10%) !important;
+
+}
+
+.product-details-container .carousel-nav {
+    position: relative !important;
+    margin-top: 15px !important;
+    right: unset !important;
+    left: unset !important;
+    bottom: unset !important;
+    width: 100% !important;
+    margin-left: unset !important;
+    margin-right: unset !important;
+    z-index: unset !important;
+}
+
+.product-details-container .carousel-nav li {
+    width: 8.33% !important;
+    height: unset !important;
+    border: 1px solid !important;
+    padding: 4px !important;
+    border-radius: 4px !important;
+}
+
+.product-details-container .carousel-nav li img {
+    width: 100% !important;
+    max-height: 22px !important;
+}
+
+.product-details-container .carousel-nav li:hover,
+.product-details-container .carousel-nav li.active {
+    cursor: pointer !important;
+    border: 1px solid var(--bold-color) !important;
     box-shadow:  0 0 4px 2px rgb(179 179 179 / 30%);
-}
-
-.carousel-nav {
-    position: relative;
-    margin-top: 15px;
-    right: unset;
-    left: unset;
-    bottom: unset;
-    width: 100%;
-    margin-left: unset;
-    margin-right: unset;
-}
-
-.carousel-nav li {
-    width: 8.33%;
-    height: unset;
-    border: 1px solid white;
-    padding: 4px;
-    border-radius: 4px;
-}
-
-.carousel-nav li img {
-    width: 100%;
-}
-
-.carousel-nav li:hover,
-.carousel-nav li.active {
-    cursor: pointer;
-    border: 1px solid var(--bold-color);
+    opacity: 0.3;
 
 }
 
@@ -96,6 +102,12 @@
 
 .p-des .seperate-horizontal-90 {
     margin-bottom: 10px;
+    border: 0.5px solid rgba(204, 204, 204, 0.25);
+}
+
+.p-des .seperate-horizontal-100 {
+    margin-bottom: 10px;
+    width: 100%;
     border: 0.5px solid rgba(204, 204, 204, 0.25);
 }
 
@@ -197,6 +209,12 @@
 
 .color-selector .option-item {
     border-radius: 20px;
+}
+
+.option-selector .option-item:disabled,
+.color-selector .option-item:disabled {
+    cursor: not-allowed;
+    opacity: 0.3;
 }
 
 .location-warehouse {

@@ -1,3 +1,12 @@
+<%@ page import="model.ProductUnit" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="DAO.ProductUnitDAO" %>
+<%@ page import="model.Property" %>
+<%@ page import="java.time.LocalDateTime" %>
+<%@ page import="java.time.Duration" %>
+<%@ page import="DAO.SaleProgramDAO" %>
+<%@ page import="java.time.LocalTime" %>
+<%@ page import="model.SaleProgram" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -7,6 +16,11 @@
 
     <!-- thu vien jquery   -->
     <script type="text/javascript" src="./assets/js/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="./assets/js/js_bootstrap4/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./assets/js/header.js"></script>
+    <script type="text/javascript" src="./assets/js/smartphone.js"></script>
+    <script type="text/javascript" src="./assets/js/toast.js"></script>
+    <script type="text/javascript" src="./assets/js/index.js"></script>
 
     <!-- Favicons -->
 
@@ -19,103 +33,225 @@
     <link rel="stylesheet" href="./assets/fonts/fonts-bootstrap/bootstrap-icons.min.css">
 
     <!-- Template Main CSS File -->
+    <link rel="stylesheet" href="./assets/css/css_bootstrap4/bootstrap.min.css">
+
     <link href="./assets/css/base.css" rel="stylesheet">
-    <link href="./assets/css/header.css" rel="stylesheet">
-    <link href="./assets/css/footer.css" rel="stylesheet">
+    <link href="./assets/css/toast.css" rel="stylesheet">
 
     <!-- css tu them   -->
+    <link href="./assets/css/smartphone.css" rel="stylesheet">
     <link href="./assets/css/index.css" rel="stylesheet">
 
 </head>
 <body>
-<div class="header pd10-20">
-    <div class="header_top grid__row flex-row">
-        <a href="" class="logo grid-col-2 pd0">
-            <img src="./assets/img/logo/Logo-The-Gioi-Di-Dong-MWG-B-H.webp" alt="" style="color:black;">
-        </a>
-        <div class="search-bar grid-col-4 ">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Bạn tìm gì...">
-        </div>
-        <div class="user_part flex-row grid-col-3">
-            <a class="user flex-row grid-col-6" href="#">
-                <i class="bi bi-person"></i>
-                <p>Đăng nhập</p>
-            </a>
-            <a class="cart flex-row grid-col-6" href="#">
-                <i class="bi bi-cart3"></i>
-                <p>Giỏ hàng</p>
-            </a>
-        </div>
-    </div>
-    <div class="header_bottom grid__row">
-        <ul class="main-menu flex-row">
-            <li>
-                <a href=""><i class="bi bi-phone"></i>
-                    Điện thoại</a>
-            </li>
-            <li>
-                <a href=""><i class="bi bi-tablet-landscape"></i>
-                    Máy tính bảng</a>
-            </li>
-            <li>
-                <a href=""><i class="bi bi-laptop"></i>
-                    Laptop</a>
-            </li>
-        </ul>
-    </div>
-</div>
+<%@ include file="header.jsp" %>
+<script>
+    console.log("index");
+</script>
+<%
+    ArrayList<ProductUnit> saledOnlineProductUnits = ProductUnitDAO.getInstance().selectBySaleProgram(Property.ONLINE,0,20);
+    ArrayList<ProductUnit> suggestedProductUnits = ProductUnitDAO.getInstance().selectByCategory(Property.ALL,0,20);
+
+%>
+<script>
+    console.log(<%=saledOnlineProductUnits.size()%>);
+    console.log(<%=suggestedProductUnits.size()%>);
+</script>
 
 <div class="content-container">
-    Code nội dung chính ở đây
-</div>
-<div class="footer pd10-20">
-    <div class="grid__row w100">
-        <div class="grid-col-3">
-            <p class="footer__title">Tổng đài hỗ trợ</p>
-            <div class="footer__content">
-                <p>Gọi mua: <span class="footer__detail">1900 1900</span> (8:00 - 21:30)</p>
-                <p>Khiếu nại: <span class="footer__detail">1900 1900</span> (8:00 - 21:30)</p>
-                <p>Bảo hành: <span class="footer__detail">1900 1900</span> (8:00 - 21:30)</p>
-            </div>
-        </div>
-        <div class="grid-col-3">
-            <p class="footer__title">Về công ty</p>
-            <div class="footer__content">
-                <a href="">Giới thiệu công ty</a>
-                <a href="">Tìm siêu thị: <span class="footer__detail">100</span> Shop</a>
-                <a href="">Tuyển dụng</a>
-            </div>
-        </div>
-        <div class="grid-col-3">
-            <p class="footer__title">Menu</p>
-            <div class="footer__content">
-                <a href=""><i class="bi bi-phone"></i>
-                    Điện thoại</a>
-                <a href=""><i class="bi bi-tablet-landscape"></i>
-                    Máy tính bảng</a>
-                <a href=""><i class="bi bi-laptop"></i>
-                    Laptop</a>
-            </div>
-        </div>
-        <div class="grid-col-3">
-            <p class="footer__title">Thông tin khác</p>
-            <div class="footer__content">
-                <a href=""><i class="bi bi-facebook"></i>
-                    <span class="footer__detail">1.000.000</span> Theo dõi</a>
-                <a href=""><i class="bi bi-youtube"></i>
-                    <span class="footer__detail">2.000.000</span> Đăng ký</a>
-                <a href=""><img src="./assets/img/logo/logo-da-thong-bao-bo-cong-thuong.webp" alt=""></a>
-            </div>
-        </div>
+    <div class="advertisement">
+        <img src="./assets/img/advertisement/ad-iphone16.jpg" alt="">
     </div>
-    <div class="grid__row footer__content">
-        <p>© 2018. Công ty cổ phần Thiết Bị Di Động. GPDKKD: 0303217354 do sở KH & ĐT TP.HCM cấp ngày 02/01/2007. GPMXH: 238/GP-BTTTT do Bộ Thông Tin và Truyền Thông cấp ngày 04/06/2020.<br>
-            Địa chỉ: 128 Trần Quang Khải, P.Tân Định, Q.1, TP.Hồ Chí Minh. Địa chỉ liên hệ và gửi chứng từ: Lô T2-1.2, Đường D1, Đ. D1, P.Tân Phú, TP.Thủ Đức, TP.Hồ Chí Minh. Điện thoại: 028 38125960.<br>
-            Email: cskh@thietbididong.com. Chịu trách nhiệm nội dung: Huỳnh Văn Tốt. Email: hotrotmdt@thietbididong.com. Xem chính sách sử dụng</p>
-    </div>
+    <%
+        if(saledOnlineProductUnits.size()>0) {
+            LocalTime remaningTime = SaleProgram.getRemainingTime();
+    %>
+    <div class="sub-content online-promotion">
+        <p class="bold-text-7" style="font-size: 25px">Khuyến mãi online</p>
+        <div class="flex-roww" style="justify-content: center">
+            <p class="promotion-time flex-roww" id="promotion-remaining-time">Chỉ còn
+                <span class="time-component promotion-time_hour hour"></span> :
+                <span class="time-component promotion-time_minute minute"></span> :
+                <span class="time-component promotion-time_second second"></span>
+            </p>
+        </div>
+        <script>
+            countdown("#promotion-remaining-time",<%=remaningTime.getHour()%>,<%=remaningTime.getMinute()%>,<%=remaningTime.getSecond()%>);
+        </script>
+        <div class="promotion-product-list">
+            <div class="grid__row">
+                <%
+                    for (ProductUnit p : saledOnlineProductUnits) {
+                %>
+                <%--                    mot san pham --%>
+                    <div class="grid-col-2_4 product-item-container">
+                        <div class="product-item">
+                            <a href="<%=p.getUrlToDetail()%>">
+                                <div class="info flex-roww status">
+                                    <%=p.getStatusItem()%>
+                                </div>
+                                <div class="img-container flex-roww" style="justify-content: center;">
+                                    <img class="img-product" src="./assets/img/thumbnail/<%=p.getThumbnail()%>" alt="<%=p.getFullName()%>">
+                                </div>
+                                <div class="info promotion">
+                                    <%--                                    <p class="promotion-item"><i class="bi bi-gift"></i><%=p.getPromotion()%></p>--%>
+                                    <p class="promotion-item"><%=p.getSaleProgramItem()%></p>
+                                </div>
+                                <div class="info name">
+                                    <p><%=p.getFullName()%></p>
+                                </div>
+                                <div class="info features flex-roww">
+                                    <%--                                    <p class="feature-item">Man hinh 4k</p>--%>
+                                    <%=p.getFeatureItems()%>
+                                </div>
+                                <div class="version flex-roww group">
+                                    <%--                                    <div class="version-item active" onclick="getPriceOf(event);">--%>
+                                    <%--                                        <p>64gb</p>--%>
+                                    <%--                                    </div>--%>
+                                    <%--                                    <div class="version-item" onclick="getPriceOf(event);">--%>
+                                    <%--                                        <p>128gb</p>--%>
+                                    <%--                                    </div>--%>
+                                    <%=p.getStorageVersionItems()%>
+
+                                </div>
+                                <div class="price">
+                                    <div><p class="cur-price"><%=p.getCurrentPrice()%> <span>VND</span></p> </div>
+                                    <div class="flex-roww" style="justify-content: space-between;">
+                                        <p class="init-price"><%=p.getInitialPrice()%> <span>VND</span></p>
+                                        <div class="info rate">
+                                            <p><i class="bi bi-star-fill"></i><span class="rate-figure"><%=p.getRate()%></span>(<span class="total-estimate"><%=p.getTotalComment()%></span>)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
 
 
+                        </div>
+
+                    </div>
+
+                <%
+                    }
+                %>
+            </div>
+        </div>
+
+    </div>
+    <%
+        }
+    %>
+    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" style="border-radius: 10px; overflow: hidden;margin-top: 20px;">
+        <ol class="carousel-indicators" style="bottom:-30px;">
+            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="row">
+                    <div class="col-6">
+                        <img class="d-block w-100" src="./assets/img/banner/banner1.png" alt="First slide">
+                    </div>
+                    <div class="col-6">
+                        <img class="d-block w-100" src="./assets/img/banner/banner2.png" alt="Second slide">
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row">
+                    <div class="col-6">
+                        <img class="d-block w-100" src="./assets/img/banner/banner3.jpg" alt="First slide">
+                    </div>
+                    <div class="col-6">
+                        <img class="d-block w-100" src="./assets/img/banner/banner4.png" alt="Second slide">
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row">
+                    <div class="col-6">
+                        <img class="d-block w-100" src="./assets/img/banner/banner5.jpg" alt="First slide">
+                    </div>
+                    <div class="col-6">
+                        <img class="d-block w-100" src="./assets/img/banner/banner6.png" alt="Second slide">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev" style="justify-content: start">
+            <!--            <span class="carousel-control-prev-icon" aria-hidden="true"></span>-->
+            <i class="bi bi-arrow-left-circle-fill" style="font-size: 40px; margin: 20px;"></i>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next" style="justify-content: end">
+            <!--            <span class="carousel-control-next-icon" aria-hidden="true"></span>-->
+            <i class="bi bi-arrow-right-circle-fill" style="font-size: 40px; margin: 20px;"></i>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+    <div class="sub-content cue-product">
+        <p class="bold-text-7" style="font-size: 25px">Gợi ý cho bạn</p>
+        <div class="promotion-product-list">
+            <div class="grid__row">
+                <%
+                    for (ProductUnit p : suggestedProductUnits) {
+                %>
+                <%--                    mot san pham --%>
+                    <div class="grid-col-2_4 product-item-container">
+                        <div class="product-item">
+                            <a href="<%=p.getUrlToDetail()%>">
+                                <div class="info flex-roww status">
+                                    <%=p.getStatusItem()%>
+                                </div>
+                                <div class="img-container flex-roww" style="justify-content: center;">
+                                    <img class="img-product" src="./assets/img/thumbnail/<%=p.getThumbnail()%>" alt="<%=p.getFullName()%>">
+                                </div>
+                                <div class="info promotion">
+                                    <%--                                    <p class="promotion-item"><i class="bi bi-gift"></i><%=p.getPromotion()%></p>--%>
+                                    <p class="promotion-item"><%=p.getSaleProgramItem()%></p>
+                                </div>
+                                <div class="info name">
+                                    <p><%=p.getFullName()%></p>
+                                </div>
+                                <div class="info features flex-roww">
+                                    <%--                                    <p class="feature-item">Man hinh 4k</p>--%>
+                                    <%=p.getFeatureItems()%>
+                                </div>
+                                <div class="version flex-roww group">
+                                    <%--                                    <div class="version-item active" onclick="getPriceOf(event);">--%>
+                                    <%--                                        <p>64gb</p>--%>
+                                    <%--                                    </div>--%>
+                                    <%--                                    <div class="version-item" onclick="getPriceOf(event);">--%>
+                                    <%--                                        <p>128gb</p>--%>
+                                    <%--                                    </div>--%>
+                                    <%=p.getStorageVersionItems()%>
+
+                                </div>
+                                <div class="price">
+                                    <div><p class="cur-price"><%=p.getCurrentPrice()%> <span>VND</span></p> </div>
+                                    <div class="flex-roww" style="justify-content: space-between;">
+                                        <p class="init-price"><%=p.getInitialPrice()%> <span>VND</span></p>
+                                        <div class="info rate">
+                                            <p><i class="bi bi-star-fill"></i><span class="rate-figure"><%=p.getRate()%></span>(<span class="total-estimate"><%=p.getTotalComment()%></span>)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+
+
+                        </div>
+
+                    </div>
+
+                <%
+                    }
+                %>
+            </div>
+        </div>
+
+    </div>
 </div>
+<%@ include file="footer.jsp" %>
 </body>
 </html>

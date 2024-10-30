@@ -28,7 +28,9 @@
     <link href="../assets/css/footer.css" rel="stylesheet">
 
     <style>
-
+        .sub-content {
+            box-shadow: 0 0 4px 2px rgb(179 179 179 / 10%) !important;
+        }
     </style>
     <!-- css tu them   -->
     <link href="../assets/css/smartphone.css" rel="stylesheet">
@@ -75,7 +77,21 @@
     </div>
 </div>
 
-<div class="content-container">
+<div class="content-container product-details-container">
+    <div class="filter-options modal-filter-details">
+        <div class="filter-details modall" style="width: 600px;height: 150px;">
+            <div class="flex-roww" style="justify-content: center;margin:22px 0;font-size: 19px">
+                <p>Bạn chưa đăng nhập, vui lòng đăng nhập để sử dụng giỏ hàng</p>
+            </div>
+            <div class="flex-roww" style="justify-content: space-around; margin-top: 20px">
+                <button class="btn btn-outline-primary btn-cancel-filter" onclick="removeModal('.modal-filter-details')"><i class="bi bi-x-lg"></i> Hủy</button>
+                <a href="product?action=FILTER" class="btn btn-primary btn-filter" style="color: white;"><i class="bi bi-check-lg"></i> Đăng nhập</a>
+
+            </div>
+        </div>
+        <div class="overlay" onclick="removeModal('.modal-filter-details')"></div>
+    </div>
+
     <div class="breadcrumb flex-roww" style="background-color: var(--base-bg-color);padding: 0;">
         <a href="#">Điện thoại </a><p style=";margin-bottom: 0;"> / <span class="total-phone" style="margin-bottom: 0">Điện thoại Samsung</span></p>
     </div>
@@ -176,13 +192,13 @@
 
                 <div class="sub-content">
                     <div class="flex-roww" style="justify-content: center;">
-                        <div class="flex-roww" style="justify-content: space-evenly;width: 60%">
-                            <button class="btn btn-outline-primary active">Thông số kỹ thuật</button>
-                            <button class="btn btn-outline-primary">Bài viết đánh giá</button>
+                        <div class="flex-roww group" style="justify-content: space-evenly;width: 60%">
+                            <button class="btn btn-outline-primary active btn-show" onclick="getConfig()">Thông số kỹ thuật</button>
+                            <button class="btn btn-outline-primary btn-show" onclick="getDes()">Bài viết đánh giá</button>
                         </div>
                     </div>
                     <div class="seperate-horizontal-90" style="margin: 20px 0;"></div>
-                    <div class="p-des active">
+                    <div id="config-show" class="p-des active">
                         <div class="grid__row p-des-info">
                             <p class="grid-col-5 des-label">Màn hình:</p>
                             <p class="grid-col-5 des-info">6.4 inch Dyanmic Amoled</p>
@@ -191,7 +207,7 @@
                         <div class="grid__row p-des-info">
                             <p class="grid-col-5 des-label">Hệ điều hành:</p>
                             <p class="grid-col-5 des-info">Android 13</p>
-                            <div class="seperate-horizontal-90"></div>
+                            <div class="seperate-horizontal-100"></div>
                         </div>
                         <div class="grid__row p-des-info">
                             <p class="grid-col-5 des-label">Chip xử lý (CPU):</p>
@@ -223,7 +239,7 @@
                         </div>
 
                     </div>
-                    <div class="p-des">
+                    <div id="des-show" class="p-des">
                         <h3 style="text-align: justify;font-size: 20px;">Tiếp tục chiếm lĩnh thị trường điện thoại thông minh với sự xuất hiện của&nbsp;
                             Samsung Galaxy S23 FE 5G
                             . Điện thoại này được trang bị camera 50 MP có khả năng quay video 8K, màn hình 120 Hz.
@@ -251,7 +267,7 @@
                     <div class="rating-product">
                         <p class="bold-text-6">Đánh giá sản phẩm</p>
                     </div>
-                    <div class="rating-main flex-roww" id="rating-presentation">
+                    <div class="rating-main flex-roww"  id="rating-presentation">
                         <p class="rating-figure bold-text-6">4.5</p>
                         <div class="rating">
                             <span class="star" data-value="1"><i class="bi bi-star"></i></span>
@@ -263,26 +279,7 @@
                         <p style="color: var(--bold-color);font-weight: 600"><span class="total-rating">72</span> đánh giá</p>
                     </div>
                     <div class="comment-container">
-                        <div class="comment-item" id="user1">
-                            <div class="comment-header flex-roww">
-                                <p class="comment-owner">Tô Nhật</p>
-                                <p class="buy-check"><i class="bi bi-check-circle"></i> Đã mua tại thietbididong</p>
-                            </div>
-                            <div class="rating">
-                                <span class="star" data-value="1"><i class="bi bi-star"></i></span>
-                                <span class="star" data-value="2"><i class="bi bi-star"></i></span>
-                                <span class="star" data-value="3"><i class="bi bi-star"></i></span>
-                                <span class="star" data-value="4"><i class="bi bi-star"></i></span>
-                                <span class="star" data-value="5"><i class="bi bi-star"></i></span>
-                            </div>
-                            <script>
-                                initRating('#user1',2);
-                            </script>
-                            <div class="comment-content">
-                                <p>Mới mua mà thấy pin tụt mau quá, máy nóng, 100% để không mà cũng tụt xuống nhanh nửa</p>
-                            </div>
-                            <div class="seperate-horizontal-90" style="margin: 20px 0;"></div>
-                        </div>
+
                         <div class="comment-item" id="user2">
                             <div class="comment-header flex-roww">
                                 <p class="comment-owner">Tú Trinh</p>
@@ -339,7 +336,7 @@
                     </div>
                     <div class="grid__row" style="margin: 15px 0;">
                         <div class="grid-col-6" style="padding-right: 5px">
-                            <button class="btn btn-outline-primary btn-add-to-cart"><i class="bi bi-cart-plus"></i>Thêm vào giỏ<span class="flex-coll"></span></button>
+                            <button class="btn btn-outline-primary btn-add-to-cart" onclick="openModal('.modal-filter-details')"><i class="bi bi-cart-plus"></i>Thêm vào giỏ<span class="flex-coll"></span></button>
                         </div>
                         <div class="grid-col-6" style="padding-left: 5px">
                             <button class="btn btn-buy">Mua ngay</button>
@@ -584,6 +581,9 @@
     radioElements('.option-item');
     initRating('#rating-presentation',4.5);
     activeRating('#rating-presentation');
+
+    radioElements('.btn-show');
+
 </script>
 </body>
 </html>

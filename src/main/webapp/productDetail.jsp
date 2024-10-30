@@ -69,7 +69,7 @@
             </div>
             <div class="flex-roww" style="justify-content: space-around; margin-top: 20px">
                 <button class="btn btn-outline-primary btn-cancel-filter" onclick="removeModal('.modal-filter-details')"><i class="bi bi-x-lg"></i> Hủy</button>
-                <a href="login?action=require?page=product&pageAction=detail&pageProductID=<%=pu.getProductID()%>" class="btn btn-primary btn-filter" style="color: white;">Đăng nhập</a>
+                <a href="login?action=require&page=product&pageAction=detail&pageProductID=<%=pu.getProductID()%>" class="btn btn-primary btn-filter" style="color: white;">Đăng nhập</a>
 
             </div>
         </div>

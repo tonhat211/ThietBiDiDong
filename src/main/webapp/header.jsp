@@ -42,7 +42,7 @@
 %>
 
 <div class="header pd10-20">
-    <div id="toast">
+    <div id="toast-header" class="toast">
 
     </div>
 
@@ -98,7 +98,7 @@
                         <a href="profile?action=init" class="li-profile" onclick="manageProfile(event);">Quản lý</a>
                     </li>
                     <li>
-                        <a href="" class="li-logout">Đăng xuất</a>
+                        <a href="login?action=logout" onclick="logout(event);" class="li-logout">Đăng xuất</a>
                     </li>
                 </ul>
                 <%
@@ -137,7 +137,7 @@
                         </div>
                     </div>
                     <div class="sub-content"  style="margin-left: 10px;" onclick="event.stopPropagation();">
-                        <form id="editAddressForm">
+                        <form id="editAddressForm" action="profile">
                             <p class="bold-text-6 edit-title" style="text-align: center">Thêm địa chỉ</p>
                             <div class="flex-roww" style="margin-top: 10px">
                                 <input type="text"  class="form-control w-80" id="receiver" name="receiver"  aria-describedby="" placeholder="Tên người nhận" value="">
@@ -152,11 +152,34 @@
                                 <input type="text" style="margin-top: 10px" class="form-control w-100" id="street" name="street"  aria-describedby="" placeholder="Chi tiết" value="">
                             </div>
                             <input type="text" class="form-control w-80" id="id" name="id"  aria-describedby="" placeholder="ID account" value="" hidden>
+                            <input type="text" class="form-control w-80" name="action"  aria-describedby="" placeholder="ID account" value="addAddress" hidden>
                             <div class="flex-roww" style="margin-top:20px; justify-content: space-around">
                                 <button class="btn btn-third" type="button" onclick="cancelEdit('#editAddressForm');">Hủy</button>
                                 <button class="btn btn-primary btn-edit" type="submit">Lưu</button>
                             </div>
                         </form>
+                        <script>
+                            const updateAddressForm = document.querySelector('#editAddressForm');
+                            updateAddressForm.addEventListener('submit', function(e) {
+                                console.log(this);
+                                console.log("call submit");
+                                e.preventDefault();
+                                var formData = new FormData(this);
+                                let id = formData.get('id');
+                                let receiver = formData.get('receiver');
+                                let phone = formData.get("phone");
+                                let street = formData.get("street");
+                                let village = formData.get("village");
+                                let district = formData.get("district");
+                                let province = formData.get("province");
+                                let action = formData.get("action");
+                                if(action=="updateAddress") {
+                                    updateAddressAjax(action,id,receiver,phone,street,village,district,province);
+                                } else {
+                                    addAddressAjax(action,id,receiver,phone,street,village,district,province);
+                                }
+                            });
+                        </script>
                     </div>
                 </div>
 
@@ -175,10 +198,19 @@
                 </div>
                 <div class="flex-roww" style="margin-top:20px; justify-content: space-around">
                     <button class="btn btn-third" type="button" onclick="cancelDelete(event,'.address-confirm');">Hủy</button>
-                    <button class="btn btn-primary btn-confirm-delete" type="submit">Xóa</button>
+                    <button class="btn btn-primary btn-confirm-delete" onclick="deleteAddress()" type="button">Xóa</button>
                 </div>
+                <script>
+                    function deleteAddress() {
+                        let id =document.querySelector('.address-confirm .id').innerText;
+                        deleteAddressAjax(id);
+                    }
+
+                </script>
             </div>
         </div>
+
+
         <div class="modall info-modal" onclick="removeModal('#modal-container');">
             <div class="modall-content" style="width: 80%; background-color: unset;">
                 <div class="flex-roww" style="align-items: start;justify-content: center;height: 100%;">
@@ -265,7 +297,7 @@
                     </div>
                     <div class="flex-roww" style="justify-content: space-around; margin-top: 20px">
                         <button class="btn btn-outline-primary btn-cancel-filter" onclick="removeModal('.modal-filter-details')"><i class="bi bi-x-lg"></i> Hủy</button>
-                        <a href="login?action=require?pageAction=forward&page=cart" class="btn btn-primary btn-filter" style="color: white;">Đăng nhập</a>
+                        <a href="login?action=require&pageAction=forward&page=cart" class="btn btn-primary btn-filter" style="color: white;">Đăng nhập</a>
                     </div>
                 </div>
 
@@ -274,6 +306,7 @@
         </div>
 
     </div>
+    <div id="header-response"></div>
 </div>
 
 </body>

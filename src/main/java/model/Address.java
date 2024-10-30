@@ -12,6 +12,10 @@ public class Address {
     public Address() {
     }
 
+    public Address(int id) {
+        this.id = id;
+    }
+
     public Address(int id, String receiver, String phone, String street, String village, String district, String province) {
         this.id = id;
         this.receiver = receiver;
@@ -21,6 +25,7 @@ public class Address {
         this.district = district;
         this.province = province;
     }
+
 
 //    constructor cho nhung dia chi ma khong phai dia chi nhan hang (dia chi chi nhanh,...)
     public Address(int id, String street, String village, String district, String province) {

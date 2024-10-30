@@ -162,9 +162,16 @@
                 </div>
                 <div class="flex-roww" style="margin-top:20px; justify-content: space-around">
                     <button class="btn btn-third" type="button" onclick="cancelDelete(event,'.address-confirm');">Hủy</button>
-                    <button class="btn btn-primary btn-confirm-delete" type="submit">Xóa</button>
+                    <button class="btn btn-primary btn-confirm-delete" onclick="deleteAddress(event)" type="button">Xóa</button>
                 </div>
             </div>
+        <script>
+            function deleteAddress() {
+                let id =document.querySelector('.address-confirm .id');
+                deleteAddressAjax(id);
+            }
+
+        </script>
         </div>
     <div class="modall info-modal" onclick="removeModal('#modal-container');">
             <div class="modall-content" style="width: 80%; background-color: unset;">

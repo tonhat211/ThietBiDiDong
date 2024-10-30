@@ -1,6 +1,13 @@
 function initUpdateAddress(event,parent, formElement) {
     event.preventDefault();
+    const parentEs= document.querySelectorAll(parent);
+    parentEs.forEach((element) => {
+        if(element.classList.contains('active')) {
+            element.classList.remove('active');
+        }
+    });
     const parentElement = event.currentTarget.closest(parent);
+    parentElement.classList.add('active');
     let id = parentElement.querySelector('.id').innerText;
     let receiver = parentElement.querySelector('.receiver').innerText;
     let phone = parentElement.querySelector('.phone').innerText;
@@ -18,9 +25,53 @@ function initUpdateAddress(event,parent, formElement) {
         else if(input.name == "village") input.value = village;
         else if(input.name == "district") input.value = district;
         else if(input.name == "province") input.value = province;
+        else if(input.name == "action") input.value = "updateAddress";
+
     });
     form.querySelector('.edit-title').innerText = "Cập nhật địa chỉ";
 
+}
+
+
+
+function updateAddressAjax(action,id,receiver,phone,street,village,district,province) {
+    console.log("call update address ajax");
+    $.ajax({
+        type: "GET",
+        url: "profile",
+        data: {action: action, id:id ,receiver: receiver,phone: phone,street:street,village:village,district:district,province:province},
+        success: function(data) {
+            var addresses = $('#address-container .address-item');
+            addresses.each(function(index, element) {
+                if ($(element).hasClass('active')) {
+                    $(element).html(data);
+                }
+            });
+            cancelEdit('#editAddressForm');
+            showSuccessToast('Cập nhật địa chỉ thành công','#toast-header');
+        },
+        error: function(error) {
+            console.error("Error during querying address: ", error);
+        }
+    });
+}
+
+function addAddressAjax(action,id,receiver,phone,street,village,district,province) {
+    console.log("call add address ajax");
+    $.ajax({
+        type: "GET",
+        url: "profile",
+        data: {action: action, id:id ,receiver: receiver,phone: phone,street:street,village:village,district:district,province:province},
+        success: function(data) {
+            $('#address-container').html(data);
+            cancelEdit('#editAddressForm');
+            showSuccessToast('Thêm địa chỉ thành công','#toast-header');
+
+        },
+        error: function(error) {
+            console.error("Error during querying address: ", error);
+        }
+    });
 }
 
 function cancelEdit(element) {
@@ -28,13 +79,21 @@ function cancelEdit(element) {
     const inputs = form.querySelectorAll('input');
     inputs.forEach(input => {
         input.value = '';
+        if(input.name=="action") input.value = 'addAddress';
     });
     form.querySelector('.edit-title').innerText = "Thêm địa chỉ";
 
 }
 
 function initDeleteAddress(event,parent,modal,confirmModal) {
+    const parentEs= document.querySelectorAll(parent);
+    parentEs.forEach((element) => {
+        if(element.classList.contains('active')) {
+            element.classList.remove('active');
+        }
+    });
     const parentElement = event.currentTarget.closest(parent);
+    parentElement.classList.add('active');
     let id = parentElement.querySelector('.id').innerText;
     let receiver = parentElement.querySelector('.receiver').innerText;
     let phone = parentElement.querySelector('.phone').innerText;
@@ -47,6 +106,28 @@ function initDeleteAddress(event,parent,modal,confirmModal) {
     confirmElement.querySelector('.phone').innerText = phone;
     confirmElement.querySelector('.address').innerText = address;
     confirmElement.classList.add('active');
+}
+
+function deleteAddressAjax(id) {
+    $.ajax({
+        type: "GET",
+        url: "profile",
+        data: {action: "deleteAddress",id: id},
+        success: function(data) {
+            var addresses = $('#address-container .address-item');
+            addresses.each(function(index, element) {
+                if ($(element).hasClass('active')) {
+                    $(element).hide();
+                }
+            });
+            console.log(data);
+            $('#header-response').html(data);
+            $('.address-confirm').removeClass('active');
+        },
+        error: function(error) {
+            console.error("Error during querying address: ", error);
+        }
+    });
 }
 
 function cancelDelete(event,element) {
@@ -113,6 +194,19 @@ function getAddressList() {
         },
         error: function(error) {
             console.error("Error during querying address: ", error);
+        }
+    });
+}
+
+function logout(event) {
+    event.preventDefault();
+    $.ajax({
+        type: "GET",
+        url: event.currentTarget.href,
+        success: function(data) {
+            window.location.href="product?action=init&&category=smartphone";
+        },
+        error: function(error) {
         }
     });
 }

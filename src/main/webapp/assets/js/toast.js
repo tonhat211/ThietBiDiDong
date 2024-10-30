@@ -1,11 +1,8 @@
-function toast({title = '', message = '', type = 'info', duration = 3000}) {
-    const main = document.getElementById('toast');
-
+function toast({title = '', message = '', type = 'info', duration = 3000, container='toast-header'}) {
+    const main = document.querySelector(container);
     if (main) {
         const toast = document.createElement('div');
-
         // auto remove toast
-
         const autoRemoveId = setTimeout(function() {
             main.removeChild(toast);
         }, duration + 1000);
@@ -43,17 +40,20 @@ function toast({title = '', message = '', type = 'info', duration = 3000}) {
                     </div>
                 `;
         main.appendChild(toast);
+        console.log(main);
 
     }
 }
 
 
-function showSuccessToast(messagein) {
+function showSuccessToast(messagein,container = '#toast') {
+    console.log("call toast");
     toast({
         title: 'Successful',
         message: messagein,
         type: 'success',
-        duration: 1200
+        duration: 1200,
+        container: container
     })
 }
 

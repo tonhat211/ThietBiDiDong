@@ -49,7 +49,9 @@ public class LoginController extends HttpServlet {
                     break;
                 }
                 case "REQUIRE" : {
+                    System.out.println("Require");
                     String page = req.getParameter("page");
+                    System.out.println("page:" + page);
                     String pageAction = req.getParameter("pageAction");
                     String pageProductID = req.getParameter("pageProductID");
                     String pageUrl=null;
@@ -58,12 +60,17 @@ public class LoginController extends HttpServlet {
                     } else {
                         pageUrl = page + "?action=" + pageAction + "&id=" + pageProductID;
                     }
+                    System.out.println("url:" + pageUrl);
 
                     if(pageUrl!=null) {
                         req.setAttribute("page",pageUrl);
                     }
                     RequestDispatcher rd = getServletContext().getRequestDispatcher("/login.jsp");
                     rd.forward(req, resp);
+                    break;
+                }
+                case "LOGOUT" :{
+                    session.removeAttribute("userLogging");
                     break;
                 }
             }

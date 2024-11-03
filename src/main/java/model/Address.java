@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 public class Address {
     private int id;
     private String receiver;
@@ -91,4 +93,9 @@ public class Address {
     public void setProvince(String province) {
         this.province = province;
     }
+
+    public String getAddress() {
+        return this.street + ", " + this.village + ", " + this.district + ", " + this.province;
+    }
+
 }

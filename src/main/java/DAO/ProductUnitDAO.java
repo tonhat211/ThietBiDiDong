@@ -115,7 +115,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                 pst.setInt(1, offset);
                 pst.setInt(2, amount);
             }
-
+            System.out.println(pst);
             ResultSet rs = pst.executeQuery();
             while(rs.next()){
                 int id = rs.getInt("id");
@@ -131,6 +131,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                 int totalComment=rs.getInt("totalComment");
                 int saleProgramID=rs.getInt("saleprogramID");
                 String saleProgram=rs.getString("saleprogram");
+
                 res.add(new ProductUnit(id, name, version, config ,thumbnail, firstSale, ram, rom, price, star, totalComment, saleProgramID, saleProgram));
 
             }

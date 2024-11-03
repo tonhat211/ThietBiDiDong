@@ -39,7 +39,6 @@ public class SaleProgramDAO implements IDAO<SaleProgram> {
         SaleProgram saleProgram = null;
         try {
             Connection conn = JDBCUtil.getConnection();
-
             String sql = "select * from saleprograms where id = ?";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, id);
@@ -55,6 +54,7 @@ public class SaleProgramDAO implements IDAO<SaleProgram> {
                 Date startTime =rs.getDate("startTime");
                 LocalDateTime endTime =rs.getObject("endTime",LocalDateTime.class);
                 int avai = rs.getInt("avai");
+
                 saleProgram = new SaleProgram(reid, objectID, name, main, content, discount, startTime, endTime, avai);
 
             }
@@ -114,6 +114,37 @@ public class SaleProgramDAO implements IDAO<SaleProgram> {
 
             JDBCUtil.closeConnection(conn);
             return re;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public SaleProgram selectOfObjectIds(ArrayList<Integer> ids) {
+        SaleProgram saleProgram = null;
+        String condition= "(";
+        for(Integer id : ids){
+            condition += id + ",";
+        }
+        condition = condition.substring(0, condition.length()-1);
+        condition += ")";
+
+        try {
+            Connection conn = JDBCUtil.getConnection();
+
+            String sql = "select id, name, max(discount) as discount from saleprograms where objectID in \n" +
+                    "(select DISTINCT productID from productdetails where id in "+ condition+")\n";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()){
+                int reid = rs.getInt("id");
+                String name = rs.getString("name");
+                double discount = rs.getDouble("discount");
+                saleProgram = new SaleProgram(reid,name,discount);
+
+            }
+            JDBCUtil.closeConnection(conn);
+            return saleProgram;
 
         } catch (SQLException e) {
             throw new RuntimeException(e);

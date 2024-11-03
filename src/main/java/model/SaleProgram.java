@@ -28,6 +28,12 @@ public class SaleProgram {
 
     }
 
+    public SaleProgram(int id, String name, double discount) {
+        this.id = id;
+        this.name = name;
+        this.discount = discount;
+    }
+
     public SaleProgram(int id, int objectID, String name, int main, String content, double discount, Date time, LocalDateTime endTime, int avai) {
         this.id = id;
         this.objectID = objectID;
@@ -144,6 +150,21 @@ public class SaleProgram {
         long seconds = duration.getSeconds() % 60;
         LocalTime remainingTime = LocalTime.of((int) hours, (int) minutes, (int) seconds);
         return remainingTime;
+    }
+
+    @Override
+    public String toString() {
+        return "SaleProgram{" +
+                "id=" + id +
+                ", objectID=" + objectID +
+                ", name='" + name + '\'' +
+                ", main=" + main +
+                ", content='" + content + '\'' +
+                ", discount=" + discount +
+                ", time=" + time +
+                ", endTime=" + endTime +
+                ", avai=" + avai +
+                '}';
     }
 
     public static void main(String[] args) {

@@ -75,6 +75,7 @@ public class test {
     }
 
     public static String upperTheFirst(String t) {
+        System.out.println("hi");
         String temp = t;
         t=temp.substring(0, 1).toUpperCase() + temp.substring(1);
         return t;

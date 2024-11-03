@@ -225,6 +225,9 @@
                             <p class="bold-text-6 edit-title" style="text-align: center;color: var(--bold-color);display: none;">Cập nhật thông tin</p>
 							<div class="flex-roww" style="justify-content: space-between;">
 								<div class="form-group">
+                                    <div>
+
+                                    </div>
 	                                <label>Họ tên</label>
 	                                <input type="text" class="form-control" name="name" placeholder="Nhập họ và tên" value="" required readonly>
 	                            </div>

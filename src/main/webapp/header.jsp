@@ -50,10 +50,10 @@
         <a href="index" class="logo grid-col-2 pd0">
             <img src="./assets/img/logo/Logo-The-Gioi-Di-Dong-MWG-B-H.webp" alt="" style="color:black;">
         </a>
-        <div class="search-bar grid-col-4 ">
+        <form action="product?action=search" class="search-bar grid-col-4 ">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Bạn tìm gì...">
-        </div>
+            <input type="text" placeholder="Bạn tìm gì..." name="search-input">
+        </form>
         <div class="user_part flex-roww grid-col-3">
             <%
                 if(userLogging==null) {

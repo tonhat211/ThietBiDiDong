@@ -60,7 +60,8 @@
         <h2 class="center-title">Giỏ hàng</h2>
         <p class="center-title">Bạn có <span class="num-of-cart"><%=carts.size()%></span> sản phẩm trong giỏ hàng</p>
     </div>
-    <form action="payment" method="post" id="myForm" class="cart-form">
+    <form action="payment" method="post" id="cartForm" class="cart-form">
+        <input type="text" value="buy" name="action" hidden>
         <div class="flex-roww" style="align-items: start;margin-top: 20px;">
             <div class="grid-col-9" style="padding-right: 10px;">
                 <div class="sub-content">
@@ -82,7 +83,7 @@
                         <tr data-value="<%=c.getId()%>">
                             <th scope="row" class="col-base" >
                                 <div class="form-check">
-                                    <input class="form-check-input p-check" type="checkbox" name="check" value="<%=c.getProductDetailID()%>">
+                                    <input class="form-check-input p-check" type="checkbox" name="cart-check" value="<%=c.getId()%>">
                                 </div>
                             </th>
                             <td class="grid-col-2">
@@ -134,6 +135,21 @@
     <div id="cart-response"></div>
     <script>
         setupCartTable('#cartTable');
+        document.getElementById("cartForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            const selectedItems = [];
+            document.querySelectorAll('input[name="cart-check"]:checked').forEach((checkbox) => {
+                selectedItems.push(checkbox.value);
+                console.log(checkbox.value);
+            });
+            if (selectedItems.length > 0) {
+                console.log("Các mục đã chọn:", selectedItems);
+                this.submit();
+            } else {
+                alert("Vui lòng chọn ít nhất một mục!");
+            }
+        });
     </script>
 </div>
 <%@ include file="footer.jsp" %>

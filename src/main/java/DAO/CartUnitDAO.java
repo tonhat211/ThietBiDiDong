@@ -148,6 +148,47 @@ public class CartUnitDAO implements IDAO<Cart> {
         }
     }
 
+    public ArrayList<CartUnit> selectByIDs(ArrayList<Integer> ids) {
+        ArrayList<CartUnit> res = new ArrayList<>();
+        String condition ="(";
+        for(Integer id : ids) {
+            condition+=id+",";
+        }
+        condition=condition.substring(0,condition.length()-1);
+        condition+=")";
+
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "SELECT c.id, d.id as productDetailID, p.name, p.version, p.thumbnail, d.color, d.ram, d.rom, d.price, c.qty\n" +
+                    "from products p join productdetails d on p.id = d.productID\n" +
+                    "\tjoin carts c on d.id = c.productDetailID\n" +
+                    "where c.id in " + condition +
+                    " group by p.id\n" +
+                    "order by c.updateTime desc;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()){
+                int id = rs.getInt("id");
+                int deid = rs.getInt("productDetailID");
+                String name = rs.getString("name");
+                String version = rs.getString("version");
+                String thumbnail = rs.getString("thumbnail");
+                String color = rs.getString("color");
+                int ram = rs.getInt("ram");
+                int rom = rs.getInt("rom");
+                double price = rs.getDouble("price");
+                int qty = rs.getInt("qty");
+
+                res.add(new CartUnit(id,deid,name,version,thumbnail,color,ram,rom,price,qty));
+
+            }
+            JDBCUtil.closeConnection(conn);
+            return res;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void main(String[] args) {
         Cart cart = new Cart(1,12,120);
         System.out.println(cart.getUserId());

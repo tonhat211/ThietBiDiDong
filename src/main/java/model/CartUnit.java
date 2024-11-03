@@ -119,4 +119,8 @@ public class CartUnit {
     public String getCurrentPrice() {
         return ProductUnit.formatPrice(this.getPrice());
     }
+
+    public String getTotalMoney() {
+        return ProductUnit.formatPrice(this.getPrice()*this.getQty());
+    }
 }

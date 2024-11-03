@@ -188,6 +188,28 @@ public class CartUnitDAO implements IDAO<Cart> {
             throw new RuntimeException(e);
         }
     }
+    
+    public int deleteOrderedCarts(ArrayList<Integer> ids) {
+        int re=0;
+        String condition ="(";
+        for(Integer id : ids) {
+            condition+=id+",";
+        }
+        condition=condition.substring(0,condition.length()-1);
+        condition+=")";
+
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "delete from carts \n" +
+                    "where id in " + condition +";";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            re=pst.executeUpdate();
+            JDBCUtil.closeConnection(conn);
+            return re;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static void main(String[] args) {
         Cart cart = new Cart(1,12,120);

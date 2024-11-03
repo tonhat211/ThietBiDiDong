@@ -380,6 +380,64 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
             throw new RuntimeException(e);
         }
     }
+    
+    public ArrayList<ProductUnit> selectBySearch(String searchInput,int offset, int amount) {
+        ArrayList<ProductUnit> res = new ArrayList<>();
+        String[] tokens = searchInput.split(" ");
+        String condition=" where ";
+        for(String token : tokens) {
+            condition+= "p.name like '%"+token+"%' and ";
+        }
+        condition=condition.substring(0, condition.length()-5);
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "SELECT p.id, p.name, p.version, p.config, p.thumbnail, p.firstsale,\n" +
+                    "GROUP_CONCAT(DISTINCT d.ram ORDER BY d.ram ASC SEPARATOR '-') AS ram,\n" +
+                    "GROUP_CONCAT(DISTINCT d.rom ORDER BY d.rom ASC SEPARATOR '-') AS rom,\n" +
+                    "min(d.price) as price,\n" +
+                    "count(DISTINCT c.id) as totalComment,\n" +
+                    "avg(c.star) as rate,\n" +
+                    "s.id as saleprogramID,\n" +
+                    "s.name as saleprogram,\n" +
+                    "p.cateID\n" +
+                    "from products p join productdetails d on p.id = d.productID\n" +
+                    "\tleft join comments c on c.objectID = p.id\n" +
+                    "    left join saleprograms s on s.objectID = p.id  and s.main=1\n" +
+                    condition +
+                    " group by p.id\n" +
+                    "order by p.prominence desc\n" +
+                    "limit ?,?\n";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1,offset);
+            pst.setInt(2,amount);
+            System.out.println(pst);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()){
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String version= rs.getString("version");
+                String config= rs.getString("config");
+                String thumbnail=rs.getString("thumbnail");
+                String firstSale=rs.getString("firstsale");
+                String ram=rs.getString("ram");
+                String rom=rs.getString("rom");
+                double price=rs.getDouble("price");
+                double star=rs.getDouble("rate");
+                int totalComment=rs.getInt("totalComment");
+                int saleProgramID=rs.getInt("saleprogramID");
+                String saleProgram=rs.getString("saleprogram");
+                int cateID=rs.getInt("cateID");
+
+                res.add(new ProductUnit(id, name, version,cateID, config ,thumbnail, firstSale, ram, rom, price, star, totalComment, saleProgramID, saleProgram));
+
+            }
+            JDBCUtil.closeConnection(conn);
+            return res;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 
     public static void main(String[] args) {

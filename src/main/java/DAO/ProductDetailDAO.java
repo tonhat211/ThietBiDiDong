@@ -1,6 +1,7 @@
 package DAO;
 
 import model.Brand;
+import model.CartUnit;
 import model.ProductDetail;
 import model.ProductUnit;
 import model.Property;
@@ -153,6 +154,32 @@ public class ProductDetailDAO implements IDAO<ProductDetail>{
                 re = rs.getInt("id");
 
             }
+            JDBCUtil.closeConnection(conn);
+            return re;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+
+    public int updateSaledQty(ArrayList<CartUnit> orderedCarts) {
+        int re=0;
+        String newValue ="";
+        String condition="(";
+        for(CartUnit c : orderedCarts) {
+            newValue += "WHEN id = "+c.getProductDetailID()+" THEN qty-" +c.getQty()+"\n";
+            condition+= c.getProductDetailID()+",";
+        }
+        condition = condition.substring(0, condition.length()-1);
+        condition += ")";
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "update productdetails set qty = case \n" +
+                                                                newValue +
+                                                        "END\n" +
+                                                "where id in " + condition+";";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            re = pst.executeUpdate();
             JDBCUtil.closeConnection(conn);
             return re;
         } catch (SQLException e) {

@@ -50,8 +50,9 @@
         <a href="index" class="logo grid-col-2 pd0">
             <img src="./assets/img/logo/Logo-The-Gioi-Di-Dong-MWG-B-H.webp" alt="" style="color:black;">
         </a>
-        <form action="product?action=search" class="search-bar grid-col-4 ">
-            <i class="fa-solid fa-magnifying-glass"></i>
+        <form action="product" class="search-bar grid-col-4 ">
+            <button style="border: none;background: none;"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <input type="text" name="action" value="Search" hidden>
             <input type="text" placeholder="Bạn tìm gì..." name="search-input">
         </form>
         <div class="user_part flex-roww grid-col-3">
@@ -215,17 +216,24 @@
             <div class="modall-content" style="width: 80%; background-color: unset;">
                 <div class="flex-roww" style="align-items: start;justify-content: center;height: 100%;">
                     <div class="sub-content"  style="margin-right: 10px; width: 50%;" onclick="event.stopPropagation();">
-                        <form id="editInfoForm">
+                        <form id="editInfoForm" action="profile" method="post">
+                        	<input type="text" name="action" value="updateInfo" hidden>
                             <h3 style="text-align: center;padding-right: 10px;">Thông tin cá nhân</h3>
                             <div class="flex-roww update-action" style="justify-content: right;">
                                 <i class="bi bi-pencil-square btn-edit" onclick="initUpdateInfo(event,'#editInfoForm');"></i>
                             </div>
                             <p class="bold-text-6 edit-title" style="text-align: center;color: var(--bold-color);display: none;">Cập nhật thông tin</p>
-
-                            <div class="form-group">
-                                <label>Họ tên</label>
-                                <input type="text" class="form-control" name="name" placeholder="Nhập họ và tên" value="To nhat" required readonly>
-                            </div>
+							<div class="flex-roww" style="justify-content: space-between;">
+								<div class="form-group">
+	                                <label>Họ tên</label>
+	                                <input type="text" class="form-control" name="name" placeholder="Nhập họ và tên" value="" required readonly>
+	                            </div>
+	                            	<div class="form-group">
+	                                <label>Ngày tham gia</label>
+	                                <input type="text" class="form-control" value="" required readonly>
+	                            </div>
+							</div>
+                            
                             <div class="form-group">
                                 <label>Email</label>
                                 <input type="email" class="form-control" name="email" aria-describedby="emailHelp" placeholder="Nhập email" value="tonhat@gmail.com" required readonly>
@@ -261,6 +269,31 @@
                                 <button class="btn btn-primary btn-edit" type="submit">Lưu</button>
                             </div>
                         </form>
+                        <script>
+                    
+	                        const updateInfoForm = document.querySelector('#editInfoForm');
+	                        updateInfoForm.addEventListener('submit', function(e) {
+	                            console.log(this);
+	                            console.log("call submit");
+	                            e.preventDefault();
+	                            var formData = new FormData(this);
+	                            let id = formData.get('id');
+	                            let receiver = formData.get('receiver');
+	                            let phone = formData.get("phone");
+	                            let street = formData.get("street");
+	                            let village = formData.get("village");
+	                            let district = formData.get("district");
+	                            let province = formData.get("province");
+	                            let action = formData.get("action");
+	                            if(action=="updateAddress") {
+	                                updateAddressAjax(action,id,receiver,phone,street,village,district,province);
+	                            } else {
+	                                addAddressAjax(action,id,receiver,phone,street,village,district,province);
+	                            }
+	                        });
+                   
+                        
+                        </script>
                     </div>
                     <div class="sub-content" id="edit-pwd-form"  style="margin-left: 10px;width: 50%;" onclick="event.stopPropagation();">
                         <form id="editPassword">

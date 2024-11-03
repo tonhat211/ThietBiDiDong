@@ -3,6 +3,7 @@ package controller;
 import DAO.AddressDAO;
 import DAO.CartUnitDAO;
 import DAO.OrderDAO;
+import DAO.ProductDetailDAO;
 import DAO.SaleProgramDAO;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -75,6 +76,10 @@ public class PaymentController extends HttpServlet {
                     Order order = new Order(Double.parseDouble(totalMoney), userLogging.getId(), address);
                     int orderID = OrderDAO.getInstance().insert(order);
                     int re = OrderDAO.getInstance().insertOrderDetail(orderID,carts);
+//                  giam so luong trong kho
+                    ProductDetailDAO.getInstance().updateSaledQty(carts);
+//                  xoa khoi gio hang
+                    CartUnitDAO.getInstance().deleteOrderedCarts(ids);
                     if(re!=0) {
                         RequestDispatcher rd = getServletContext().getRequestDispatcher("/index.jsp");
                         rd.forward(req, resp);
@@ -82,6 +87,7 @@ public class PaymentController extends HttpServlet {
                     }
                     break;
                 }
+                
 
             }
 

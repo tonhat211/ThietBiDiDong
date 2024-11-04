@@ -35,7 +35,23 @@ public class UserDAO implements IDAO<User> {
 
     @Override
     public int update(User user) {
-        return 0;
+        int re=0;
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "update users set name = ? , email = ? , info = ? where id = ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, user.getName());
+            pst.setString(2, user.getEmail());
+            pst.setString(3, user.getInfo());
+            pst.setInt(4, user.getId());
+            re = pst.executeUpdate();
+
+            JDBCUtil.closeConnection(conn);
+            return re;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -68,12 +84,31 @@ public class UserDAO implements IDAO<User> {
     }
 
     @Override
-    public User selectById(int id) {
-        return null;
+    public User selectById(int idin) {
+        User user = null;
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "SELECT * FROM `users` where id = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, idin);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()){
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                String info = rs.getString("info");
+                user = new User(id,name,email,info);
+            }
+
+            JDBCUtil.closeConnection(conn);
+            return user;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public User checkLogin(String email, String password) {
-        User user = new User(-1);
+        User user = null;
         try {
             Connection conn = JDBCUtil.getConnection();
             String sql = "SELECT * FROM `users` WHERE email = ? and password =?;";
@@ -110,6 +145,24 @@ public class UserDAO implements IDAO<User> {
             JDBCUtil.closeConnection(conn);
             if(count>0) return true;
             else return false;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int updatePassword(int idin, String pwd) {
+        int re=0;
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "update users set password = ? where id = ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1,pwd);
+            pst.setInt(2, idin);
+            re = pst.executeUpdate();
+
+            JDBCUtil.closeConnection(conn);
+            return re;
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

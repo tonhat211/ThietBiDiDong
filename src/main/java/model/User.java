@@ -1,5 +1,11 @@
 package model;
 
+import com.google.gson.Gson;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class User {
     private int id;
     private String name;
@@ -36,6 +42,8 @@ public class User {
         this.email = email;
     }
 
+
+
     public User(String name, String email, String password,int avai) {
         this.name = name;
         this.email = email;
@@ -43,6 +51,12 @@ public class User {
         this.avai = avai;
     }
 
+    public User(int id,String name, String email, String info) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.info = info;
+    }
 
     // dung trong image
     public User(int id, String name) {
@@ -130,4 +144,45 @@ public class User {
 
         return code;
     }
+
+    public UserInfo getUserInfo() {
+        Gson gson = new Gson();
+        UserInfo info = gson.fromJson(this.info, UserInfo.class);
+        return info;
+    }
+
+    public String getDateIn() {
+        LocalDate day = getUserInfo().getDateIn();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        String formattedDate = day.format(formatter);
+        return formattedDate;
+    }
+
+    public String getPhone() {
+        return getUserInfo().getPhone();
+    }
+
+    public String getBirthday() {
+        LocalDate day = getUserInfo().getBirthday();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        String formattedDate = day.format(formatter);
+        return formattedDate;
+    }
+
+
+
+    public static void main(String[] args) {
+
+        LocalDateTime now = LocalDateTime.now();
+
+        // Chuyển đổi sang LocalDate để chỉ lấy ngày
+        LocalDate today = now.toLocalDate();
+
+        // Định dạng ngày
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        String formattedDate = today.format(formatter);
+        System.out.println("Formatted Date: " + formattedDate);
+    }
+
+
 }

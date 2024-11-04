@@ -139,6 +139,8 @@ function initUpdateInfo(event,parent) {
     const inputs = form.querySelectorAll('input');
     inputs.forEach(input => {
         input.removeAttribute('readonly');
+        if(input.name=="dateIn") input.readOnly = true;
+        if(input.name=="email") input.readOnly = true;
     });
     form.querySelector('.update-action').style.display = 'none';
     form.querySelector('.edit-title').style.display = 'block';
@@ -176,6 +178,30 @@ function manageAddress(event) {
 function manageProfile(event) {
     event.preventDefault();
     document.querySelector('.info-modal').classList.add('active');
+    loadUserInfo();
+}
+
+function loadUserInfo() {
+    console.log("load user info");
+    $.ajax({
+        type: "post",
+        url: "profile",
+        data: {action: "info"},
+        success: function(data) {
+            console.log(data);
+            $('#editInfoForm input[name="name"]').val(data.name);
+            $('#editInfoForm input[name="email"]').val(data.email);
+
+            const info = JSON.parse(data.info);
+            $('#editInfoForm input[name="dateIn"]').val(info.dateIn);
+            $('#editInfoForm input[name="phone"]').val(info.phone);
+            $('#editInfoForm input[name="gender"]').val(info.gender);
+            $('#editInfoForm input[name="birthday"]').val(info.birthday);
+        },
+        error: function(error) {
+            console.error("Error during querying address: ", error);
+        }
+    });
 }
 
 function openHeaderModal(modal) {

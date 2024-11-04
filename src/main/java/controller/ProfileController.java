@@ -1,6 +1,7 @@
 package controller;
 
 import DAO.AddressDAO;
+import DAO.UserDAO;
 import com.google.gson.Gson;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -11,8 +12,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.Address;
 import model.User;
+import model.UserInfo;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 @WebServlet("/profile")
@@ -86,6 +89,61 @@ public class ProfileController extends HttpServlet {
                 }
                 break;
             }
+            case "INFO" : {
+                User user = UserDAO.getInstance().selectById(userLogging.getId());
+                System.out.println("info: user name:" + user.getName());
+                Gson gson = new Gson();
+                String userJson = gson.toJson(user);
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+                resp.getWriter().write(userJson);
+                break;
+            }
+            case "UPDATEINFO" : {
+                String name = req.getParameter("name");
+                String email = req.getParameter("email");
+                String gender = req.getParameter("gender");
+                String phone = req.getParameter("phone");
+                String birthday = req.getParameter("birthday");
+                String dateIn = req.getParameter("dateIn");
+                LocalDate birthdayDate = LocalDate.parse(birthday);
+                LocalDate dateInDate = LocalDate.parse(dateIn);
+                UserInfo info = new UserInfo(dateInDate,phone,gender,birthdayDate);
+                User user = new User(userLogging.getId(),name,email,info.toJson());
+                System.out.println("creat user from params: user name:" + user.getName());
+                int re = UserDAO.getInstance().update(user);
+
+                user = UserDAO.getInstance().selectById(user.getId());
+                System.out.println("update info: user info:" + user.getInfo());
+                Gson gson = new Gson();
+                String userJson = gson.toJson(user);
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+                resp.getWriter().write(userJson);
+                break;
+            }
+            case "UPDATEPASSWORD" : {
+                String currentPassword = req.getParameter("currentPassword");
+                String password = req.getParameter("password");
+                User user = UserDAO.getInstance().checkLogin(userLogging.getEmail(),currentPassword);
+                if(user!=null && user.getId()== userLogging.getId()) { // dung mat khau
+                    int re = UserDAO.getInstance().updatePassword(user.getId(), password);
+                    if(re==1) {
+                        String html = renderToast("Đổi mật khẩu thành công");
+                        html+= renderScript("removeModal('#modal-container');");
+                        resp.setContentType("text/html");
+                        resp.setCharacterEncoding("UTF-8");
+                        resp.getWriter().write(html);
+                    }
+                } else { // sai mat khau
+                    String html = renderScript("tellWrongCurrentPassword();");
+                    resp.setContentType("text/html");
+                    resp.setCharacterEncoding("UTF-8");
+                    resp.getWriter().write(html);
+                }
+                break;
+            }
+
         }
 
     }
@@ -147,6 +205,13 @@ public class ProfileController extends HttpServlet {
     public String renderToast(String message) {
         String re ="  <script>\n" +
                 "          showSuccessToast('"+message+"','#toast-header');\n" +
+                "     </script>";
+        return re;
+    }
+
+    public String renderScript(String method) {
+        String re ="  <script>\n" +
+                    method +
                 "     </script>";
         return re;
     }

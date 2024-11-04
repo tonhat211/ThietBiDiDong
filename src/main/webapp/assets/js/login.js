@@ -58,7 +58,7 @@ function signup(name,email,password,repassword) {
     } else {
         console.log("goi servlet singup");
         $.ajax({
-            url: "/ThietBiDiDong/signup",
+            url: "signup",
             method: "POST",
             data: { action: "signup",name: name, email: email, password : password,repassword: repassword},
             success: function(data) {

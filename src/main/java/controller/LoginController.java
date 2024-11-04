@@ -35,7 +35,7 @@ public class LoginController extends HttpServlet {
                     String email = req.getParameter("email");
                     String password = req.getParameter("password");
                     User u = UserDAO.getInstance().checkLogin(email, password);
-                    if(u.getId()==-1) { // khong thanh cong
+                    if(u==null) { // khong thanh cong
                         String html = renderHtml("WRONGPASSWORD","");
                         resp.getWriter().write(html);
                     } else { // thanh cong

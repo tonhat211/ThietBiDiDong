@@ -197,6 +197,20 @@ p {
     cursor: pointer;
 }
 
+
+.search-bar button:hover {
+    border: none;
+    background-color: white;
+    cursor: pointer;
+}
+
+.search-bar button:focus-visible,
+.search-bar button:focus {
+    border: none;
+    background-color: white;
+    outline: none;
+}
+
 .search-bar:focus-within {
     outline: 2px solid var(--hover-color); /* Tạo viền khi focus */
     outline-offset: 3px;

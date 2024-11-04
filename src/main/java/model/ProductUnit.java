@@ -15,6 +15,7 @@ public class ProductUnit {
     private int productID;
     private String name;
     private String version;
+    private int cateID;
     private String config;
     private String thumbnail;
     private String firstSale;
@@ -48,8 +49,30 @@ public class ProductUnit {
         this.saleProgramID = saleProgramID;
         this.saleProgram = saleProgram;
     }
+    
+    
 
-    public String getName() {
+    public ProductUnit(int productID, String name, String version, int cateID, String config, String thumbnail,
+			String firstSale, String ram, String rom, double price, double star, int totalComment, int saleProgramID,
+			String saleProgram) {
+		super();
+		this.productID = productID;
+		this.name = name;
+		this.version = version;
+		this.cateID = cateID;
+		this.config = config;
+		this.thumbnail = thumbnail;
+		this.firstSale = firstSale;
+		this.ram = ram;
+		this.rom = rom;
+		this.price = price;
+		this.star = star;
+		this.totalComment = totalComment;
+		this.saleProgramID = saleProgramID;
+		this.saleProgram = saleProgram;
+	}
+
+	public String getName() {
         return name;
     }
 

@@ -328,7 +328,7 @@
 
 /* pwd form */
 
-
+.current-pwd-error,
 .pwd-error {
     color: red;
     padding: 0 4px;
@@ -340,6 +340,7 @@
     display: none;
 }
 
+.current-pwd-error.active,
 .pwd-error.active {
     display: block;
 }

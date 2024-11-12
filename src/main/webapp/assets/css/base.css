@@ -3,6 +3,7 @@
     --secondary-color: #C6CBFB;
     --bold-color: #2f80ed;
     --blue-super-light: #f1f8fe;
+    --blue-color: #4154f1;
 
     --white-color: #fff;
     --black-color: #000;
@@ -115,6 +116,10 @@ p {
     width:75%;
 }
 
+.grid-col-9_6 {
+    width: 80%;
+}
+
 .grid-col-10 {
     width: 83.33%;
 }
@@ -225,6 +230,13 @@ p {
 }
 /* end content container */
 
-
+.sub-content {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--content-bg-color);
+    margin-top: 15px;
+    border-radius: 10px;
+    box-shadow:  0 0 4px 2px rgb(179 179 179 / 30%);
+}
 
 

@@ -72,6 +72,10 @@ p {
     flex-wrap: wrap;
 }
 
+.grid-col-0_5 {
+    width: 4.17%;
+}
+
 .grid-col-1 {
     width: 8.33%;
 }
@@ -239,4 +243,7 @@ p {
     box-shadow:  0 0 4px 2px rgb(179 179 179 / 30%);
 }
 
+input[readonly]:focus-visible {
+    outline: none;
+}
 

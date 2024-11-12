@@ -1,0 +1,44 @@
+.logo {
+    display: block;
+}
+
+.logo img {
+    width: 100%;
+}
+
+#main {
+    margin-left: auto;
+}
+
+#header ul {
+    display: block;
+}
+
+.search-bar {
+    border: 1px solid var(--blue-color);
+    /*outline-offset: 3px;*/
+}
+
+.search-bar:focus-within {
+    outline-offset: unset;
+    outline: 3px solid var(--secondary-color); /* Tạo viền khi focus */
+}
+
+.info-container {
+    margin-top: 40px;
+}
+
+.info-table td {
+    padding: 4px;
+}
+
+.info-input {
+    width: 100%;
+    font-size: 15px;
+    border: none;
+    padding: 2px 4px;
+}
+
+.info-input:focus-visible {
+    outline-color: var(--secondary-color);
+}

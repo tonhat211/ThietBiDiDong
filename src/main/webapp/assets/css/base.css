@@ -80,6 +80,10 @@ p {
     width: 8.33%;
 }
 
+.grid-col-1_5 {
+    width: 12.5%;
+}
+
 .grid-col-2 {
     width: 16.66%;
 }
@@ -246,4 +250,40 @@ p {
 input[readonly]:focus-visible {
     outline: none;
 }
+
+/* scroll bar*/
+.custom-scroll {
+    overflow: auto;
+}
+
+.custom-scroll::-webkit-scrollbar {
+    width: 2px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background-color: var(--text-color);
+    border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+/* Ẩn nút tăng giảm trong input[type="number"] */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+
 

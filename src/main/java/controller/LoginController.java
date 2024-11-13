@@ -21,6 +21,7 @@ public class LoginController extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession();
+        
 
         String action = req.getParameter("action");
         if(action == null || action.isEmpty()) {

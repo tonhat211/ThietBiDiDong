@@ -76,3 +76,25 @@ tr:nth-child(odd) input,
 tr:nth-child(odd) select {
     background-color: #ffffff; /* Màu nền cho hàng lẻ */
 }
+
+.not-confirm * {
+    background-color: rgb(255, 240, 219) !important;
+}
+
+.locked * {
+    background-color: rgb(255, 204, 204) !important;
+}
+
+.add-form {
+    display: none;
+}
+
+.add-form.active {
+    display: block;
+}
+
+#update-info-modal .modall-content {
+    overflow: auto;
+    /*max-width: 800px;*/
+    max-height: 90%;
+}

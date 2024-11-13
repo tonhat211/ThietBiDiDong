@@ -96,6 +96,10 @@ p {
     width: 25%;
 }
 
+.grid-col-3_5 {
+    width: 29.17%;
+}
+
 .grid-col-3_6 {
     width: 30%;
 }

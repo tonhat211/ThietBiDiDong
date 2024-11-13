@@ -267,7 +267,7 @@
               let selectedValue = event.target.value;
               setDefaultOption("action");
               event.target.value = selectedValue;
-              console.log("selected value: " + selectedValue);
+              // console.log("selected value: " + selectedValue);
               const group = event.currentTarget.closest(".group");
               selectedValue=selectedValue.toUpperCase();
               switch (selectedValue) {
@@ -361,9 +361,9 @@
     </div>
     <div class="modall active" id="update-info-modal">
       <div class="modal__overlay" onclick="closeModal(event);">
-        <div class="modall-content grid-col-6" onclick="event.stopPropagation();">
+        <div class="modall-content grid-col-6 custom-scroll" onclick="event.stopPropagation();">
           <form action="">
-            <h4 class="confirm-content" style="text-align: center">Cập nhật thông tin nhân viên!</h4>
+            <h4 class="confirm-content" style="text-align: center">Cập nhật thông tin nhân viên</h4>
             <div class="flex-roww" style="justify-content: space-around; margin-top: 10px;">
               <div class="form-group grid-col-4">
                 <label for="name">Họ tên</label>

@@ -1,0 +1,16 @@
+.address-container {
+    position: absolute;
+    z-index: 4;
+    width: max-content;
+    display: none;
+}
+
+.address-container.active {
+    display: block;
+}
+
+
+/*.address-detail-btn:hover + div .address-container,*/
+.address-detail-btn:focus + div .address-container {
+    display: block;
+}

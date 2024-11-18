@@ -37,14 +37,20 @@ public class LoginController extends HttpServlet {
                     String password = req.getParameter("password");
                     User u = UserDAO.getInstance().checkLogin(email, password);
                     if(u==null) { // khong thanh cong
+                        System.out.println("login failed");
                         String html = renderHtml("WRONGPASSWORD","");
                         resp.getWriter().write(html);
                     } else { // thanh cong
+                        System.out.println("login success");
                         String page = req.getParameter("page");
                         String html;
                         session.setAttribute("userLogging",u);
                         System.out.println("page: " + page);
                         html = renderHtml("SUCCESS",page);
+                        if(u.getRoles().length!=0) { //admin
+                            System.out.println("confirm admin");
+                            html = callFunction("forward(\"adminmenu?action=init\");");
+                        }
                         resp.getWriter().write(html);
                     }
                     break;
@@ -100,7 +106,8 @@ public class LoginController extends HttpServlet {
                 html = "   <script>\n" +
                         "      forward(\""+page+"\");\n" +
                         " </script>";
-            } else  {
+            }
+            else  {
                 html = "   <script>\n" +
                         "      forward(\"product?action=init&&category=smartphone\");\n" +
                         " </script>";
@@ -109,5 +116,12 @@ public class LoginController extends HttpServlet {
 
         }
         return html;
+    }
+
+    public String callFunction(String function) {
+        return "   <script>\n" +
+                function +
+                " </script>";
+
     }
 }

@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpSession;
 import model.*;
 
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 @WebServlet("/index")
@@ -23,7 +24,16 @@ public class IndexController extends HttpServlet {
         resp.setContentType("text/html; charset=UTF-8");
         req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
-        RequestDispatcher rd = getServletContext().getRequestDispatcher("/index.jsp");
+        ArrayList<ProductUnit> saledOnlineProductUnits = ProductUnitDAO.getInstance().selectBySaleProgram(Constant.ONLINE,0,20);
+        ArrayList<ProductUnit> suggestedProductUnits = ProductUnitDAO.getInstance().selectByCategory(Constant.ALL,0,20);
+        LocalTime remaningTime = null;
+        if(saledOnlineProductUnits.size()>0) {
+            remaningTime = SaleProgram.getRemainingTime();
+        }
+        req.setAttribute("saledOnlineProductUnits",saledOnlineProductUnits);
+        req.setAttribute("suggestedProductUnits",suggestedProductUnits);
+        req.setAttribute("remaningTime",remaningTime);
+        RequestDispatcher rd = getServletContext().getRequestDispatcher("/home.jsp");
         rd.forward(req, resp);
     }
 

@@ -1,6 +1,11 @@
 package model;
 
-public class Property {
+import java.text.NumberFormat;
+import java.util.Locale;
+
+public class Constant {
+    public static final int NUM_OF_ITEMS_A_PAGE = 2;
+
     public static final int AVAI_CODE = 1;
     public static final int USED_CODE = 0;
     public static final int EXPIRED_CODE = -1;
@@ -32,6 +37,33 @@ public class Property {
     public static final int PRICE_UP = 4;
     public static final int PRICE_DOWN = 5;
     public static final int DEFAULT = 0;
+
+    public static final int WAITING = 0;
+    public static final int CONFIRM = 1;
+    public static final int DELIVERY = 2;
+    public static final int COMPLETE = 3;
+    public static final int CANCEL = 10;
+
+    public static final String UNDEFINED = "Không xác định";
+
+    public static final int OFFSET = 20;
+
+    public static String formatPrice(double price) {
+        NumberFormat numberFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
+        String priceString = numberFormat.format(price);
+        return priceString;
+    }
+
+    public static String getStatusString(int status) {
+        switch (status) {
+            case WAITING: return "Chờ xác nhận";
+            case CONFIRM: return "Xác nhận";
+            case DELIVERY: return "Vận chuyển";
+            case COMPLETE: return "Hoàn thành";
+            case CANCEL: return "Hủy";
+        }
+        return UNDEFINED;
+    }
 
 
 

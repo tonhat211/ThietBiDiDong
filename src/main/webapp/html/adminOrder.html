@@ -9,7 +9,9 @@
   <meta content="" name="description">
   <meta content="" name="keywords">
 
-  <!-- Favicons -->
+  <script type="text/javascript" src="../assets/js/jquery-3.7.1.min.js"></script>
+  <script type="text/javascript" src="../assets/js/js_bootstrap4/bootstrap.min.js"></script>
+  <script type="text/javascript" src="../assets/js/toast.js"></script>
 
 
   <!-- Google Fonts -->
@@ -30,6 +32,7 @@
   <link href="../assets/css/style.css" rel="stylesheet">
   <link href="../assets/css/base.css" rel="stylesheet">
   <link href="../assets/css/modal.css" rel="stylesheet">
+  <link href="../assets/css/toast.css" rel="stylesheet">
 
 
 
@@ -152,7 +155,12 @@
   </aside><!-- End Sidebar-->
 
   <main id="main" class="main grid-col-10">
+    <div id="toast-2">
 
+    </div>
+    <script>
+      showSuccessToast2("test");
+    </script>
     <div class="pagetitle grid-col-3">
       <h1>Quản lý đơn hàng</h1>
       <nav>
@@ -181,7 +189,7 @@
         </div>
 
       </div>
-      <div class="info-container">
+      <div class="info-container custom-scroll" style="max-height: 90%;">
         <table style="width: 100%;" id="infoTable" class="info-table">
           <thead>
           <tr>
@@ -230,6 +238,8 @@
                 </select>
               </td>
             </tr>
+
+
 
           <script>
 
@@ -298,6 +308,132 @@
 
           </script>
           </tbody>
+          <tbody class="group">
+            <tr>
+              <th scope="rol" class="grid-col-0_5 text-center id" style="height: fit-content;">1</th>
+              <td class="grid-col-1_5">
+                14/11/2024 </br> 12:12:12
+              </td>
+              <td class="grid-col-3_5">
+                6 x ID:1 - Iphone 11 thuong (den-4-64GB) </br>
+                6 x ID:1 - Iphone 11 thuong (den-4-64GB) </br>
+                6 x ID:1 - Iphone 11 thuong (den-4-64GB) </br>
+                6 x ID:1 - Iphone 11 thuong (den-4-64GB)
+
+              </td>
+              <td class="grid-col-1_5">200.000.000</td>
+              <td class="grid-col-1_5"><a class="address-detail-btn" href="" onclick="event.preventDefault()">Chi tiết</a>
+                <div style="position: relative;">
+                  <div class="address-container sub-content">
+                    <p>To Nhat</p>
+                    <p>Sdt: 03523405724</p>
+                    <p>Nga 3 bao dinh xuan dinh xuan loc dong nai</p>
+                  </div>
+                </div>
+              </td>
+              <td class="grid-col-1_5">14/11/2024 </br> 12:12:12</td>
+              <td class="grid-col-1">Vận chuyển</td>
+              <td class="grid-col-1">
+                <select name="action" onchange="handleChange(event);" data-default="2">
+                  <option value="0">...</option>
+                  <option value="1">Xác nhận</option>
+                  <option class="" value="2">Bàn giao</option>
+                  <option class="" value="3">Thành công</option>
+                  <option value="4">Hủy</option>
+                </select>
+              </td>
+            </tr>
+
+
+
+          <script>
+
+            function showAddress(event) {
+              event.preventDefault();
+              event.currentTarget.parentNode.querySelector(".address-container").classList.add("active");
+              console.log();
+            }
+            // xử lý khi action được chọn
+            function handleChange(event) {
+              event.stopPropagation();
+              let selectedValue = event.target.value;
+              setDefaultOption("action");
+              event.target.value = selectedValue;
+              console.log("selected value: " + selectedValue);
+              const group = event.currentTarget.closest(".group");
+              selectedValue=selectedValue.toUpperCase();
+              switch (selectedValue) {
+                case "CONFIRM": {
+                  // xu ly cap nhat
+                  break;
+                }
+                case "DELIVERY": {
+                  // xu ly cap nhat
+                  break;
+                }
+                case "COMPLETE": {
+                  // xu ly cap nhat
+                  break;
+                }
+                case "CANCEL": {
+                  // xu ly cap nhat
+                  var id = group.querySelector(".id").innerText;
+                  var object = "Đơn hàng: " + id;
+                  setupConfirm("#cancel-confirm-modal",object);
+                  break;
+                }
+                default:
+                  // setInfosStatus(group,false);
+              }
+            }
+
+
+
+            // mở modal xác nhận
+            function setupConfirm(modalID,object) {
+              // var name = group.querySelector('input[name="name"]').value;
+              openModal(modalID);
+              document.querySelector(modalID).querySelector('.object').innerText = object;
+            }
+
+            function openModal(modalID) {
+              document.querySelector(modalID).classList.add('active');
+            }
+
+
+
+            function setDefaultOption(name) {
+              document.querySelectorAll(`select[name="${name}"]`).forEach(select => {
+                const defaultValue = select.getAttribute('data-default');
+                  select.value = defaultValue;
+              });
+            }
+            // setDefaultOption("action");
+
+            function setDisabledOption(name,exception) {
+              document.querySelectorAll(`select[name="${name}"]`).forEach(select => {
+                const defaultValue = parseInt(select.getAttribute('data-default'));
+                console.log(defaultValue);
+                select.querySelectorAll('option').forEach(option => {
+                  var value = parseInt(option.value);
+                  if(value>=0 && value <= defaultValue) {
+                    console.log("nhor");
+                    option.disabled = true;
+                  }
+                  if(exception.includes(defaultValue)) {
+                    if(exception.includes(value)) {
+                      option.disabled = true;
+                    }
+                  }
+                });
+              });
+            }
+
+            setDisabledOption("action",[3,4]);
+
+
+          </script>
+          </tbody>
         </table>
         <div class="temp" style="display: none;">
 
@@ -305,7 +441,29 @@
 
       </div>
 
+
     </div>
+    <div class="flex-roww" style="justify-content: center;margin-top: 20px">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          <li class="page-item">
+            <a class="page-link" href="#" aria-label="Previous">
+              <span class="sr-only">Trước</span>
+            </a>
+          </li>
+          <li class="page-item"><a class="page-link active" data-value="1" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" data-value="2" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" data-value="3" href="#">3</a></li>
+          <li class="page-item">
+            <a class="page-link" href="#" aria-label="Next">
+<!--              <span aria-hidden="true">&raquo;</span>-->
+              <span class="sr-only">Tiếp theo</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
     <div class="modall" id="cancel-confirm-modal">
       <div class="modal__overlay" onclick="closeModal(event);">
         <div class="modall-content grid-col-6" onclick="event.stopPropagation();">

@@ -1,8 +1,7 @@
 package DAO;
 
 import model.Comment;
-import model.ProductDetail;
-import model.Property;
+import model.Constant;
 import model.User;
 import service.JDBCUtil;
 
@@ -45,7 +44,7 @@ public class CommentDAO implements IDAO<Comment> {
             Connection conn = JDBCUtil.getConnection();
             String sql = "select c.id as cmtID, c.content,c.star,u.id as userID, u.name as userName, c.time " +
                     "from comments c join users u on c.userID = u.id " +
-                    "where c.objectID = ? and c.avai = "+ Property.ACTIVE+ " " +
+                    "where c.objectID = ? and c.avai = "+ Constant.ACTIVE+ " " +
                     "order by c.id desc;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, oID);

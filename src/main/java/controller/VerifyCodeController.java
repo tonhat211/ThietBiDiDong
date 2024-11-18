@@ -1,6 +1,5 @@
 package controller;
 
-import DAO.UserDAO;
 import DAO.VerifyCodeDAO;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -9,8 +8,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Property;
-import model.User;
+import model.Constant;
 
 import java.io.IOException;
 
@@ -46,10 +44,10 @@ public class VerifyCodeController extends HttpServlet {
                     email = "2003tonhat@gmail.com"; //test
                     String code = req.getParameter("code");
                     int re=VerifyCodeDAO.getInstance().verifyCode(code,email);
-                    if(re==Property.EXPIRED_CODE) {// code het han
+                    if(re== Constant.EXPIRED_CODE) {// code het han
                         String html = renderHtml("EXPIREDCODE");
                         resp.getWriter().write(html);
-                    } else if(re==Property.USED_CODE){ //code thanh cong
+                    } else if(re== Constant.USED_CODE){ //code thanh cong
                         String html = renderHtml("SUCCESS");
                         resp.getWriter().write(html);
                     } else { //sai code

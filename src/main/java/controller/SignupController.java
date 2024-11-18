@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.Property;
+import model.Constant;
 import model.User;
 import model.VerifyCode;
 
@@ -44,7 +44,7 @@ public class SignupController extends HttpServlet {
                         System.out.println("insert user into database");
                         String name = req.getParameter("name");
                         String password = req.getParameter("password");
-                        User user = new User(email,name,password, Property.UN_VERIFIED_USER);
+                        User user = new User(email,name,password, Constant.UN_VERIFIED_USER);
                         int re=UserDAO.getInstance().insert(user);
                         if(re==1) { // insert thanh cong
 

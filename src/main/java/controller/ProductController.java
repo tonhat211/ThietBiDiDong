@@ -40,8 +40,8 @@ public class ProductController extends HttpServlet {
                 category = category.toUpperCase();
                 switch (category) {
                     case "SMARTPHONE": {
-                        ArrayList<Brand> brands = BrandDAO.getInstance().selectByCategory(Property.SMARTPHONE_CATEGORY);
-                        ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().selectByCategory(Property.SMARTPHONE_CATEGORY,0,20);
+                        ArrayList<Brand> brands = BrandDAO.getInstance().selectByCategory(Constant.SMARTPHONE_CATEGORY);
+                        ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().selectByCategory(Constant.SMARTPHONE_CATEGORY,0,20);
                         req.setAttribute("category", category);
                         req.setAttribute("brands", brands);
                         req.setAttribute("productUnits", productUnits);
@@ -259,13 +259,13 @@ public class ProductController extends HttpServlet {
             case "SEARCH": {
                 String searchInput = req.getParameter("search-input");
                 ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().selectBySearch(searchInput,0,20);
-                int cateID = Property.SMARTPHONE_CATEGORY;
+                int cateID = Constant.SMARTPHONE_CATEGORY;
                 if(!productUnits.isEmpty()) cateID = productUnits.get(0).getProductID();
                 ArrayList<Brand> brands = BrandDAO.getInstance().selectByCategory(cateID);
                 switch (cateID) {
-                    case Property.SMARTPHONE_CATEGORY : category = "SMARTPHONE"; break;
-                    case Property.TABLET_CATEGORY: category = "TABLET"; break;
-                    case Property.LAPTOP_CATEGORY: category = "LAPTOP"; break;
+                    case Constant.SMARTPHONE_CATEGORY : category = "SMARTPHONE"; break;
+                    case Constant.TABLET_CATEGORY: category = "TABLET"; break;
+                    case Constant.LAPTOP_CATEGORY: category = "LAPTOP"; break;
                     default: category = "SMARTPHONE";
                 }
                 req.setAttribute("category", category);

@@ -12,21 +12,23 @@ import java.text.NumberFormat;
 import java.util.*;
 
 public class ProductUnit {
-    private int productID;
-    private String name;
-    private String version;
-    private int cateID;
-    private String config;
-    private String thumbnail;
-    private String firstSale;
-    private String ram;
-    private String rom;
-    private double price;
-    private double star;
-    private int totalComment;
-    private int saleProgramID;
-    private String saleProgram;
-    private ArrayList<ProductDetail> details;
+    public int productID;
+    public String name;
+    public String version;
+    public int cateID;
+    public String config;
+    public String thumbnail;
+    public String firstSale;
+    public String ram;
+    public String rom;
+    public double price;
+    public double star;
+    public int totalComment;
+    public int saleProgramID;
+    public String saleProgram;
+    public String color;
+    public int productDetailId;
+    public ArrayList<ProductDetail> details;
     public ProductUnit() {
 
     }
@@ -49,12 +51,23 @@ public class ProductUnit {
         this.saleProgramID = saleProgramID;
         this.saleProgram = saleProgram;
     }
-    
-    
+
+    // trong order
+
+
+    public ProductUnit(int productDetailId, String name, String version, String color, String ram, String rom, String thumbnail) {
+        this.productDetailId = productDetailId;
+        this.name = name;
+        this.version = version;
+        this.ram = ram;
+        this.rom = rom;
+        this.color = color;
+        this.thumbnail = thumbnail;
+    }
 
     public ProductUnit(int productID, String name, String version, int cateID, String config, String thumbnail,
-			String firstSale, String ram, String rom, double price, double star, int totalComment, int saleProgramID,
-			String saleProgram) {
+                       String firstSale, String ram, String rom, double price, double star, int totalComment, int saleProgramID,
+                       String saleProgram) {
 		super();
 		this.productID = productID;
 		this.name = name;
@@ -500,6 +513,19 @@ public class ProductUnit {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductUnit{" +
+                "name='" + name + '\'' +
+                ", version='" + version + '\'' +
+                ", thumbnail='" + thumbnail + '\'' +
+                ", ram='" + ram + '\'' +
+                ", rom='" + rom + '\'' +
+                ", productDetailId=" + productDetailId +
+                ", color='" + color + '\'' +
+                '}';
     }
 
     public static void main(String[] args) {

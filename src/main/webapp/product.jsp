@@ -1,7 +1,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="model.ProductUnit" %>
 <%@ page import="model.Brand" %>
-<%@ page import="model.Property" %>
+<%@ page import="model.Constant" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -104,7 +104,7 @@
     <div class="main-content">
         <div class="filter-container flex-roww">
             <div class="filter-brand flex-roww active">
-                <button class="btn filter-btn ml-0 all-brand" value="<%=Property.ALL%>">Tất cả</button>
+                <button class="btn filter-btn ml-0 all-brand" value="<%=Constant.ALL%>">Tất cả</button>
                 <div class="btn-brand-container">
                     <%
                         for(Brand b : brands) {

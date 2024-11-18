@@ -1,6 +1,6 @@
 package DAO;
 
-import model.Property;
+import model.Constant;
 import model.VerifyCode;
 import service.JDBCUtil;
 
@@ -110,7 +110,7 @@ public class VerifyCodeDAO implements IDAO<VerifyCode> {
             Connection conn = JDBCUtil.getConnection();
             String sql = "update verifycode set isVerify = ? where code = ?;";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setInt(1, Property.USED_CODE);
+            pst.setInt(1, Constant.USED_CODE);
             pst.setString(2, code);
             re = pst.executeUpdate();
             return re;
@@ -125,13 +125,13 @@ public class VerifyCodeDAO implements IDAO<VerifyCode> {
         boolean res = false;
         VerifyCode code = VerifyCodeDAO.getInstance().selectTheLastCodeOf(emailin);
         if (code == null) {
-            return Property.WRONG_CODE;
+            return Constant.WRONG_CODE;
         }
         if (!codein.equals(code.getCode())) {
-            return Property.WRONG_CODE;
+            return Constant.WRONG_CODE;
         }
         if (code.getIsVerify() == 0) {
-            return Property.USED_CODE;
+            return Constant.USED_CODE;
         }
         long codeTime = code.getTime().getTime();
         long currentTimestamp = System.currentTimeMillis();
@@ -140,9 +140,9 @@ public class VerifyCodeDAO implements IDAO<VerifyCode> {
         long seconds = timeDifferenceMillis / 1000;
         if (seconds > 0 && seconds < 300) {
             VerifyCodeDAO.getInstance().disableCode(codein);
-            return Property.USED_CODE;
+            return Constant.USED_CODE;
         } else {
-            return Property.EXPIRED_CODE;
+            return Constant.EXPIRED_CODE;
         }
     }
 

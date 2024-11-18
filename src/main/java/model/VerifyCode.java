@@ -20,7 +20,7 @@ public class VerifyCode {
 
     public VerifyCode(String email) {
         this.email = email;
-        this.isVerify=Property.AVAI_CODE;
+        this.isVerify= Constant.AVAI_CODE;
     }
 
 

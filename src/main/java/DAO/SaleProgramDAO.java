@@ -1,7 +1,6 @@
 package DAO;
 
-import model.Image;
-import model.Property;
+import model.Constant;
 import model.SaleProgram;
 import service.JDBCUtil;
 
@@ -72,7 +71,7 @@ public class SaleProgramDAO implements IDAO<SaleProgram> {
         try {
             Connection conn = JDBCUtil.getConnection();
 
-            String sql = "select * from saleprograms where objectID = ? and main = " + Property.MAIN;
+            String sql = "select * from saleprograms where objectID = ? and main = " + Constant.MAIN;
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1, id);
             ResultSet rs = pst.executeQuery();
@@ -105,7 +104,7 @@ public class SaleProgramDAO implements IDAO<SaleProgram> {
 
             String sql = "select endTime from saleprograms where main = ? and avai = 1 order by id desc limit 0,1";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setInt(1, Property.ONLINE);
+            pst.setInt(1, Constant.ONLINE);
             System.out.println(pst);
             ResultSet rs = pst.executeQuery();
             while(rs.next()){

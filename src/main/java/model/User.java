@@ -42,9 +42,14 @@ public class User {
         this.email = email;
     }
 
+    public User(int id, String name, String email, String[] roles) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.roles = roles;
+    }
 
-
-    public User(String name, String email, String password,int avai) {
+    public User(String name, String email, String password, int avai) {
         this.name = name;
         this.email = email;
         this.password = password;

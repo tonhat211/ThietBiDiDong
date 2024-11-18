@@ -115,9 +115,13 @@
     opacity: 0.6;
 }
 
-.toast-2 {
-    position: relative;
+#toast-2 {
+    position: fixed;
     z-index: 9999;
+    top: 70px;
+    left: 50%;
+    width: fit-content;
+    transform: translateX(-50%);
 
 
 }

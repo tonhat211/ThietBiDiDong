@@ -9,10 +9,14 @@ public class Order {
     private int userID;
     private String address;
     private LocalDateTime dateSet;
-    private LocalDateTime dateFinish;
+    private LocalDateTime updateTime;
     private int status;
 
     public Order() {
+    }
+
+    public Order(int id) {
+        this.id = id;
     }
 
     public Order(double money, int userID, String address) {
@@ -21,22 +25,22 @@ public class Order {
         this.address = address;
     }
 
-    public Order(int id, double money, int userID, String address, LocalDateTime dateSet, LocalDateTime dateFinish, int status) {
+    public Order(int id, double money, int userID, String address, LocalDateTime dateSet, LocalDateTime updateTime, int status) {
         this.id = id;
         this.money = money;
         this.userID = userID;
         this.address = address;
         this.dateSet = dateSet;
-        this.dateFinish = dateFinish;
+        this.updateTime = updateTime;
         this.status = status;
     }
 
-    public LocalDateTime getDateFinish() {
-        return dateFinish;
+    public LocalDateTime getupdateTime() {
+        return updateTime;
     }
 
-    public void setDateFinish(LocalDateTime dateFinish) {
-        this.dateFinish = dateFinish;
+    public void setupdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
     }
 
     public int getUserID() {
@@ -98,5 +102,18 @@ public class Order {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", money=" + money +
+                ", userID=" + userID +
+                ", address='" + address + '\'' +
+                ", dateSet=" + dateSet +
+                ", updateTime=" + updateTime +
+                ", status=" + status +
+                '}';
     }
 }

@@ -1,7 +1,6 @@
 package DAO;
 
-import model.CartUnit;
-import model.Order;
+import model.*;
 import service.JDBCUtil;
 
 import java.sql.Connection;
@@ -10,6 +9,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class OrderDAO implements IDAO<Order> {
     public static OrderDAO getInstance(){
@@ -144,6 +145,288 @@ public class OrderDAO implements IDAO<Order> {
             return res;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public int selectStatus(int id) {
+        int re=0;
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "select status from orders where id = ? ;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1,id);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()) {
+                re = rs.getInt("status");
+            }
+            JDBCUtil.closeConnection(conn);
+            return re;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<Order> selectOrderByStatus(int statusCondition, int offset, int amount) {
+        ArrayList<Order> res = new ArrayList<>();
+        String condition = "" ;
+        if(statusCondition!=-1) {
+            condition= "where status = '" + statusCondition + "'";
+        }
+        System.out.println(condition);
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "select * from orders\n" +
+                    " " + condition +
+                    "\n   order by updateTime desc \n" +
+                    "limit ?,?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, offset);
+            pst.setInt(2, amount);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()) {
+                int id = rs.getInt("id");
+                double money = rs.getDouble("money");
+                int userID = rs.getInt("userID");
+                String address = rs.getString("address");
+                LocalDateTime dateSet = rs.getObject("dateSet",LocalDateTime.class);
+                LocalDateTime updateTime = rs.getObject("updateTime",LocalDateTime.class);
+                int status = rs.getInt("status");
+                res.add(new Order(id,money,userID,address,dateSet,updateTime,status));
+            }
+            JDBCUtil.closeConnection(conn);
+            return res;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<OrderDetail> selectDetailByOrders(ArrayList<Order> orders) {
+        ArrayList<OrderDetail> res = new ArrayList<>();
+        if(orders.size()==0) {return new ArrayList<>();}
+        String idList = "(" ;
+        for(Order o : orders){
+            idList+=o.getId()+",";
+        }
+        idList=idList.substring(0, idList.length()-1);
+        idList+=")";
+//        System.out.println(idList);
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "select od.orderID as oid, pd.id as pdid, \n" +
+                    "p.name, p.version,  \n" +
+                    "    pd.color, pd.ram, pd.rom, " +
+                    "    od.qty, od.currentPrice, \n" +
+                    "   p.thumbnail \n" +
+                    "    from orderdetails od join productdetails pd on od.productDetailID = pd.id \n" +
+                    "                       join products p on p.id = pd.productID \n" +
+                    "   where od.orderID in " + idList +";";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()) {
+                int oid = rs.getInt("oid");
+                int pdid = rs.getInt("pdid");
+                String name = rs.getString("name");
+                String version = rs.getString("version");
+                String color = rs.getString("color");
+                int ram = rs.getInt("ram");
+                int rom = rs.getInt("rom");
+                int qty = rs.getInt("qty");
+                double currentPrice = rs.getDouble("currentPrice");
+                String thumbnail = rs.getString("thumbnail");
+
+                ProductUnit productUnit = new ProductUnit(pdid, name, version, color, String.valueOf(ram), String.valueOf(rom), thumbnail);
+                OrderDetail orderDetail = new OrderDetail(oid,productUnit, currentPrice, qty);
+                res.add(orderDetail);
+            }
+            JDBCUtil.closeConnection(conn);
+            return res;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<OrderUnit> selectOrderUnitByStatus(int statusCondition, int offset, int amount) {
+        ArrayList<OrderUnit> res = new ArrayList<>();
+        Map<Order,OrderUnit> maps = new LinkedHashMap<>();
+        ArrayList<Order> orders = selectOrderByStatus(statusCondition, offset, amount);
+        ArrayList<OrderDetail> details = selectDetailByOrders(orders);
+
+        for (Order o : orders) {
+            maps.put(o, new OrderUnit(o));
+        }
+        for(OrderDetail d : details) {
+            int orderID = d.orderId;
+            maps.get(new Order(orderID)).details.add(d);
+        }
+        for (OrderUnit orderUnit : maps.values()) {
+            res.add(orderUnit);
+        }
+
+        return res;
+
+    }
+
+    public int selectCountOrderUnitBy(int statusCondition) {
+        int re=0;
+        String condition = "" ;
+        if(statusCondition!=-1) {
+            condition= "where status = '" + statusCondition + "'";
+        }
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "select count(*) as count from orders " +
+                    " " + condition +";";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()) {
+                re = rs.getInt("count");
+            }
+            JDBCUtil.closeConnection(conn);
+            return re;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<Order> selectOrderByTime(int statusCondition, String time, int offset, int amount) {
+        ArrayList<Order> res = new ArrayList<>();
+        String condition = "" ;
+        if(statusCondition!=-1) {
+            condition= " status = '" + statusCondition + "' and ";
+        }
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "select * from orders\n" +
+                    " where " + condition + " (updateTime like ? or dateSet like ?) "+
+                    "\n   order by updateTime desc \n" +
+                    "limit ?,?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, "%"+time+"%");
+            pst.setString(2, "%"+time+"%");
+            pst.setInt(3, offset);
+            pst.setInt(4, amount);
+            System.out.println(pst);
+
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()) {
+                int id = rs.getInt("id");
+                double money = rs.getDouble("money");
+                int userID = rs.getInt("userID");
+                String address = rs.getString("address");
+                LocalDateTime dateSet = rs.getObject("dateSet",LocalDateTime.class);
+                LocalDateTime updateTime = rs.getObject("updateTime",LocalDateTime.class);
+                int status = rs.getInt("status");
+                res.add(new Order(id,money,userID,address,dateSet,updateTime,status));
+            }
+            JDBCUtil.closeConnection(conn);
+            return res;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<OrderUnit> selectOrderUnitByTime(int statusCondition, String time, int offset, int amount) {
+        ArrayList<OrderUnit> res = new ArrayList<>();
+        Map<Order,OrderUnit> maps = new LinkedHashMap<>();
+        ArrayList<Order> orders = selectOrderByTime(statusCondition,time, offset, amount);
+        ArrayList<OrderDetail> details = selectDetailByOrders(orders);
+
+        for (Order o : orders) {
+            maps.put(o, new OrderUnit(o));
+        }
+        for(OrderDetail d : details) {
+            int orderID = d.orderId;
+            maps.get(new Order(orderID)).details.add(d);
+        }
+        for (OrderUnit orderUnit : maps.values()) {
+            res.add(orderUnit);
+        }
+
+        return res;
+
+    }
+    public ArrayList<Order> selectOrderByID(int statusCondition, String idin, int offset, int amount) {
+        ArrayList<Order> res = new ArrayList<>();
+        String condition = "" ;
+        if(statusCondition!=-1) {
+            condition= " status = '" + statusCondition + "' and ";
+        }
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "select * from orders\n" +
+                    " where " + condition + " id like ?"+
+                    "\n   order by updateTime desc \n" +
+                    "limit ?,?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, "%"+idin+"%");
+            pst.setInt(2, offset);
+            pst.setInt(3, amount);
+            System.out.println(pst);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()) {
+                int id = rs.getInt("id");
+                double money = rs.getDouble("money");
+                int userID = rs.getInt("userID");
+                String address = rs.getString("address");
+                LocalDateTime dateSet = rs.getObject("dateSet",LocalDateTime.class);
+                LocalDateTime updateTime = rs.getObject("updateTime",LocalDateTime.class);
+                int status = rs.getInt("status");
+                res.add(new Order(id,money,userID,address,dateSet,updateTime,status));
+            }
+            JDBCUtil.closeConnection(conn);
+            return res;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public ArrayList<OrderUnit> selectOrderUnitByID(int statusCondition, String id, int offset, int amount) {
+        ArrayList<OrderUnit> res = new ArrayList<>();
+        Map<Order,OrderUnit> maps = new LinkedHashMap<>();
+        ArrayList<Order> orders = selectOrderByID(statusCondition,id, offset, amount);
+        ArrayList<OrderDetail> details = selectDetailByOrders(orders);
+
+        for (Order o : orders) {
+            maps.put(o, new OrderUnit(o));
+        }
+        for(OrderDetail d : details) {
+            int orderID = d.orderId;
+            maps.get(new Order(orderID)).details.add(d);
+        }
+        for (OrderUnit orderUnit : maps.values()) {
+            res.add(orderUnit);
+        }
+
+        return res;
+
+    }
+
+
+    public int updateStatus(int idin, int newStatus) {
+        int re= 0;
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "update orders set status = ? where id = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1,newStatus);
+            pst.setInt(2,idin);
+            re = pst.executeUpdate();
+            JDBCUtil.closeConnection(conn);
+            return re;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void main(String[] args) {
+        ArrayList<OrderUnit> orderunits =  OrderDAO.getInstance().selectOrderUnitByID(-1,"5",0,20);
+//        System.out.println("count: " + OrderDAO.getInstance().selectCountOrderUnitBy(-1));
+        for(OrderUnit o : orderunits) {
+            System.out.println(o.getOrderID() + " : " + o.getUpdateTime() + " : " + o.getDateSet());
         }
     }
 }

@@ -1,10 +1,7 @@
 package DAO;
 
-import model.Brand;
 import model.CartUnit;
 import model.ProductDetail;
-import model.ProductUnit;
-import model.Property;
 import service.JDBCUtil;
 
 import java.sql.Connection;
@@ -160,7 +157,6 @@ public class ProductDetailDAO implements IDAO<ProductDetail>{
             throw new RuntimeException(e);
         }
     }
-    
 
     public int updateSaledQty(ArrayList<CartUnit> orderedCarts) {
         int re=0;

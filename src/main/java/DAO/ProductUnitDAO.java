@@ -1,22 +1,11 @@
 package DAO;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import model.Image;
-import model.ProductDetail;
 import model.ProductUnit;
-import model.Property;
+import model.Constant;
 import service.JDBCUtil;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class ProductUnitDAO implements IDAO<ProductUnit>{
     public static ProductUnitDAO getInstance(){
@@ -86,7 +75,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
     public ArrayList<ProductUnit> selectByCategory(int categoryID,int offset, int amount) {
         ArrayList<ProductUnit> res = new ArrayList<>();
         String condition="";
-        if(categoryID!=Property.ALL) {
+        if(categoryID!= Constant.ALL) {
             condition = "where p.cateID=?\n";
         }
         try {
@@ -107,7 +96,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                     "order by p.prominence desc\n" +
                     "limit ?,?\n";
             PreparedStatement pst = conn.prepareStatement(sql);
-            if(categoryID!=Property.ALL) {
+            if(categoryID!= Constant.ALL) {
                 pst.setInt(1, categoryID);
                 pst.setInt(2, offset);
                 pst.setInt(3, amount);
@@ -115,7 +104,6 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                 pst.setInt(1, offset);
                 pst.setInt(2, amount);
             }
-            System.out.println(pst);
             ResultSet rs = pst.executeQuery();
             while(rs.next()){
                 int id = rs.getInt("id");
@@ -251,11 +239,11 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
 
         }
         String sortSql="";
-        if(sort==Property.NEW) {
+        if(sort== Constant.NEW) {
             sortSql="JSON_EXTRACT(p.firstsale, '$.date') DESC";
-        } else if(sort==Property.PRICE_UP) {
+        } else if(sort== Constant.PRICE_UP) {
             sortSql="min(d.price) asc";
-        } else if (sort==Property.PRICE_DOWN) {
+        } else if (sort== Constant.PRICE_DOWN) {
             sortSql="min(d.price) desc";
         } else {
             sortSql="p.prominence desc";
@@ -325,11 +313,11 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
         }
 
         String sortSql="";
-        if(sort==Property.NEW) {
+        if(sort== Constant.NEW) {
             sortSql="JSON_EXTRACT(p.firstsale, '$.date') DESC";
-        } else if(sort==Property.PRICE_UP) {
+        } else if(sort== Constant.PRICE_UP) {
             sortSql="min(d.price) asc";
-        } else if (sort==Property.PRICE_DOWN) {
+        } else if (sort== Constant.PRICE_DOWN) {
             sortSql="min(d.price) desc";
         } else {
             sortSql="p.prominence desc";
@@ -450,7 +438,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
         priceRange.add(10000000);
         ArrayList<String> osList = new ArrayList<>();
         osList.add("android");
-        ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().selectByFilters(osList,priceRange,Property.PROMINENCE,0,20);
+        ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().selectByFilters(osList,priceRange, Constant.PROMINENCE,0,20);
 //        ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().selectByCategory(1,0,20);
         System.out.println(productUnits.size());
 

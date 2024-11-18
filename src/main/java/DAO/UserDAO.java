@@ -1,5 +1,6 @@
 package DAO;
 
+import com.google.gson.Gson;
 import model.Image;
 import model.User;
 import service.JDBCUtil;
@@ -120,8 +121,13 @@ public class UserDAO implements IDAO<User> {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
                 String reEmail = rs.getString("email");
+                String rolesJson = rs.getString("roles");
+                System.out.println("rolesJson: " + rolesJson);
+                Gson gson = new Gson();
+                String[] roles = gson.fromJson(rolesJson, String[].class);
+                System.out.println("roles1: " + roles[0]);
 
-                user = new User(id,name,reEmail);
+                user = new User(id,name,reEmail,roles);
             }
 
             JDBCUtil.closeConnection(conn);
@@ -169,8 +175,9 @@ public class UserDAO implements IDAO<User> {
     }
 
     public static void main(String[] args) {
-        boolean re = UserDAO.getInstance().checkEmail("2003tonhat@gmail.com");
-        System.out.println(re);
+        User u = UserDAO.getInstance().checkLogin("2003tonhat@gmail.com", "1234");
+        System.out.println(u.getRoles()[0]);
+
     }
 
 

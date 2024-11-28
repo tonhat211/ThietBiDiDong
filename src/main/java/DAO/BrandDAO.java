@@ -56,10 +56,11 @@ public class BrandDAO implements IDAO<Brand>{
             PreparedStatement pst = conn.prepareStatement(sql);
             ResultSet rs = pst.executeQuery();
             while(rs.next()){
+                int id = rs.getInt("id");
                 String name = rs.getString("name");
-                String country = rs.getString("name");
+                String country = rs.getString("country");
                 String cateIDs = rs.getString("cateIDs");
-                res.add(new Brand(name,country,Brand.getCateIDsFromJSON(cateIDs)));
+                res.add(new Brand(id,name,country,Brand.getCateIDsFromJSON(cateIDs)));
             }
             JDBCUtil.closeConnection(conn);
             return res;
@@ -68,6 +69,29 @@ public class BrandDAO implements IDAO<Brand>{
             throw new RuntimeException(e);
         }
     }
+
+//    public ArrayList<Brand> selectByCate(int cate) {
+//        ArrayList<Brand> res = new ArrayList<>();
+//        try {
+//            Connection conn = JDBCUtil.getConnection();
+//            String sql = "select * from brands WHERE JSON_CONTAINS(cateIDs, ?);;";
+//            PreparedStatement pst = conn.prepareStatement(sql);
+//            pst.setInt(1, cate);
+//            ResultSet rs = pst.executeQuery();
+//            while(rs.next()){
+//                int id = rs.getInt("id");
+//                String name = rs.getString("name");
+//                String country = rs.getString("country");
+//                String cateIDs = rs.getString("cateIDs");
+//                res.add(new Brand(id,name,country,Brand.getCateIDsFromJSON(cateIDs)));
+//            }
+//            JDBCUtil.closeConnection(conn);
+//            return res;
+//
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     @Override
     public Brand selectById(int id) {

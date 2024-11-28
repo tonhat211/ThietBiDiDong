@@ -3,11 +3,11 @@ package model;
 import com.google.gson.Gson;
 
 public class Brand {
-    private int id;
-    private String name;
-    private String country;
-    private int[] cateIDs;
-    private int avai;
+    public int id;
+    public String name;
+    public String country;
+    public int[] cateIDs;
+    public int avai;
 
     public Brand() {
     }
@@ -24,6 +24,16 @@ public class Brand {
         this.name = name;
         this.country = country;
         this.cateIDs = cateIDs;
+    }
+
+    public Brand(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Brand(int id) {
+        this.id = id;
+
     }
 
     public int getId() {

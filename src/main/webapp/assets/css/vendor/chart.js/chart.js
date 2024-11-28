@@ -3467,6 +3467,7 @@ class Element {
     active = false;
     options;
     $animations;
+    rows;
     tooltipPosition(useFinalPosition) {
         const { x , y  } = this.getProps([
             'x',

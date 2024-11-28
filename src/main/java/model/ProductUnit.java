@@ -28,15 +28,36 @@ public class ProductUnit {
     public String saleProgram;
     public String color;
     public int productDetailId;
+    public int avai;
+    public int totalQty;
+    public Brand brand;
+    public int prominence;
+    public String des;
     public ArrayList<ProductDetail> details;
+
     public ProductUnit() {
 
+    }
+
+
+    // update admin
+    public ProductUnit(int productID, String name, String version, Brand brand, int cateID, String config, String thumbnail, String firstSale, int prominence,String des) {
+        this.productID = productID;
+        this.name = name;
+        this.version = version;
+        this.brand = brand;
+        this.cateID = cateID;
+        this.config = config;
+        this.thumbnail = thumbnail;
+        this.firstSale = firstSale;
+        this.prominence = prominence;
+        this.des = des;
     }
 
     // base
 
 
-    public ProductUnit(int productID, String name, String version, String config, String thumbnail, String firstSale, String ram, String rom, double price, double star, int totalComment, int saleProgramID, String saleProgram) {
+    public ProductUnit(int productID, String name, String version, String config, String thumbnail, String firstSale, String ram, String rom, double price, double star, int totalComment, int saleProgramID, String saleProgram,int avai) {
         this.productID = productID;
         this.name = name;
         this.version = version;
@@ -50,7 +71,45 @@ public class ProductUnit {
         this.totalComment = totalComment;
         this.saleProgramID = saleProgramID;
         this.saleProgram = saleProgram;
+        this.avai = avai;
     }
+
+    public ProductUnit(int productID, String name, String version, String config, String thumbnail, String firstSale, String ram, String rom, double price, double star, int totalComment, int saleProgramID, String saleProgram,int avai,int totalQty) {
+        this.productID = productID;
+        this.name = name;
+        this.version = version;
+        this.config = config;
+        this.thumbnail = thumbnail;
+        this.firstSale = firstSale;
+        this.ram = ram;
+        this.rom = rom;
+        this.price = price;
+        this.star = star;
+        this.totalComment = totalComment;
+        this.saleProgramID = saleProgramID;
+        this.saleProgram = saleProgram;
+        this.avai = avai;
+        this.totalQty  = totalQty;
+
+    }
+
+    public ProductUnit(int productID, String name, String version, String config, String thumbnail, String firstSale, String ram, String rom, double price,int avai,int totalQty,Brand brand,int cateID) {
+        this.productID = productID;
+        this.name = name;
+        this.version = version;
+        this.config = config;
+        this.thumbnail = thumbnail;
+        this.firstSale = firstSale;
+        this.ram = ram;
+        this.rom = rom;
+        this.price = price;
+        this.avai = avai;
+        this.totalQty  = totalQty;
+        this.brand = brand;
+        this.cateID=cateID;
+    }
+
+
 
     // trong order
 
@@ -234,6 +293,10 @@ public class ProductUnit {
         return res;
     }
 
+    public String getCategoryName() {
+        return Constant.getCategoryName(this.cateID);
+    }
+
     public String getStorageVersionItems() {
         String re="";
         ArrayList<String> versions = new ArrayList<>();
@@ -373,7 +436,7 @@ public class ProductUnit {
     }
 
     public static String getConfigHelper(String input) {
-        String re="";
+        String re=input;
         switch (input)  {
             case "screen": {
                 re= "Màn hình";
@@ -515,6 +578,11 @@ public class ProductUnit {
         return false;
     }
 
+    public boolean isLocked() {
+        if(this.avai==Constant.LOCK) return true;
+        else return false;
+    }
+
     @Override
     public String toString() {
         return "ProductUnit{" +
@@ -526,6 +594,14 @@ public class ProductUnit {
                 ", productDetailId=" + productDetailId +
                 ", color='" + color + '\'' +
                 '}';
+    }
+
+    public String getBrandName() {
+        return this.brand.getName();
+    }
+
+    public int getBrandID() {
+        return this.brand.getId();
     }
 
     public static void main(String[] args) {

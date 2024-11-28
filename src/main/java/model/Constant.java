@@ -4,7 +4,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 public class Constant {
-    public static final int NUM_OF_ITEMS_A_PAGE = 2;
+    public static final int NUM_OF_ITEMS_A_PAGE = 20;
 
     public static final int AVAI_CODE = 1;
     public static final int USED_CODE = 0;
@@ -19,11 +19,24 @@ public class Constant {
     public static final int ACTIVE = 1;
     public static final int HIDE = 0;
     public static final int LOCK = -1;
+    public static final int DELETE = -99;
 
     public static final int ALL = 0;
     public static final int SMARTPHONE_CATEGORY = 1;
     public static final int TABLET_CATEGORY = 2;
     public static final int LAPTOP_CATEGORY = 3;
+
+    public static String getCategoryName(int in) {
+        switch (in) {
+            case SMARTPHONE_CATEGORY: return "Smartphone";
+            case TABLET_CATEGORY: return "Tablet";
+            case LAPTOP_CATEGORY: return "Laptop";
+            default: return "Unknown";
+        }
+    }
+
+    public static final String THUMBNAIL_DIR = "/assets/img/thumbnail"; // Relative path
+    public static final String PRODUCT_DETAIL_IMG_DIR = "/assets/img/product";
 
     public static final int MAIN = 1;
     public static final int UNMAIN = 0;

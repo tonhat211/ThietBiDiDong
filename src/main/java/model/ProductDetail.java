@@ -11,6 +11,7 @@ public class ProductDetail {
     private int rom;
     private double price;
     private int qty;
+    public int avai;
 
     public ProductDetail() {
     }
@@ -23,6 +24,17 @@ public class ProductDetail {
         this.rom = rom;
         this.price = price;
         this.qty = qty;
+    }
+
+//admin
+    public ProductDetail(int id, String color, int ram, int rom, double price, int qty,int avai) {
+        this.id = id;
+        this.color = color;
+        this.ram = ram;
+        this.rom = rom;
+        this.price = price;
+        this.qty = qty;
+        this.avai = avai;
     }
 
     public double getPrice() {
@@ -79,5 +91,10 @@ public class ProductDetail {
 
     public void setQty(int qty) {
         this.qty = qty;
+    }
+
+    public boolean isActive() {
+        if(this.avai==1) return true;
+        else return false;
     }
 }

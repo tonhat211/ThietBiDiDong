@@ -732,7 +732,7 @@
     <div class="modall active" id="add-modal">
       <div class="modal__overlay" onclick="closeModal(event);">
         <div class="modall-content grid-col-6 custom-scroll" style="max-height:90%" onclick="event.stopPropagation();">
-          <form action="">
+          <form action="" id="addProductForm">
             <h4 class="confirm-content" style="text-align: center">Thêm sản phẩm sản phẩm mới</h4>
             <div class="flex-roww" style="justify-content: space-between; margin-top: 10px;">
               <div class="form-group grid-col-4">
@@ -909,12 +909,121 @@
 
 
             </div>
-            <div class="flex-roww" style="justify-content: space-around; margin-top: 20px;" >
+            <div class="flex-roww" style="margin-top: 20px;" >
               <div class="form-group">
                 <p>Ảnh chi tiết</p>
-                <input class="detailImageInput" type="file" name="file" accept=".jpg, .jpeg, .png" multiple  onchange="previewImages()"/>
-                <div class="detailImagePreview" class="grid_row" style="margin-top: 15px;">
+<!--                <input class="detailImageInput" type="file" name="file" accept=".jpg, .jpeg, .png" multiple  onchange="previewImages()"/>-->
+<!--                <div class="detailImagePreview" class="grid_row" style="margin-top: 15px;">-->
+<!--                </div>-->
+
+<!--                new -->
+                <input type="text" name="imgUrls">
+                <div class="upload__box">
+                  <div class="upload__btn-box">
+                    <label class="upload__btn">
+                      <p>Upload images</p>
+                      <input type="file" multiple data-max_length="20" name="imgs" class="upload__inputfile">
+                    </label>
+                  </div>
+                  <div class="upload__img-wrap"></div>
                 </div>
+
+                <script>
+                  uploadImg();
+
+                  function uploadImg() {
+                    let imgWrap = "";
+                    let imgArray = [];
+
+                    // Find all file input elements with the class 'upload__inputfile'
+                    document.querySelectorAll('.upload__inputfile').forEach(function (inputFile) {
+                      inputFile.addEventListener('change', function (e) {
+                        // Get the closest '.upload__box' and find '.upload__img-wrap' inside it
+                        imgWrap = inputFile.closest('.upload__box').querySelector('.upload__img-wrap');
+                        const maxLength = parseInt(inputFile.getAttribute('data-max_length'), 10);
+
+                        const files = e.target.files;
+                        const filesArr = Array.from(files);
+                        let iterator = 0;
+
+                        filesArr.forEach(function (f, index) {
+                          if (!f.type.match('image.*')) {
+                            return;
+                          }
+
+                          if (imgArray.length > maxLength) {
+                            return false;
+                          } else {
+                            let len = 0;
+                            for (let i = 0; i < imgArray.length; i++) {
+                              if (imgArray[i] !== undefined) {
+                                len++;
+                              }
+                            }
+                            if (len > maxLength) {
+                              return false;
+                            } else {
+                              imgArray.push(f);
+                              // document.querySelector("#")
+
+                              const reader = new FileReader();
+                              reader.onload = function (e) {
+                                const html = `
+                                <div class='upload__img-box'>
+                                    <div style='background-image: url(${e.target.result})'
+                                         data-number='${document.querySelectorAll(".upload__img-close").length}'
+                                         data-file='${f.name}' class='img-bg'>
+                                        <div class='upload__img-close'></div>
+                                    </div>
+                                </div>`;
+                                imgWrap.insertAdjacentHTML('beforeend', html);
+                                initializeImageRemoval();
+
+                                iterator++;
+                              };
+                              reader.readAsDataURL(f);
+                            }
+                          }
+                        });
+                      });
+                    });
+
+                    // Handle the image removal
+                    function initializeImageRemoval() {
+                      // Get all current upload__img-close elements
+                      const closeButtons = document.querySelectorAll('.upload__img-close');
+
+                      // Add click event listener to each button directly
+                      closeButtons.forEach(button => {
+                        button.addEventListener('click', function (e) {
+                          console.log("remove img");
+
+                          // Find the closest element with the class 'img-bg' to the clicked target
+                          const imgBox = e.target.closest('.img-bg');
+
+                          // Get the 'data-file' attribute from the 'img-bg' element
+                          const fileName = imgBox.getAttribute('data-file');
+
+                          // Remove the file from the 'imgArray'
+                          for (let i = 0; i < imgArray.length; i++) {
+                            if (imgArray[i].name === fileName) {
+                              imgArray.splice(i, 1);  // Remove the matching file from 'imgArray'
+                              break;
+                            }
+                          }
+
+                          // Remove the image box (the parent div) from the DOM
+                          imgBox.parentNode.remove();
+                        });
+                      });
+                    }
+
+// Call this function whenever a new image with a close button is added
+                  }
+
+                </script>
+
+<!--                end new-->
               </div>
             </div>
             <p>Mô tả</p>

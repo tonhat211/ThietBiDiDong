@@ -13,6 +13,11 @@ public class Product {
     private String thumbnail;
     private int avai;
 
+    public int brandID;
+    public int cateID;
+    public String firstSale;
+
+
     public Product() {
     }
 

@@ -99,12 +99,6 @@
                         <option value="2">Vận chuyển</option>
                         <option  value="3">Thành công</option>
                         <option value="10">Hủy</option>
-<%--                        <option value="adminorder?action=byStatus&status=-1">Tất cả</option>--%>
-<%--                        <option value="adminorder?action=byStatus&status=0">Chờ xác nhận</option>--%>
-<%--                        <option value="adminorder?action=byStatus&status=1">Xác nhận</option>--%>
-<%--                        <option value="adminorder?action=byStatus&status=2">Vận chuyển</option>--%>
-<%--                        <option value="adminorder?action=byStatus&status=2">Thành công</option>--%>
-<%--                        <option value="adminorder?action=byStatus&status=10">Hủy</option>--%>
                     </select>
                 </div>
 

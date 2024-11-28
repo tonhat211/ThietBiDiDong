@@ -9,6 +9,6 @@
 <body>
 
 <%--<%response.sendRedirect("index");%>--%>
-<%response.sendRedirect("adminmenu?action=adminOrder");%>
+<%response.sendRedirect("adminmenu?action=adminProduct");%>
 </body>
 </html>

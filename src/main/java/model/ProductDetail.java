@@ -13,6 +13,7 @@ public class ProductDetail {
     private int qty;
     public int avai;
 
+
     public ProductDetail() {
     }
 
@@ -35,6 +36,16 @@ public class ProductDetail {
         this.price = price;
         this.qty = qty;
         this.avai = avai;
+    }
+
+    // admin add product
+    public ProductDetail(String color, int ram, int rom, double price, int qty) {
+        this.color = color;
+        this.ram = ram;
+        this.rom = rom;
+        this.price = price;
+        this.qty = qty;
+
     }
 
     public double getPrice() {

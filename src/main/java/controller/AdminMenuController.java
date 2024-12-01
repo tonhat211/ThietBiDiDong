@@ -72,6 +72,7 @@ public class AdminMenuController extends HttpServlet {
                     if(message.contains("updateSuccess"))
                         message = "Cập nhật sản phẩm id: "+ message.split("_")[1] +" thành công";
                     else if(message.contains("deleteSuccess")) message = "Xóa sản phẩm id: "+ message.split("_")[1] +" thành công";
+                    else if(message.contains("addSuccess")) message = "Thêm sản phẩm thành công";
                     req.setAttribute("message", message);
                 }
 

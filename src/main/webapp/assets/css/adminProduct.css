@@ -215,21 +215,21 @@ textarea {
     font-weight: 600;
     color: #fff;
     text-align: center;
-    min-width: 116px;
+    /*min-width: 116px;*/
     padding: 5px;
     transition: all 0.3s ease;
     cursor: pointer;
-    border: 2px solid;
-    background-color: #4045ba;
-    border-color: #4045ba;
+    /*border: 2px solid;*/
+    /*background-color: #4045ba;*/
+    /*border-color: #4045ba;*/
     border-radius: 10px;
     line-height: 26px;
     font-size: 14px;
 }
 
 .upload__btn:hover {
-    background-color: unset;
-    color: #4045ba;
+    /*background-color: unset;*/
+    /*color: #4045ba;*/
     transition: all 0.3s ease;
 }
 

@@ -54,7 +54,7 @@
     <%
         ArrayList<ProductUnit> productUnits = (ArrayList<ProductUnit>) request.getAttribute("productUnits");
         int numOfPages = request.getAttribute("numOfPages")!=null?(int) request.getAttribute("numOfPages"):0;
-        int byCategory = request.getAttribute("byCategory")!=null?(int) request.getAttribute("byCategory"):Constant.ALL;
+        int cateID = request.getAttribute("cateID")!=null?(int) request.getAttribute("cateID"):Constant.ALL;
 
         String message = (String) request.getAttribute("message");
     %>
@@ -69,13 +69,15 @@
 
         }
     %>
+
     <script>
-        function previewImage() {
-            var file = document.getElementById('thumbnailInput').files[0];
+        function previewImage(event) {
+            const parent = event.currentTarget.closest('.group');
+            var file = parent.querySelector('.thumbnailInput').files[0];
             var reader = new FileReader();
 
             reader.onload = function(e) {
-                var imagePreview = document.getElementById('thumbnailPreview');
+                var imagePreview = parent.querySelector('.thumbnailPreview');
                 imagePreview.src = e.target.result;
                 imagePreview.style.display = 'block';  // Hiển thị ảnh
             }
@@ -144,18 +146,21 @@
         </div><!-- End Page Title -->
         <div class="sub-content">
             <div class="flex-roww" style="justify-content: space-between">
-                <form class="search-bar grid-col-4 ">
+                <form action="adminproduct" method="get" class="search-bar grid-col-4 ">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" name="" placeholder="Bạn tìm gì...">
+                    <input type="text" name="search" placeholder="Bạn tìm gì...">
+                    <input type="text" name="action" value="search" hidden>
+                    <input type="submit" hidden>
                 </form>
-                <a href="" onclick="openModal('#add-modal');">Thêm sản phẩm</a>
+                <a href="" id="add-product-btn">Thêm sản phẩm</a>
             </div>
             <div class="flex-roww" style="margin-left: auto">
                 <p style="margin-right: 10px">Xem theo trạng thái: </p>
-                <select name="byCategory" data-default="1">
-                    <option value="1">Smartphone</option>
-                    <option value="2">Tablet</option>
-                    <option  value="3">Laptop</option>
+                <select name="byCategory" data-default="<%=cateID%>" onchange="queryBy(event);" >
+                    <option value="<%=Constant.ALL%>">Tất cả</option>
+                    <option value="<%=Constant.SMARTPHONE_CATEGORY%>">Smartphone</option>
+                    <option value="<%=Constant.TABLET_CATEGORY%>">Tablet</option>
+                    <option value="<%=Constant.LAPTOP_CATEGORY%>">Laptop</option>
                 </select>
             </div>
             <div class="info-container">
@@ -555,30 +560,33 @@
             </div>
         </div>
 
-        <div class="modall" id="add-modal">
+        <div class="modall active" id="add-modal">
             <div class="modal__overlay" onclick="closeModal(event);">
-                <div class="modall-content grid-col-6 custom-scroll" style="max-height:90%" onclick="event.stopPropagation();">
-                    <form action="">
-                        <h4 class="confirm-content" style="text-align: center">Thêm sản phẩm sản phẩm mới</h4>
+<%--            <div class="modal__overlay">--%>
+                <div class="modall-content grid-col-6 custom-scroll" style="max-height: 90%;" onclick="event.stopPropagation();">
+                    <form action="adminproduct" method="POST" id="addProductForm" enctype="multipart/form-data">
+                        <h4 class="confirm-content" style="text-align: center">Thêm sản phẩm mơi</h4>
                         <div class="flex-roww" style="justify-content: space-between; margin-top: 10px;">
                             <div class="form-group grid-col-4">
                                 <label>Tên</label>
-                                <input type="text" class="form-control" name="name" aria-describedby="emailHelp" placeholder="Nhập tên sản phẩm" required>
+                                <input type="text" class="form-control" name="name" aria-describedby="emailHelp" placeholder="Nhập tên sản phẩm" required="">
                             </div>
-                            <div class="form-group flex-roww grid-col-4">
-                            </div>
+<%--                            <div class="form-group flex-roww grid-col-4">--%>
+<%--                                <label>ID:</label>--%>
+<%--                                <input type="text" class="form-control" name="id" aria-describedby="emailHelp" placeholder="ID" value="92" readonly="">--%>
+<%--                            </div>--%>
                         </div>
                         <div style="margin-top: 15px;">
                             <p>Phiên bản:</p>
                             <div class="group">
                                 <div class="flex-roww version-input-container group">
                                     <div class="grid-col-0_5 flex-roww" style="justify-content: center;">
-                                        <i class="bi bi-plus-circle-fill btn-add-version active" onclick="addMoreConfig(event);"></i>
-                                        <i class="bi bi-dash-circle-fill btn-remove-version" onclick="removeConfig(event)"></i>
+<%--                                        <i class="bi bi-plus-circle-fill btn-add-version active" onclick="addMoreConfig(event);"></i>--%>
+<%--                                        <i class="bi bi-dash-circle-fill btn-remove-version" onclick="removeConfig(event)"></i>--%>
                                     </div>
-                                    <div class="grid-col-11" style="border-left: 1px solid var(--bold-color);padding-left: 4px;">
+                                    <div class="grid-col-11 version-item" style="border-left: 1px solid var(--bold-color);padding-left: 4px;">
                                         <input type="text" name="version" placeholder="Phiên bản">
-                                        <div class="flex-roww group" style="justify-content: space-between;margin-top: 10px">
+                                        <div class="flex-roww group version-detail" style="justify-content: space-between;margin-top: 10px">
                                             <input class="grid-col-2" type="text" name="color" placeholder="Màu">
                                             <input class="grid-col-2" type="text" name="ram" placeholder="Ram(GB)">
                                             <input class="grid-col-2" type="text" name="rom" placeholder="Rom(GB)">
@@ -591,64 +599,13 @@
 
                                 </div>
                             </div>
+                            <input type="text" name="versions" hidden>
                         </div>
-
-                        <script>
-                            function addMoreConfigDetail(event) {
-                                const group = event.currentTarget.closest('.group');
-                                const newDetail = group.cloneNode(true);
-                                clearInput(newDetail);
-                                group.parentNode.appendChild(newDetail);
-                                const btnRemove = group.querySelector('.btn-remove-version');
-                                plusToMinus(event.currentTarget,btnRemove);
-                            }
-
-                            function removeConfigDetail(event) {
-                                const group = event.currentTarget.closest('.group');
-                                group.parentNode.removeChild(group);
-                            }
-
-                            function clearInput(group) {
-                                const inputs = group.querySelectorAll("input");
-                                inputs.forEach(input => { input.value = "";});
-                            }
-
-                            function plusToMinus(plus,minus) {
-                                plus.classList.remove('active');
-                                minus.classList.add('active');
-                            }
-
-                            function minusToPlus(minus,plus) {
-                                minus.classList.remove('active');
-                                plus.classList.add('active');
-                            }
-
-                            function addMoreConfig(event) {
-                                const group = event.currentTarget.closest('.group');
-                                const newConfig = group.cloneNode(true);
-                                let configDetails = newConfig.querySelectorAll('.group');
-                                for(let i=0;i<configDetails.length-1;i++) {
-                                    configDetails[i].parentNode.removeChild(configDetails[i]);
-                                }
-                                clearInput(newConfig);
-                                group.parentNode.appendChild(newConfig);
-                                const btnRemove = event.currentTarget.parentNode.querySelector('.btn-remove-version');
-                                plusToMinus(event.currentTarget,btnRemove);
-                            }
-
-                            function removeConfig(event) {
-                                const group = event.currentTarget.closest('.group');
-                                group.parentNode.removeChild(group);
-                            }
-
-                        </script>
-
-
                         <div class="flex-roww" style="justify-content: space-between; margin-top: 15px;">
                             <div class="form-group grid-col-4">
                                 <label>Thương hiệu</label>
-                                <select name="brand" data-default="1">
-                                    <option value="1">Samsung</option>
+                                <select name="brandID" data-default="1">
+                                    <option value="1" selected="">Samsung</option>
                                     <option value="2">Apple</option>
                                     <option value="3">Oppo</option>
                                     <option value="4">Xiaomi</option>
@@ -657,8 +614,8 @@
                             </div>
                             <div class="form-group grid-col-4">
                                 <label>Phân loại</label>
-                                <select name="gender" data-default="male">
-                                    <option value="1">Smartphone</option>
+                                <select name="cateID" data-default="1">
+                                    <option value="1" selected="">Smartphone</option>
                                     <option value="2">Tablet</option>
                                     <option value="3">Laptop</option>
                                 </select>
@@ -667,83 +624,88 @@
                         <div class="flex-roww" style="justify-content: space-between; margin-top: 15px;">
                             <div class="form-group grid-col-4">
                                 <label>Ngày mở bán</label>
-                                <input type="date" class="form-control" name="date" value="2024-10-10" placeholder="Nhập ngày mở bán" required>
+                                <input type="date" class="form-control" name="saleDate" value="2020-10-10" placeholder="Nhập ngày mở bán" required="">
                             </div>
                             <div class="form-group grid-col-4">
                                 <label>Giá mở bán</label>
-                                <input type="number" class="form-control" name="initial-price" value="8900000" placeholder="Nhập giá mở bán" required>
+                                <input type="text" class="form-control" name="initialPrice" value="22.000.000" placeholder="Nhập giá mở bán" required="">
                             </div>
+                            <input type="text" name="firstSale" value="{&quot;date&quot;:&quot;2020-10-10&quot;,&quot;initial-price&quot;:22000000}" hidden="">
                         </div>
-                        <div class="flex-roww" style="justify-content: space-around; margin-top: 15px;" >
+                        <div class="flex-roww" style="margin-top: 15px;">
                             <div class="form-group grid-col-4">
                                 <label>Cấu hình</label>
-                                <table class="configTable" class="table">
+                                <table class="table configTable">
                                     <thead>
                                     <tr>
                                         <th>Tên</th>
                                         <th>Giá trị</th>
                                     </tr>
                                     </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td><input type="text" onkeydown="handleKeyDown(event, 1)"></td>
-                                        <td><input type="text" onkeydown="handleKeyDown(event, 2)"></td>
-                                    </tr>
+                                    <tbody class="group">
+                                        <tr>
+                                            <td><input type="text" value="" onkeydown="handleKeyDown(event, 1)"></td>
+                                            <td><input type="text" value="" onkeydown="handleKeyDown(event, 2)"></td>
+                                        </tr>
+
+
                                     </tbody>
                                 </table>
-
+                                <input type="text" name="config" hidden="">
                             </div>
                             <div class="form-group grid-col-4">
                             </div>
                         </div>
-                        <div class="flex-roww" style="justify-content: space-around; margin-top: 15px;" >
+                        <div class="flex-roww" style="margin-top: 15px;">
                             <div class="form-group grid-col-4">
                                 <label>Nổi bật</label>
-                                <table class="featureTable" class="table">
-                                    <thead>
-                                    <tr>
-                                        <th>Tên</th>
-                                        <th>Giá trị</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td><input type="text"></td>
-                                        <td><input type="text"></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text"></td>
-                                        <td><input type="text"></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-
+                                <input type="text" name="feature" value="" placeholder="Nhập thuộc tính nổi bật">
                             </div>
                             <div class="form-group grid-col-4">
                             </div>
                         </div>
-                        <div class="flex-roww" style="justify-content: space-around; margin-top: 20px;" >
+                        <div class="flex-roww" style="margin-top: 15px;">
                             <div class="form-group grid-col-4">
+                                <label>Độ nổi bật</label>
+                                <input type="number" class="form-control" name="prominence" value="" placeholder="Nhập độ nổi bật" required="">
+                            </div>
+                            <div class="form-group grid-col-4">
+                            </div>
+
+                        </div>
+                        <div class="flex-roww" style="margin-top: 20px;">
+                            <div class="form-group grid-col-4 group">
                                 <p>Ảnh thumbnail</p>
-                                <input class="thumbnailInput" type="file" name="file" accept=".jpg, .jpeg, .png"  onchange="previewImage()" />
+                                <input class="thumbnailInput" type="file" name="thumbnail" accept=".jpg, .jpeg, .png" onchange="previewImage(event)">
                                 <div class="thumbnail-img-container grid-col-6" style="margin-top: 15px;">
-                                    <img src="./assets/img/thumbnail/iphone-11-trang-600x600.jpg" alt="" class="thumbnailPreview" style="width:100%">
+                                    <img src="./assets/img/thumbnail/samsung-galaxy-a05s-sliver-thumbnew-600x600.jpg" alt="" class="thumbnailPreview" style="width:100%">
                                 </div>
                             </div>
                             <div class="form-group grid-col-4">
                             </div>
 
-
                         </div>
-                        <div class="flex-roww" style="justify-content: space-around; margin-top: 20px;" >
-                            <div class="form-group group">
+                        <div class="flex-roww" style="margin-top: 20px;">
+                            <div class="form-group">
                                 <p>Ảnh chi tiết</p>
-                                <input class="detailImageInput" type="file" name="file" accept=".jpg, .jpeg, .png" multiple  onchange="previewImages(event)"/>
-                                <div class="detailImagePreview" class="grid_row" style="margin-top: 15px;">
+                                <!--                new -->
+                                <div class="upload__box group">
+                                    <div class="upload__btn-box">
+                                        <label class="upload__btn">
+                                            <input type="file" multiple="" data-max_length="20" name="imgs" class="upload__inputfile" accept=".jpg, .jpeg, .png" onchange="previewImages(event);">
+                                        </label>
+                                    </div>
+                                    <div class="upload__img-wrap"></div>
+                                    <input type="text" name="imgUrls" value="iphone-13-xanh-glr-4-750x500.jpg==iphone-13-xanh-glr-5-750x500.jpg==vi-vn-samsung-galaxy-s23-fe-5g-2.jpeg==vi-vn-samsung-galaxy-s23-fe-5g-4.jpeg==vi-vn-samsung-galaxy-s23-fe-5g-5.jpeg==vi-vn-samsung-galaxy-s23-fe-5g-6.jpeg==vi-vn-samsung-galaxy-s23-fe-5g-8.jpeg" hidden="">
                                 </div>
                             </div>
 
+
+
                         </div>
+
+
+
                         <p>Mô tả</p>
                         <div class="toolbar">
                             <button onclick="document.execCommand('bold')"><b>B</b></button>
@@ -751,16 +713,156 @@
                             <button onclick="document.execCommand('underline')"><u>U</u></button>
                         </div>
 
-                        <textarea contenteditable="true" class="editor" class="editor" name="des" placeholder="Bắt đầu soạn thảo văn bản ở đây..."></textarea>
+                        <textarea contenteditable="true" class="editor" name="description" placeholder="Bắt đầu soạn thảo văn bản ở đây..."></textarea>
                         <br>
                         <div class="flex-roww" style="margin-top:20px; justify-content: space-around">
+                            <input type="text" name="action" value="add" hidden>
                             <button class="btn  btn-fourth btn-cancel" type="button" onclick="closeModal(event);">Hủy</button>
-                            <button class="btn btn-primary btn-confirm" onclick="" type="button">Lưu</button>
+                            <button class="btn btn-primary btn-confirm" onclick="" type="submit">Thêm</button>
                         </div>
                     </form>
+
+                    <script>
+
+
+
+                    </script>
+
+                    <script>
+                        document.querySelector('#addProductForm').addEventListener('submit', function(event) {
+                            event.preventDefault();
+                            var configTable = this.querySelector(".configTable");
+                            var configJson = {};
+                            for (let i = 1; i < configTable.rows.length; i++) {
+                                const row = configTable.rows[i];
+                                const inputKey = row.cells[0].querySelector('input'); // Tìm ô input trong cột giá trị
+                                const valueKey = inputKey ? inputKey.value.trim() : ''; // Lấy giá trị từ ô input nếu có// Cột thứ nhất là tên thuộc tính
+                                const inputValue = row.cells[1].querySelector('input'); // Tìm ô input trong cột giá trị
+                                const valueValue = inputValue ? inputValue.value.trim() : ''; // Lấy giá trị từ ô input nếu có// Cột thứ hai là giá trị
+                                configJson[valueKey] = valueValue;
+                            }
+                            const featureInput = this.querySelector('input[name="feature"]').value.trim();
+                            const featureArray = featureInput ? featureInput.split(',').map(item => item.trim()) : [];
+                            configJson['features'] = featureArray;
+                            var configString = JSON.stringify(configJson, null, 2);
+                            this.querySelector('input[name="config"]').value = configString;
+                            var saleDate = this.querySelector('input[name="saleDate"]').value;
+                            var initialPrice = this.querySelector('input[name="initialPrice"]').value;
+                            const firstSaleJson = {};
+                            firstSaleJson['date'] = saleDate;
+                            firstSaleJson['initial-price'] = initialPrice;
+                            const firstSaleString = JSON.stringify(firstSaleJson, null, 2);
+                            this.querySelector('input[name="firstSale"]').value = firstSaleString;
+
+                            //version
+                            var versionJson = {};
+                            var versionArr=[];
+
+                            const versionDetails = this.querySelectorAll('.version-detail');
+                            console.log("so detail: " + versionDetails.length);
+                            versionDetails.forEach(versionDetail => {
+                                var versionItemJson={};
+                                var color = versionDetail.querySelector('input[name="color"]').value;
+                                var ram = versionDetail.querySelector('input[name="ram"]').value;
+                                var rom = versionDetail.querySelector('input[name="rom"]').value;
+                                var price = versionDetail.querySelector('input[name="price"]').value;
+                                var qty = versionDetail.querySelector('input[name="qty"]').value;
+                                versionItemJson['color'] = color;
+                                versionItemJson['ram'] = ram;
+                                versionItemJson['rom'] = rom;
+                                versionItemJson['price'] = price;
+                                versionItemJson['qty'] = qty;
+                                versionArr.push(versionItemJson);
+                            });
+                            versionJson['versions'] = versionArr;
+                            const versionString = JSON.stringify(versionJson, null, 2);
+                            console.log(versionString);
+                            this.querySelector('input[name="versions"]').value = versionString;
+
+                            this.submit();
+
+                        });
+
+                        document.querySelector('#updateInfoForm').addEventListener('submit', function(event) {
+                            event.preventDefault();
+                            var configTable = document.getElementById("configTable");
+                            var configJson = {};
+                            for (let i = 1; i < configTable.rows.length; i++) {
+                                const row = configTable.rows[i];
+                                const inputKey = row.cells[0].querySelector('input'); // Tìm ô input trong cột giá trị
+                                const valueKey = inputKey ? inputKey.value.trim() : ''; // Lấy giá trị từ ô input nếu có// Cột thứ nhất là tên thuộc tính
+                                const inputValue = row.cells[1].querySelector('input'); // Tìm ô input trong cột giá trị
+                                const valueValue = inputValue ? inputValue.value.trim() : ''; // Lấy giá trị từ ô input nếu có// Cột thứ hai là giá trị
+                                configJson[valueKey] = valueValue;
+                            }
+                            const featureInput = this.querySelector('input[name="feature"]').value.trim();
+                            const featureArray = featureInput ? featureInput.split(',').map(item => item.trim()) : [];
+                            configJson['features'] = featureArray;
+                            var configString = JSON.stringify(configJson, null, 2);
+                            this.querySelector('input[name="config"]').value = configString;
+                            var saleDate = this.querySelector('input[name="saleDate"]').value;
+                            var initialPrice = this.querySelector('input[name="initialPrice"]').value;
+                            const firstSaleJson = {};
+                            firstSaleJson['date'] = saleDate;
+                            firstSaleJson['initial-price'] = initialPrice;
+                            const firstSaleString = JSON.stringify(firstSaleJson, null, 2);
+                            this.querySelector('input[name="firstSale"]').value = firstSaleString;
+                            this.submit();
+
+                        });
+                    </script>
                 </div>
             </div>
         </div>
+        <script>
+            function addMoreConfigDetail(event) {
+                const group = event.currentTarget.closest('.group');
+                const newDetail = group.cloneNode(true);
+                clearInput(newDetail);
+                group.parentNode.appendChild(newDetail);
+                const btnRemove = group.querySelector('.btn-remove-version');
+                plusToMinus(event.currentTarget,btnRemove);
+            }
+
+            function removeConfigDetail(event) {
+                const group = event.currentTarget.closest('.group');
+                group.parentNode.removeChild(group);
+            }
+
+            function clearInput(group) {
+                const inputs = group.querySelectorAll("input");
+                inputs.forEach(input => { input.value = "";});
+            }
+
+            function plusToMinus(plus,minus) {
+                plus.classList.remove('active');
+                minus.classList.add('active');
+            }
+
+            function minusToPlus(minus,plus) {
+                minus.classList.remove('active');
+                plus.classList.add('active');
+            }
+
+            function addMoreConfig(event) {
+                const group = event.currentTarget.closest('.group');
+                const newConfig = group.cloneNode(true);
+                let configDetails = newConfig.querySelectorAll('.group');
+                for(let i=0;i<configDetails.length-1;i++) {
+                    configDetails[i].parentNode.removeChild(configDetails[i]);
+                }
+                clearInput(newConfig);
+                group.parentNode.appendChild(newConfig);
+                const btnRemove = event.currentTarget.parentNode.querySelector('.btn-remove-version');
+                plusToMinus(event.currentTarget,btnRemove);
+            }
+
+            function removeConfig(event) {
+                const group = event.currentTarget.closest('.group');
+                group.parentNode.removeChild(group);
+            }
+
+        </script>
         <div class="modall" id="lock-detail-confirm-modal">
             <div class="modal__overlay group" onclick="closeModal(event);">
                 <div class="modall-content grid-col-6" onclick="event.stopPropagation();">
@@ -811,6 +913,7 @@
         <script>
             // Hàm xử lý khi nhấn Enter hoặc Backspace
             function handleKeyDown(event, column) {
+                const body = event.currentTarget.closest('.group');
                 const currentRow = event.target.closest('tr');
                 const currentInput = event.target;
                 const currentValue = currentInput.value;
@@ -855,16 +958,16 @@
                         currentRow.cells[1].querySelector('input').focus();
                     } else {
                         // Nếu đang ở ô thứ 2, thêm hàng mới và chuyển focus đến ô đầu tiên của hàng mới
-                        addNewRow();
-                        const newRow = document.getElementById('configTable').getElementsByTagName('tbody')[0].lastElementChild;
+                        addNewRow(body);
+                        const newRow = body.lastElementChild;
                         newRow.cells[0].querySelector('input').focus();
                     }
                 }
             }
 
             // Hàm thêm hàng mới vào bảng
-            function addNewRow() {
-                const table = document.getElementById('configTable').getElementsByTagName('tbody')[0];
+            function addNewRow(body) {
+                // const table = document.getElementById('configTable').getElementsByTagName('tbody')[0];
                 const newRow = document.createElement('tr');
 
                 // Thêm 2 ô nhập liệu vào hàng mới
@@ -878,7 +981,7 @@
                 }
 
                 // Thêm hàng mới vào cuối bảng
-                table.appendChild(newRow);
+                body.appendChild(newRow);
             }
         </script>
         <script>
@@ -963,11 +1066,25 @@
                         setupConfirm(id,'#delete-detail-confirm-modal',object);
                         break;
                     }
+
                     default:
                         setInfosStatus(group,false);
 
                 }
             }
+
+            function queryBy(event) {
+                var value = event.currentTarget.value;
+                window.location.href = "adminproduct?action=queryBy&cateID=" + value;
+                console.log(value);
+            }
+
+
+
+            document.querySelector('#add-product-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                openModal("#add-modal");
+            });
 
             function setupUpdate(group,modalID) {
                 var id = group.querySelector(".id").innerText;
@@ -1005,6 +1122,7 @@
                 document.querySelector(modalID).classList.add('active');
             }
 
+
             function hideModal(modalID) {
                 document.querySelector(modalID).classList.remove('active');
             }
@@ -1020,13 +1138,22 @@
             }
 
             function setDefaultOption(name) {
-                document.querySelectorAll(`select[name="${name}"]`).forEach(select => {
+                document.querySelectorAll('select[name="'+name+'"]').forEach(select => {
                     const defaultValue = select.getAttribute('data-default');
                     select.value = defaultValue;
                 });
             }
+
             // Gọi hàm một lần cho các phần tử hiện có
             setDefaultOption("gender");
+            setDefaultOption("byCategory");
+
+            // function setSelectedOption(name,selectedValue) {
+            //     document.querySelectorAll('select[name="'+name+'"]').forEach(select => {
+            //         select.setAttribute('data-default',selectedValue);
+            //         select.value = selectedValue;
+            //     });
+            // }
 
             function showDetail(event) {
                 event.stopPropagation();

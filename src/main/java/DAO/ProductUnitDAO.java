@@ -10,6 +10,8 @@ import service.JDBCUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProductUnitDAO implements IDAO<ProductUnit>{
     public static ProductUnitDAO getInstance(){
@@ -810,8 +812,115 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
         }
     }
 
+    public int insertProduct(ProductUnit p) {
+        int re =0;
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "insert into products (name, version, brandID, cateID, config, thumbnail, firstSale, des, prominence) values (?,?,?,?,?,?,?,?,?)";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1,p.name);
+            pst.setString(2,p.version);
+            pst.setInt(3,p.brand.getId());
+            pst.setInt(4,p.cateID);
+            pst.setString(5,p.config);
+            pst.setString(6,p.thumbnail);
+            pst.setString(7,p.firstSale);
+            pst.setString(8,p.des);
+            pst.setInt(9,p.prominence);
+            System.out.println(pst);
+            re= pst.executeUpdate();
+            int id=0;
+            if(re==1) {
+                sql = "select max(id) as id from products;";
+                pst = conn.prepareStatement(sql);
+                ResultSet rs = pst.executeQuery();
+                while(rs.next()) {
+                    id = rs.getInt("id");
+                }
+            }
+            JDBCUtil.closeConnection(conn);
+            return id;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-//    test
+    public int insertDetails(int pid, ArrayList<ProductDetail> details) {
+        int re =0;
+        StringBuilder temp = new StringBuilder();
+        for(ProductDetail detail : details) {
+            temp.append("("+pid+",'"+detail.getColor()+"',"+detail.getRam()+","+detail.getRom()+","+detail.getPrice()+","+detail.getQty()+"),\n");
+        }
+        String values = temp.toString();
+        if(temp.length()>3) {
+            values = values.substring(0, values.length()-2);
+        }
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "insert into productdetails (productID, color, ram, rom, price, qty) values " + values +";";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            System.out.println(pst);
+            re= pst.executeUpdate();
+            JDBCUtil.closeConnection(conn);
+            return re;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<ProductUnit> searchForAdmin(String idin) {
+        ArrayList<ProductUnit> res = new ArrayList<>();
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "SELECT p.id, p.name, p.version, p.config, p.thumbnail, p.firstsale,\n" +
+                    "GROUP_CONCAT(DISTINCT d.ram ORDER BY d.ram ASC SEPARATOR '-') AS ram,\n" +
+                    "GROUP_CONCAT(DISTINCT d.rom ORDER BY d.rom ASC SEPARATOR '-') AS rom,\n" +
+                    "min(d.price) as price,\n" +
+                    "p.avai as avai,\n" +
+                    "sum(d.qty) as totalQty,\n" +
+                    "b.id as brandID,\n" +
+                    "b.name as brand,\n" +
+                    "p.cateID as cateID\n" +
+                    "from products p join productdetails d on p.id = d.productID\n" +
+                    "    left join brands b on p.brandID = b.id\n" +
+                    " where p.avai !=" + Constant.DELETE + " and p.id like ?" +
+                    "group by p.id\n" +
+                    "order by p.prominence desc;\n";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, "%"+idin+"%");
+            System.out.println(pst);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()){
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String version= rs.getString("version");
+                String config= rs.getString("config");
+                String thumbnail=rs.getString("thumbnail");
+                String firstSale=rs.getString("firstsale");
+                String ram=rs.getString("ram");
+                String rom=rs.getString("rom");
+                double price=rs.getDouble("price");
+                int avai=rs.getInt("avai");
+                int totalQty=rs.getInt("totalQty");
+                int brandID = rs.getInt("brandID");
+                String brand=rs.getString("brand");
+                Brand b = new Brand(brandID,brand);
+                int cateID=rs.getInt("cateID");
+
+
+                res.add(new ProductUnit(id, name, version, config ,thumbnail, firstSale, ram, rom, price,avai,totalQty,b,cateID));
+
+            }
+            JDBCUtil.closeConnection(conn);
+            return res;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+    //    test
 public String renderUpdateForm(ProductUnit p,ArrayList<Brand> brands, ArrayList<Image> imgs) {
     String re="";
     re = "                    <form action=\"adminproduct\" method=\"POST\" id=\"updateInfoForm\" enctype=\"multipart/form-data\">\n" +
@@ -1121,11 +1230,40 @@ public String renderUpdateForm(ProductUnit p,ArrayList<Brand> brands, ArrayList<
 
 
     public static void main(String[] args) {
-        ProductUnit p = ProductUnitDAO.getInstance().selectForUpdateProduct(52);
-        ArrayList<Brand> brands = BrandDAO.getInstance().selectByCategory(p.cateID);
-        ArrayList<Image> imgs = ImageDAO.getInstance().selectByParentID(p.getProductID());
-        String html = ProductUnitDAO.getInstance().renderUpdateForm(p,brands, imgs) ;
-        System.out.println("html:" + html);
+        String json = "{  \"versions\": [    {      \"name\": \"thuowng\",      \"color\": \"xanhn\",      \"ram\": \"1\",      \"rom\": \"1\",      \"price\": \"1\",      \"qty\": \"1\"    },    {      \"name\": \"thuowng\",      \"color\": \"den\",      \"ram\": \"1\",      \"rom\": \"1\",      \"price\": \"1\",      \"qty\": \"1\"    },    {      \"name\": \"plus\",      \"color\": \"vang\",      \"ram\": \"1\",      \"rom\": \"1\",      \"price\": \"1\",      \"qty\": \"1\"    }  ]}";
+
+//        ArrayList<String> versionNames = new ArrayList<>();
+        Map<String,ArrayList<ProductDetail>> map = new HashMap<>();
+        JsonObject root = JsonParser.parseString(json).getAsJsonObject();
+
+        // Lấy mảng "versions"
+        JsonArray versions = root.getAsJsonArray("versions");
+
+        // Duyệt qua từng đối tượng trong mảng
+        for (JsonElement element : versions) {
+            JsonObject version = element.getAsJsonObject();
+
+            // Lấy các thuộc tính
+            String name = version.get("name").getAsString();
+//            if(!versionNames.contains(name)) versionNames.add(name);
+            if(!map.containsKey(name)) map.put(name, new ArrayList<>());
+            String color = version.get("color").getAsString();
+            int ram = version.get("ram").getAsInt();
+            int rom = version.get("rom").getAsInt();
+            double price = version.get("price").getAsDouble();
+            int qty = version.get("qty").getAsInt();
+            ProductDetail p = new ProductDetail(color,ram,rom,price,qty);
+            map.get(name).add(p);
+
+
+            }
+        for (Map.Entry<String, ArrayList<ProductDetail>> entry : map.entrySet()) {
+            System.out.println("version: " + entry.getKey());
+            for(ProductDetail pd : entry.getValue()) {
+                System.out.println("\tdetail:" + pd.getColor() + ", " + pd.getRam()+", "
+                        + pd.getRom() +", " + pd.getPrice() + ", " + pd.getQty());
+            }
+        }
 
     }
 }

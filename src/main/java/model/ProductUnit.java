@@ -109,6 +109,18 @@ public class ProductUnit {
         this.cateID=cateID;
     }
 
+    //insert product
+    public ProductUnit(String name, String version, Brand brand, int cateID, String config, String thumbnail, String firstSale, String des, int prominence) {
+        this.name = name;
+        this.version = version;
+        this.brand = brand;
+        this.cateID = cateID;
+        this.config = config;
+        this.thumbnail = thumbnail;
+        this.firstSale = firstSale;
+        this.des = des;
+        this.prominence = prominence;
+    }
 
 
     // trong order

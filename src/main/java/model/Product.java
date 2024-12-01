@@ -41,6 +41,8 @@ public class Product {
         this.thumbnail = thumbnail;
     }
 
+
+
     public String getThumbnail() {
         return thumbnail;
     }

@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @MultipartConfig
 @WebServlet("/adminproduct")
@@ -33,11 +35,28 @@ public class AdminProductController extends HttpServlet {
         action = action.toUpperCase();
         switch (action) {
             case "SEARCH": {
-//                System.out.println("product search");
-//
-//
-//                RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminOrder.jsp");
-//                dispatcher.forward(req, resp);
+                String idin = req.getParameter("search");
+                ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().searchForAdmin(idin);
+                req.setAttribute("numOfPages", 1);
+                req.setAttribute("productUnits", productUnits);
+                RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminProduct.jsp");
+                dispatcher.forward(req, resp);
+                break;
+            }
+            case "QUERYBY": {
+                System.out.println("admin product: query by cate");
+                int cateID = Integer.parseInt(req.getParameter("cateID"));
+                ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().selectByCategoryForAdmin(cateID,0,Constant.NUM_OF_ITEMS_A_PAGE);
+                int numOfProducts = ProductUnitDAO.getInstance().selectCountByCategory(cateID);
+                Integer numOfPages = numOfProducts / Constant.NUM_OF_ITEMS_A_PAGE;
+                if(numOfProducts % Constant.NUM_OF_ITEMS_A_PAGE != 0) numOfPages++;
+
+                req.setAttribute("numOfPages", numOfPages);
+                req.setAttribute("productUnits", productUnits);
+                req.setAttribute("cateID", cateID);
+
+                RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminProduct.jsp");
+                dispatcher.forward(req, resp);
                 break;
             }
             case "QUERY": {
@@ -248,6 +267,97 @@ public class AdminProductController extends HttpServlet {
                 }
                 break;
             }
+            case "ADD": {
+                System.out.println("admin product : add product");
+
+                String name = req.getParameter("name");
+                int brandID = Integer.parseInt(req.getParameter("brandID"));
+                int cateID = Integer.parseInt(req.getParameter("cateID"));
+                String firstSale = req.getParameter("firstSale").replace(".", "");
+                String config = req.getParameter("config");
+                int prominence = Integer.parseInt(req.getParameter("prominence"));
+                String version = req.getParameter("version");
+                String des = req.getParameter("des");
+                String imgUrls = req.getParameter("imgUrls");
+                Brand brand = new Brand(brandID);
+                ArrayList<String> imgUrlList = new ArrayList<>();
+                String versions = req.getParameter("versions");
+
+                ArrayList<ProductDetail> details = new ArrayList<>();
+                JsonObject root = JsonParser.parseString(versions).getAsJsonObject();
+                JsonArray versionArr = root.getAsJsonArray("versions");
+                for (JsonElement element : versionArr) {
+                    JsonObject versionItem = element.getAsJsonObject();
+                    String color = versionItem.get("color").getAsString();
+                    int ram = versionItem.get("ram").getAsInt();
+                    int rom = versionItem.get("rom").getAsInt();
+                    double price = versionItem.get("price").getAsDouble();
+                    int qty = versionItem.get("qty").getAsInt();
+                    details.add(new ProductDetail(color,ram,rom,price,qty));
+                }
+
+
+                if(imgUrls!=null || !imgUrls.isEmpty()) {
+                    String temps[] = imgUrls.split("==");
+                    for(String s : temps) {
+                        imgUrlList.add(s);
+                    }
+
+                }
+                // upload img
+                String uploadThumbnailDir = getServletContext().getRealPath("/") + Constant.THUMBNAIL_DIR;
+                String uploadImagesDir = getServletContext().getRealPath("/") + Constant.PRODUCT_DETAIL_IMG_DIR;
+
+                File thumbnailDir = new File(uploadThumbnailDir);
+                if (!thumbnailDir.exists()) {
+                    thumbnailDir.mkdirs();  // Create the thumbnails directory
+                }
+                File imagesDir = new File(uploadImagesDir);
+                if (!imagesDir.exists()) {
+                    imagesDir.mkdirs();  // Create the images directory
+                }
+                Part thumbnailPart = req.getPart("thumbnail"); // For the thumbnail (single file)
+
+                String thumbnailFileName="";
+
+                // For the images (multiple files)
+                // Handle the thumbnail upload
+                if (thumbnailPart != null && thumbnailPart.getSize() > 0) {
+                    thumbnailFileName = getFileName(thumbnailPart);
+                    String thumbnailPath = uploadThumbnailDir + File.separator + thumbnailFileName;
+                    File file = new File(thumbnailPath);
+                    if (!file.exists()) thumbnailPart.write(thumbnailPath);
+                    // Write the file to the server
+//                    ProductUnitDAO.getInstance().updateThumbnail(id,thumbnailFileName);
+                }
+                // Handle the image upload
+
+
+                Collection<Part> parts = req.getParts();
+                for (Part part : parts) {
+                    if (part.getName().equals("imgs") && part.getSize() > 0) {
+                        String imageFileName = getFileName(part);
+                        String imagePath = uploadImagesDir + File.separator + imageFileName;
+                        File file = new File(imagePath);
+                        if (!file.exists()) part.write(imagePath);
+                        // Write the image file to the server
+                    }
+                }
+
+                ProductUnit product = new ProductUnit(name, version, brand, cateID, config, thumbnailFileName, firstSale, des, prominence);
+                int id = ProductUnitDAO.getInstance().insertProduct(product);
+                if(id!=0) {
+                    ProductUnitDAO.getInstance().insertDetails(id,details);
+                    if(!imgUrlList.isEmpty()) ProductUnitDAO.getInstance().updateImgs(id,imgUrlList);
+
+                }
+                System.out.println("add product thanh cong");
+                RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminmenu?action=adminproduct&message=addSuccess_"+id);
+                dispatcher.forward(req, resp);
+
+                break;
+            }
+
         }
 
     }
@@ -260,6 +370,143 @@ public class AdminProductController extends HttpServlet {
         doGet(req, resp);
     }
 
+    public String renderUpdateForm(ProductUnit p,ArrayList<Brand> brands, ArrayList<Image> imgs) {
+        String re="";
+//        re = "                    <form action=\"adminproduct\" method=\"POST\" id=\"updateInfoForm\" enctype=\"multipart/form-data\">\n" +
+        re =
+                "                        <h4 class=\"confirm-content\" style=\"text-align: center\">Cập nhật thông tin sản phẩm</h4>\n" +
+                        "                        <div class=\"flex-roww\" style=\"justify-content: space-between; margin-top: 10px;\">\n" +
+                        "                            <div class=\"form-group grid-col-4\">\n" +
+                        "                                <label for=\"name\">Tên</label>\n" +
+                        "                                <input type=\"text\" class=\"form-control\" id=\"name\" name=\"name\" value=\""+p.getName()+"\" aria-describedby=\"emailHelp\" placeholder=\"Nhập tên sản phẩm\" required>\n" +
+                        "                            </div>\n" +
+                        "                            <div class=\"form-group flex-roww grid-col-4\">\n" +
+                        "                                <label for=\"id\">ID:</label>\n" +
+                        "                                <input type=\"text\" class=\"form-control\" id=\"id\" name=\"id\" aria-describedby=\"emailHelp\" placeholder=\"ID\" value=\""+p.getProductID()+"\" readonly>\n" +
+                        "                            </div>\n" +
+                        "                        </div>\n" +
+                        "                        <div class=\"flex-roww\" style=\"justify-content: space-between; margin-top: 10px;\">\n" +
+                        "                        <div class=\"form-group grid-col-4\">\n" +
+                        "                            <label for=\"version\">Phiên bản</label>\n" +
+                        "                            <input type=\"text\" class=\"form-control\" id=\"version\" name=\"version\" value=\""+p.getVersion()+"\" aria-describedby=\"emailHelp\" placeholder=\"Nhập phiên bản\" required>\n" +
+                        "                        </div>\n" +
+                        "                            <div class=\"form-group flex-roww grid-col-4\">\n" +
+
+                        "                            </div>\n" +
+                        "                        </div>\n" +
+
+                        "                        <div class=\"flex-roww\" style=\"justify-content: space-between; margin-top: 15px;\">\n" +
+                        "                            <div class=\"form-group grid-col-4\">\n" +
+                        "                                <label>Thương hiệu</label>\n" +
+                        getBrandSelect(p.brand.id,brands) +
+                        "                            </div>\n" +
+                        "                            <div class=\"form-group grid-col-4\">\n" +
+                        "                                <label>Phân loại</label>\n" +
+                        getCateSelect(p.cateID)+
+                        "                            </div>\n" +
+                        "                        </div>\n" +
+                        "                        <div class=\"flex-roww\" style=\"justify-content: space-between; margin-top: 15px;\">\n" +
+                        "                            <div class=\"form-group grid-col-4\">\n" +
+                        "                                <label for=\"saleDate\">Ngày mở bán</label>\n" +
+                        "                                <input type=\"date\" class=\"form-control\" id=\"saleDate\" name=\"saleDate\" value=\""+p.getSaleDate()+"\" placeholder=\"Nhập ngày mở bán\" required>\n" +
+                        "                            </div>\n" +
+                        "                            <div class=\"form-group grid-col-4\">\n" +
+                        "                                <label for=\"initial-price\">Giá mở bán</label>\n" +
+                        "                                <input type=\"text\" class=\"form-control\" id=\"initial-price\" name=\"initialPrice\" value=\""+p.getInitialPrice()+"\" placeholder=\"Nhập giá mở bán\" required>\n" +
+                        "                            </div>\n" +
+                        "                            <input type=\"text\" name=\"firstSale\"  value='"+p.firstSale+"' hidden>\n" +
+                        "                        </div>\n" +
+                        "                        <div class=\"flex-roww\" style=\"margin-top: 15px;\" >\n" +
+                        "                            <div class=\"form-group grid-col-4\">\n" +
+                        "                                <label>Cấu hình</label>\n" +
+                        "                                <table id=\"configTable\" class=\"table\">\n" +
+                        "                                    <thead>\n" +
+                        "                                    <tr>\n" +
+                        "                                        <th>Tên</th>\n" +
+                        "                                        <th>Giá trị</th>\n" +
+                        "                                    </tr>\n" +
+                        "                                    </thead>\n" +
+                        "                                    <tbody class=\"group\">\n" +
+                        getConfigurationTable(p.config)+
+                        "                                    </tbody>\n" +
+                        "                                </table>\n" +
+                        "                                <input type=\"text\" name=\"config\" hidden>\n" +
+                        "                            </div>\n" +
+                        "                            <div class=\"form-group grid-col-4\">\n" +
+                        "                            </div>\n" +
+                        "                        </div>\n" +
+                        "                        <div class=\"flex-roww\" style=\"margin-top: 15px;\" >\n" +
+                        "                            <div class=\"form-group grid-col-4\">\n" +
+                        "                                <label>Nổi bật</label>\n" +
+                        "                                <input type=\"text\" name=\"feature\" value=\""+getFeatureValue(p.config)+"\" placeholder=\"Nhập thuộc tính nổi bật\">\n" +
+                        "                            </div>\n" +
+                        "                            <div class=\"form-group grid-col-4\">\n" +
+                        "                            </div>\n" +
+                        "                        </div>\n" +
+                        "                        <div class=\"flex-roww\" style=\"margin-top: 15px;\" >\n" +
+                        "                            <div class=\"form-group grid-col-4\">\n" +
+                        "                                <label for=\"prominence\">Độ nổi bật</label>\n" +
+                        "                                <input type=\"number\" class=\"form-control\" id=\"prominence\" name=\"prominence\" value=\""+p.prominence+"\" placeholder=\"Nhập độ nổi bật\" required>\n" +
+                        "                            </div>\n" +
+                        "                            <div class=\"form-group grid-col-4\">\n" +
+                        "                            </div>\n" +
+                        "\n" +
+                        "                        </div>\n" +
+                        "                        <div class=\"flex-roww\" style=\"margin-top: 20px;\" >\n" +
+                        "                            <div class=\"form-group grid-col-4\">\n" +
+                        "                                <p>Ảnh thumbnail</p>\n" +
+                        "                                <input id=\"thumbnailInput\" type=\"file\" name=\"thumbnail\" accept=\".jpg, .jpeg, .png\"  onchange=\"previewImage()\" />\n" +
+                        "                                <div class=\"thumbnail-img-container grid-col-6\" style=\"margin-top: 15px;\">\n" +
+                        "                                    <img src=\"./assets/img/thumbnail/"    +p.thumbnail+"\" alt=\"\" id=\"thumbnailPreview\" style=\"width:100%\">\n" +
+//                "                                     <input type=\"text\" value=\""+p.thumbnail+"\" name=\"thumbnailInput\">\n\n" +
+                        "                                </div>\n" +
+                        "                            </div>\n" +
+                        "                            <div class=\"form-group grid-col-4\">\n" +
+                        "                            </div>\n" +
+
+                        "\n" +
+                        "                        </div>\n" +
+                        "                        <div class=\"flex-roww\" style=\"margin-top: 20px;\" >\n" +
+                        "                            <div class=\"form-group\">\n" +
+                        "                                <p>Ảnh chi tiết</p>\n" +
+                        "                                <!--                new -->\n" +
+                        "                                <div class=\"upload__box group\">\n" +
+                        "                                    <div class=\"upload__btn-box\">\n" +
+                        "                                        <label class=\"upload__btn\">\n" +
+                        "                                            <input type=\"file\" multiple data-max_length=\"20\" name=\"imgs\" class=\"upload__inputfile\" accept=\".jpg, .jpeg, .png\" onchange=\"previewImages(event);\">\n" +
+                        "                                        </label>\n" +
+                        "                                    </div>\n" +
+                        "                                    <div class=\"upload__img-wrap\">" +
+                        getImgs(imgs) +
+                        "                                   </div>\n" +
+                        "                                   <input type=\"text\" name=\"imgUrls\" value=\""+getImgUrls(imgs)+"\" hidden>\n" +
+                        "                                </div>\n" +
+
+                        "                            </div>\n" +
+                        "\n" +
+                        "\n" +
+                        "\n" +
+                        "                        </div>\n" +
+                        "\n" +
+                        "\n" +
+                        "\n" +
+                        "                        <p>Mô tả</p>\n" +
+                        "                        <div class=\"toolbar\">\n" +
+                        "                            <button onclick=\"document.execCommand('bold')\"><b>B</b></button>\n" +
+                        "                            <button onclick=\"document.execCommand('italic')\"><i>I</i></button>\n" +
+                        "                            <button onclick=\"document.execCommand('underline')\"><u>U</u></button>\n" +
+                        "                        </div>\n" +
+                        "\n" +
+                        "                        <textarea contenteditable=\"true\" id=\"editor\" class=\"editor\" name=\"description\" placeholder=\"Bắt đầu soạn thảo văn bản ở đây...\"></textarea>\n" +
+                        "                        <br>\n" +
+                        "                        <div class=\"flex-roww\" style=\"margin-top:20px; justify-content: space-around\">\n" +
+                        "                            <input type=\"text\" name=\"action\" value=\"update\" hidden>\n" +
+                        "                            <button class=\"btn  btn-fourth btn-cancel\" type=\"button\" onclick=\"closeModal(event);\">Hủy</button>\n" +
+                        "                            <button class=\"btn btn-primary btn-confirm\" onclick=\"\" type=\"submit\">Lưu</button>\n" +
+                        "                        </div>\n";
+//                "                    </form>\n";
+        return re;
+    }
     public String getFileName(Part part) {
         String contentDisposition = part.getHeader("Content-Disposition");
         for (String content : contentDisposition.split(";")) {
@@ -270,143 +517,6 @@ public class AdminProductController extends HttpServlet {
         return null;
     }
 
-    public String renderUpdateForm(ProductUnit p,ArrayList<Brand> brands, ArrayList<Image> imgs) {
-        String re="";
-//        re = "                    <form action=\"adminproduct\" method=\"POST\" id=\"updateInfoForm\" enctype=\"multipart/form-data\">\n" +
-        re =
-                "                        <h4 class=\"confirm-content\" style=\"text-align: center\">Cập nhật thông tin sản phẩm</h4>\n" +
-                "                        <div class=\"flex-roww\" style=\"justify-content: space-between; margin-top: 10px;\">\n" +
-                "                            <div class=\"form-group grid-col-4\">\n" +
-                "                                <label for=\"name\">Tên</label>\n" +
-                "                                <input type=\"text\" class=\"form-control\" id=\"name\" name=\"name\" value=\""+p.getName()+"\" aria-describedby=\"emailHelp\" placeholder=\"Nhập tên sản phẩm\" required>\n" +
-                "                            </div>\n" +
-                "                            <div class=\"form-group flex-roww grid-col-4\">\n" +
-                "                                <label for=\"id\">ID:</label>\n" +
-                "                                <input type=\"text\" class=\"form-control\" id=\"id\" name=\"id\" aria-describedby=\"emailHelp\" placeholder=\"ID\" value=\""+p.getProductID()+"\" readonly>\n" +
-                "                            </div>\n" +
-                "                        </div>\n" +
-                "                        <div class=\"flex-roww\" style=\"justify-content: space-between; margin-top: 10px;\">\n" +
-                "                        <div class=\"form-group grid-col-4\">\n" +
-                "                            <label for=\"version\">Phiên bản</label>\n" +
-                "                            <input type=\"text\" class=\"form-control\" id=\"version\" name=\"version\" value=\""+p.getVersion()+"\" aria-describedby=\"emailHelp\" placeholder=\"Nhập phiên bản\" required>\n" +
-                "                        </div>\n" +
-                "                            <div class=\"form-group flex-roww grid-col-4\">\n" +
-
-                "                            </div>\n" +
-                "                        </div>\n" +
-
-                "                        <div class=\"flex-roww\" style=\"justify-content: space-between; margin-top: 15px;\">\n" +
-                "                            <div class=\"form-group grid-col-4\">\n" +
-                "                                <label>Thương hiệu</label>\n" +
-                                getBrandSelect(p.brand.id,brands) +
-                "                            </div>\n" +
-                "                            <div class=\"form-group grid-col-4\">\n" +
-                "                                <label>Phân loại</label>\n" +
-                                getCateSelect(p.cateID)+
-                "                            </div>\n" +
-                "                        </div>\n" +
-                "                        <div class=\"flex-roww\" style=\"justify-content: space-between; margin-top: 15px;\">\n" +
-                "                            <div class=\"form-group grid-col-4\">\n" +
-                "                                <label for=\"saleDate\">Ngày mở bán</label>\n" +
-                "                                <input type=\"date\" class=\"form-control\" id=\"saleDate\" name=\"saleDate\" value=\""+p.getSaleDate()+"\" placeholder=\"Nhập ngày mở bán\" required>\n" +
-                "                            </div>\n" +
-                "                            <div class=\"form-group grid-col-4\">\n" +
-                "                                <label for=\"initial-price\">Giá mở bán</label>\n" +
-                "                                <input type=\"text\" class=\"form-control\" id=\"initial-price\" name=\"initialPrice\" value=\""+p.getInitialPrice()+"\" placeholder=\"Nhập giá mở bán\" required>\n" +
-                "                            </div>\n" +
-                "                            <input type=\"text\" name=\"firstSale\"  value='"+p.firstSale+"' hidden>\n" +
-                "                        </div>\n" +
-                "                        <div class=\"flex-roww\" style=\"margin-top: 15px;\" >\n" +
-                "                            <div class=\"form-group grid-col-4\">\n" +
-                "                                <label>Cấu hình</label>\n" +
-                "                                <table id=\"configTable\" class=\"table\">\n" +
-                "                                    <thead>\n" +
-                "                                    <tr>\n" +
-                "                                        <th>Tên</th>\n" +
-                "                                        <th>Giá trị</th>\n" +
-                "                                    </tr>\n" +
-                "                                    </thead>\n" +
-                "                                    <tbody>\n" +
-                            getConfigurationTable(p.config)+
-                "                                    </tbody>\n" +
-                "                                </table>\n" +
-                "                                <input type=\"text\" name=\"config\" hidden>\n" +
-                "                            </div>\n" +
-                "                            <div class=\"form-group grid-col-4\">\n" +
-                "                            </div>\n" +
-                "                        </div>\n" +
-                "                        <div class=\"flex-roww\" style=\"margin-top: 15px;\" >\n" +
-                "                            <div class=\"form-group grid-col-4\">\n" +
-                "                                <label>Nổi bật</label>\n" +
-                "                                <input type=\"text\" name=\"feature\" value=\""+getFeatureValue(p.config)+"\" placeholder=\"Nhập thuộc tính nổi bật\">\n" +
-                "                            </div>\n" +
-                "                            <div class=\"form-group grid-col-4\">\n" +
-                "                            </div>\n" +
-                "                        </div>\n" +
-                "                        <div class=\"flex-roww\" style=\"margin-top: 15px;\" >\n" +
-                "                            <div class=\"form-group grid-col-4\">\n" +
-                "                                <label for=\"prominence\">Độ nổi bật</label>\n" +
-                "                                <input type=\"number\" class=\"form-control\" id=\"prominence\" name=\"prominence\" value=\""+p.prominence+"\" placeholder=\"Nhập độ nổi bật\" required>\n" +
-                "                            </div>\n" +
-                "                            <div class=\"form-group grid-col-4\">\n" +
-                "                            </div>\n" +
-                "\n" +
-                "                        </div>\n" +
-                "                        <div class=\"flex-roww\" style=\"margin-top: 20px;\" >\n" +
-                "                            <div class=\"form-group grid-col-4\">\n" +
-                "                                <p>Ảnh thumbnail</p>\n" +
-                "                                <input id=\"thumbnailInput\" type=\"file\" name=\"thumbnail\" accept=\".jpg, .jpeg, .png\"  onchange=\"previewImage()\" />\n" +
-                "                                <div class=\"thumbnail-img-container grid-col-6\" style=\"margin-top: 15px;\">\n" +
-                "                                    <img src=\"./assets/img/thumbnail/"    +p.thumbnail+"\" alt=\"\" id=\"thumbnailPreview\" style=\"width:100%\">\n" +
-//                "                                     <input type=\"text\" value=\""+p.thumbnail+"\" name=\"thumbnailInput\">\n\n" +
-                "                                </div>\n" +
-                "                            </div>\n" +
-                "                            <div class=\"form-group grid-col-4\">\n" +
-                "                            </div>\n" +
-
-                "\n" +
-                "                        </div>\n" +
-                "                        <div class=\"flex-roww\" style=\"margin-top: 20px;\" >\n" +
-                "                            <div class=\"form-group\">\n" +
-                "                                <p>Ảnh chi tiết</p>\n" +
-                "                                <!--                new -->\n" +
-                "                                <div class=\"upload__box group\">\n" +
-                "                                    <div class=\"upload__btn-box\">\n" +
-                "                                        <label class=\"upload__btn\">\n" +
-                "                                            <input type=\"file\" multiple data-max_length=\"20\" name=\"imgs\" class=\"upload__inputfile\" accept=\".jpg, .jpeg, .png\" onchange=\"previewImages(event);\">\n" +
-                "                                        </label>\n" +
-                "                                    </div>\n" +
-                "                                    <div class=\"upload__img-wrap\">" +
-                                                        getImgs(imgs) +
-                "                                   </div>\n" +
-                "                                   <input type=\"text\" name=\"imgUrls\" value=\""+getImgUrls(imgs)+"\" hidden>\n" +
-                "                                </div>\n" +
-
-                "                            </div>\n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "                        </div>\n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "                        <p>Mô tả</p>\n" +
-                "                        <div class=\"toolbar\">\n" +
-                "                            <button onclick=\"document.execCommand('bold')\"><b>B</b></button>\n" +
-                "                            <button onclick=\"document.execCommand('italic')\"><i>I</i></button>\n" +
-                "                            <button onclick=\"document.execCommand('underline')\"><u>U</u></button>\n" +
-                "                        </div>\n" +
-                "\n" +
-                "                        <textarea contenteditable=\"true\" id=\"editor\" class=\"editor\" name=\"description\" placeholder=\"Bắt đầu soạn thảo văn bản ở đây...\"></textarea>\n" +
-                "                        <br>\n" +
-                "                        <div class=\"flex-roww\" style=\"margin-top:20px; justify-content: space-around\">\n" +
-                "                            <input type=\"text\" name=\"action\" value=\"update\">\n" +
-                "                            <button class=\"btn  btn-fourth btn-cancel\" type=\"button\" onclick=\"closeModal(event);\">Hủy</button>\n" +
-                "                            <button class=\"btn btn-primary btn-confirm\" onclick=\"\" type=\"submit\">Lưu</button>\n" +
-                "                        </div>\n";
-//                "                    </form>\n";
-        return re;
-    }
 
     public String getConfigurationTable(String config) {
         String re="";
@@ -576,5 +686,7 @@ public class AdminProductController extends HttpServlet {
                     "        </tr>";
         return re;
     }
+
+
 
 }

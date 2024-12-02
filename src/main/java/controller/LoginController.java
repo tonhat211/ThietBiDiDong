@@ -35,6 +35,7 @@ public class LoginController extends HttpServlet {
                     System.out.println("check login");
                     String email = req.getParameter("email");
                     String password = req.getParameter("password");
+                    password = User.hashPassword(password);
                     User u = UserDAO.getInstance().checkLogin(email, password);
                     if(u==null) { // khong thanh cong
                         System.out.println("login failed");

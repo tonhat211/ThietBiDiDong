@@ -1,6 +1,7 @@
 package DAO;
 
 import com.google.gson.Gson;
+import model.Constant;
 import model.Image;
 import model.User;
 import service.JDBCUtil;
@@ -9,26 +10,37 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class UserDAO implements IDAO<User> {
     public static UserDAO getInstance(){
         return new UserDAO();
     }
     @Override
-    public int insert(User user) {
+    public int insert(User user) { // tra ve id
         int re=0;
         try {
             Connection conn = JDBCUtil.getConnection();
-            String sql = "insert into users (email,name,password,avai) values(?,?,?,?);";
+            String sql = "insert into users (email,name,password,info) values(?,?,?,?);";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setString(1, user.getEmail());
             pst.setString(2, user.getName());
-            pst.setInt(4,user.getAvai());
+            pst.setString(3,user.getPassword());
+            pst.setString(4,user.getInfo());
             re = pst.executeUpdate();
-
+            int id=0;
+            if(re==1) {
+                sql = "select max(id) as id from users;";
+                pst = conn.prepareStatement(sql);
+                ResultSet rs = pst.executeQuery();
+                while(rs.next()) {
+                    id = rs.getInt("id");
+                }
+            }
             JDBCUtil.closeConnection(conn);
-            return re;
+            return id;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -174,9 +186,95 @@ public class UserDAO implements IDAO<User> {
         }
     }
 
+    public ArrayList<User> selectCustomers() {
+        ArrayList<User> res = new ArrayList<>();
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "SELECT * FROM `users` WHERE roles IS NULL and avai != ? order by id desc;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1,Constant.DELETE);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()){
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                res.add(new User(id,name,email));
+            }
+            JDBCUtil.closeConnection(conn);
+            return res;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int lockUser(int id) {
+        int re =0;
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "update users set avai = "+ Constant.LOCK+ " where id = ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1,id);
+            re= pst.executeUpdate();
+            JDBCUtil.closeConnection(conn);
+            return re;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int activeUser(int id) {
+        int re =0;
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "update users set avai = "+ Constant.ACTIVE+ " where id = ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1,id);
+            re= pst.executeUpdate();
+            JDBCUtil.closeConnection(conn);
+            return re;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int deleteUser(int id) {
+        int re =0;
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "update users set avai = "+ Constant.DELETE+ " where id = ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1,id);
+            re= pst.executeUpdate();
+            JDBCUtil.closeConnection(conn);
+            return re;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int insertNewUser(User user) {
+        int re=0;
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "insert into users (email,name,password) values(?,?,?);";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, user.getEmail());
+            pst.setString(2, user.getName());
+            pst.setInt(3,user.getAvai());
+            re = pst.executeUpdate();
+
+            JDBCUtil.closeConnection(conn);
+            return re;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void main(String[] args) {
-        User u = UserDAO.getInstance().checkLogin("2003tonhat@gmail.com", "1234");
-        System.out.println(u.getRoles()[0]);
+        User u = UserDAO.getInstance().selectById(5);
+        System.out.println(u.getUserInfo().getBirthdayAsString());
+
+
 
     }
 

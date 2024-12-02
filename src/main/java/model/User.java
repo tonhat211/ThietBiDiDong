@@ -1,21 +1,23 @@
 package model;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 public class User {
-    private int id;
-    private String name;
-    private String email;
-    private String password;
-    private String[] roles;
-    private Branch branch;
-    private String info;
-    private Image image;
-    private int avai;
+    public int id;
+    public String name;
+    public String email;
+    public String password;
+    public String[] roles;
+    public Branch branch;
+    public String info;
+    public Image image;
+    public int avai;
 
     public User() {
     }
@@ -49,11 +51,11 @@ public class User {
         this.roles = roles;
     }
 
-    public User(String name, String email, String password, int avai) {
+    public User(String name, String email, String password,String info) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.avai = avai;
+        this.info = info;
     }
 
     public User(int id,String name, String email, String info) {
@@ -151,7 +153,10 @@ public class User {
     }
 
     public UserInfo getUserInfo() {
-        Gson gson = new Gson();
+        // Tạo Gson với TypeAdapter tùy chỉnh
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .create();
         UserInfo info = gson.fromJson(this.info, UserInfo.class);
         return info;
     }
@@ -174,7 +179,34 @@ public class User {
         return formattedDate;
     }
 
+    public boolean isLocked() {
+        if(this.avai==Constant.LOCK) return true;
+        else return false;
+    }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", roles=" + Arrays.toString(roles) +
+                ", branch=" + branch +
+                ", info='" + info + '\'' +
+                ", image=" + image +
+                ", avai=" + avai +
+                '}';
+    }
+
+    public static String hashPassword(String password) {
+        HashAlgorism hashAlgorism = new HashAlgorism();
+        try {
+            return hashAlgorism.hash(password);
+        } catch (Exception e) {
+            return "null";
+        }
+    }
 
     public static void main(String[] args) {
 
@@ -182,11 +214,14 @@ public class User {
 
         // Chuyển đổi sang LocalDate để chỉ lấy ngày
         LocalDate today = now.toLocalDate();
+        System.out.println("Today: " +today.toString());
 
         // Định dạng ngày
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String formattedDate = today.format(formatter);
         System.out.println("Formatted Date: " + formattedDate);
+
+        System.out.println("hash password: " + hashPassword(formattedDate));
     }
 
 

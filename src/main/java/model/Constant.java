@@ -4,6 +4,12 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 public class Constant {
+    public final static String EN_CHARS =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+                    "abcdefghijklmnopqrstuvwxyz" +
+                    "0123456789" +
+                    ".,;!?()[]{}:<>-_=/+*^%$#@&";
+
     public static final int NUM_OF_ITEMS_A_PAGE = 20;
 
     public static final int AVAI_CODE = 1;

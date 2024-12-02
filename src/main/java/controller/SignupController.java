@@ -14,6 +14,7 @@ import model.User;
 import model.VerifyCode;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 @WebServlet("/signup")
 public class SignupController extends HttpServlet {
@@ -44,9 +45,12 @@ public class SignupController extends HttpServlet {
                         System.out.println("insert user into database");
                         String name = req.getParameter("name");
                         String password = req.getParameter("password");
-                        User user = new User(email,name,password, Constant.UN_VERIFIED_USER);
+                        String hashPassword = User.hashPassword(password);
+                        String today = LocalDate.now().toString();
+                        String info = "{\"dateIn\":\""+today+"\",\"phone\":\"null\",\"gender\":\"null\",\"birthday\":\"null\",\"position\":\"null\",\"area\":\"null\"}";
+                        User user = new User(name,email,hashPassword,info);
                         int re=UserDAO.getInstance().insert(user);
-                        if(re==1) { // insert thanh cong
+                        if(re!=0) { // insert thanh cong
 
                             // khoi tao otp va insert vao database
                             VerifyCode verifyCode = new VerifyCode(email);

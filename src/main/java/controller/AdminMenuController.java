@@ -3,6 +3,7 @@ package controller;
 import DAO.BrandDAO;
 import DAO.OrderDAO;
 import DAO.ProductUnitDAO;
+import DAO.UserDAO;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -79,6 +80,31 @@ public class AdminMenuController extends HttpServlet {
 
 
                 RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminProduct.jsp");
+                dispatcher.forward(req, resp);
+                break;
+            }
+            case "ADMINCUSTOMER": {
+                System.out.println("menu admin customer");
+                ArrayList<User> customers = UserDAO.getInstance().selectCustomers();
+//                int numOfProducts = ProductUnitDAO.getInstance().selectCountByCategory(Constant.SMARTPHONE_CATEGORY);
+//                Integer numOfPages = numOfProducts / Constant.NUM_OF_ITEMS_A_PAGE;
+//                if(numOfProducts % Constant.NUM_OF_ITEMS_A_PAGE != 0) numOfPages++;
+
+
+//                req.setAttribute("numOfPages", numOfPages);
+                req.setAttribute("customers", customers);
+                String message = req.getParameter("message");
+                if(message != null) {
+                    if(message.contains("updateSuccess"))
+                        message = "Cập nhật sản phẩm id: "+ message.split("_")[1] +" thành công";
+                    else if(message.contains("deleteSuccess")) message = "Xóa sản phẩm id: "+ message.split("_")[1] +" thành công";
+                    else if(message.contains("addSuccess")) message = "Thêm sản phẩm thành công";
+                    req.setAttribute("message", message);
+                }
+
+
+
+                RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminCustomer.jsp");
                 dispatcher.forward(req, resp);
                 break;
             }

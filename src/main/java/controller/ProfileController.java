@@ -125,6 +125,7 @@ public class ProfileController extends HttpServlet {
             case "UPDATEPASSWORD" : {
                 String currentPassword = req.getParameter("currentPassword");
                 String password = req.getParameter("password");
+                password = User.hashPassword(password);
                 User user = UserDAO.getInstance().checkLogin(userLogging.getEmail(),currentPassword);
                 if(user!=null && user.getId()== userLogging.getId()) { // dung mat khau
                     int re = UserDAO.getInstance().updatePassword(user.getId(), password);

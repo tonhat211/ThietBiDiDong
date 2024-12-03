@@ -37,12 +37,11 @@
 </head>
 <body>
 <%
-//    User userLogging = (User) session.getAttribute("userLogging");
-//    userLogging = new User(1,"Minh Nhat","minhnhat@gmail.com");
+    User userLogging = (User) session.getAttribute("userLogging");
 %>
 
 <header id="header" class="header fixed-top flex-roww" style="justify-content: space-between">
-    <a href="" class="logo grid-col-2 pd0">
+    <a href="index" class="logo grid-col-2 pd0">
         <img src="./assets/img/logo/Logo-The-Gioi-Di-Dong-MWG-B-H.webp" alt="" style="color:black;">
     </a>
     <nav class="header-nav ms-auto">
@@ -56,15 +55,14 @@
 
             <li class="nav-item dropdown pe-3">
 
-                <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                    <img src="./assets/img/thumbnail/iphone-11-trang-600x600.jpg" alt="Profile" class="rounded-circle">
-                    <span class="d-none d-md-block dropdown-toggle ps-2">K. Anderson</span>
+                <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" onfocus="handleFocus(event)">
+                    <span class="d-none d-md-block dropdown-toggle ps-2"><%=userLogging.getName()%></span>
                 </a><!-- End Profile Iamge Icon -->
 
-                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile" style="display: none">
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                     <li class="dropdown-header">
-                        <h6>Kevin Anderson</h6>
-                        <span>Web Designer</span>
+                        <h6>chuc vu</h6>
+                        <span>phong ban</span>
                     </li>
                     <li>
                         <hr class="dropdown-divider">
@@ -81,7 +79,7 @@
                     </li>
 
                     <li>
-                        <a class="dropdown-item d-flex align-items-center" href="#">
+                        <a class="dropdown-item d-flex align-items-center" href="login?action=logout">
                             <i class="bi bi-box-arrow-right"></i>
                             <span>Đăng xuất</span>
                         </a>
@@ -92,7 +90,20 @@
 
         </ul>
     </nav><!-- End Icons Navigation -->
+    <script>
 
+        const link = document.querySelector('.nav-profile');
+
+        link.addEventListener("focus", (e) => {
+            e.preventDefault();
+            document.querySelector('.profile').classList.add('active');
+        });
+
+        link.addEventListener("blur", (e) => {
+            e.preventDefault();
+            document.querySelector('.profile').classList.remove('active');
+        });
+    </script>
 </header>
 
 </body>

@@ -53,6 +53,7 @@
         ArrayList<OrderUnit> orderunits = (ArrayList<OrderUnit>) request.getAttribute("orderUnits");
         int numOfPages = request.getAttribute("numOfPages")!=null?(int) request.getAttribute("numOfPages"):0;
         int byStatus = request.getAttribute("byStatus")!=null?(int) request.getAttribute("byStatus"):-1;
+        String title = (String) request.getAttribute("title");
 
     %>
     <script>
@@ -63,7 +64,17 @@
 
         </div>
         <div class="pagetitle grid-col-3">
-            <h1>Quản lý đơn hàng</h1>
+            <%
+                if(title==null) {
+            %>
+                <h1>Quản lý đơn hàng</h1>
+            <%
+            } else {
+            %>
+                <h1><%=title%></h1>
+            <%
+            }
+            %>
             <nav>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="index.jsp">Trang chủ</a></li>

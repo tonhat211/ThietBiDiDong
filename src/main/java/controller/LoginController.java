@@ -35,6 +35,7 @@ public class LoginController extends HttpServlet {
                     System.out.println("check login");
                     String email = req.getParameter("email");
                     String password = req.getParameter("password");
+                    password = User.hashPassword(password);
                     User u = UserDAO.getInstance().checkLogin(email, password);
                     if(u==null) { // khong thanh cong
                         System.out.println("login failed");
@@ -78,6 +79,8 @@ public class LoginController extends HttpServlet {
                 }
                 case "LOGOUT" :{
                     session.removeAttribute("userLogging");
+                    RequestDispatcher rd = getServletContext().getRequestDispatcher("/index");
+                    rd.forward(req, resp);
                     break;
                 }
             }

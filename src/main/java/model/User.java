@@ -44,11 +44,11 @@ public class User {
         this.email = email;
     }
 
-    public User(int id, String name, String email, String[] roles) {
+    public User(int id, String name, String email, String info) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.roles = roles;
+        this.info = info;
     }
 
     public User(String name, String email, String password,String info) {
@@ -58,10 +58,11 @@ public class User {
         this.info = info;
     }
 
-    public User(int id,String name, String email, String info) {
+    public User(int id,String name, String email, String[] roles, String info) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.roles = roles;
         this.info = info;
     }
 
@@ -206,6 +207,14 @@ public class User {
         } catch (Exception e) {
             return "null";
         }
+    }
+
+    public boolean hasRole(String role) {
+        if(this.roles==null) return false;
+        String userRole = Arrays.toString(this.roles);
+        userRole = userRole.toUpperCase();
+        if(userRole.contains(role)) return true;
+        else return false;
     }
 
     public static void main(String[] args) {

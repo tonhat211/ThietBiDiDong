@@ -99,3 +99,13 @@ tr:nth-child(odd) select {
     max-height: 90%;
 }
 
+
+/*header*/
+.dropdown-menu {
+    display: none !important;
+}
+
+.dropdown-menu.active {
+    display: block !important;
+}
+

@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Quản lý khách hàng</title>
+    <title>Quản lý nhân viên</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="description">
     <meta content="" name="keywords">
@@ -49,7 +49,7 @@
 <div class="flex-roww">
     <%@ include file="adminMenu.jsp" %>
     <%
-        ArrayList<User> customers = (ArrayList<User>) request.getAttribute("customers");
+        ArrayList<User> employees = (ArrayList<User>) request.getAttribute("employees");
         int numOfPages = request.getAttribute("numOfPages")!=null?(int) request.getAttribute("numOfPages"):0;
         int cateID = request.getAttribute("cateID")!=null?(int) request.getAttribute("cateID"):Constant.ALL;
 
@@ -69,11 +69,11 @@
     <main id="main" class="main grid-col-10">
         <div id="toast"></div>
         <div class="pagetitle grid-col-3">
-            <h1>Quản lý khách hàng</h1>
+            <h1>Quản lý nhân viên</h1>
             <nav>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="index">Trang chủ</a></li>
-                    <li class="breadcrumb-item active">Quản lý khách hàng</li>
+                    <li class="breadcrumb-item active">Quản lý nhân viên</li>
                 </ol>
             </nav>
         </div><!-- End Page Title -->
@@ -96,6 +96,7 @@
                         <th scope="col" class="grid-col-2">Tên</th>
                         <th scope="col" class="grid-col-2">Email</th>
                         <th scope="col" class="grid-col-1">Đơn hàng</th>
+                        <th scope="col" class="grid-col-1">Quyền truy cập</th>
                         <th scope="col" class="grid-col-1">Thao tác</th>
                     </tr>
                     </thead>
@@ -109,12 +110,16 @@
                                     <th scope="col" class="grid-col-1">Ngày sinh</th>
                                     <th scope="col" class="grid-col-1">Điện thoại</th>
                                     <th scope="col" class="grid-col-1">Ngày tham gia</th>
+                                    <th scope="col" class="grid-col-1">Chức vụ</th>
+                                    <th scope="col" class="grid-col-1">Phòng ban</th>
+                                    <th scope="col" class="grid-col-1_5">Thao tác</th>
                                 </tr>
                                 </thead>
                                 <tbody class="group">
                                 <tr class="group">
                                     <th scope="row" class="grid-col-1" >
                                         <span class="gender">1</span>
+                                        <input type="text" name="id" value="" hidden>
                                     </th>
                                     <td class="grid-col-1">
                                         <span class="birthday">1</span>
@@ -125,15 +130,63 @@
                                     <td class="grid-col-1">
                                         <input class="info-input" type="text" name="dateIn" readonly>
                                     </td>
+                                    <td class="grid-col-1">
+                                        <input class="info-input" type="text" name="area" readonly>
+                                    </td>
+                                    <td class="grid-col-1">
+                                        <input class="info-input" type="text" name="position" readonly>
+                                    </td>
+                                    <td class="grid-col-1_5">
+                                        <div class="flex-coll" style="align-items: end;">
+                                            <button class="btn btn-primary btn-setupupdate" type="button" onclick="setupUpdate(event);" style="background-color: blue; color:white">Cập nhật</button>
+                                            <div class="flex-roww secondary-btns-container" style="display: none">
+                                                <button class="btn btn-fourth btn-save" style="margin-right: 20px;background-color: blue; color:white" type="button" onclick="saveUpdateDetails(event);">Lưu</button>
+                                                <button class="btn btn-fourth btn-cancel" style="" type="button" onclick="closeDetail();">Hủy</button>
+
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
 
                                 </tbody>
                             </table>
+                            <script>
+                                function setupUpdate(event) {
+                                    const group = event.currentTarget.closest('.group');
+                                    group.querySelector('input[name="area"]').readOnly = false;
+                                    group.querySelector('input[name="position"]').readOnly = false;
+                                    group.querySelector('.secondary-btns-container').style.display = 'block';
+                                    group.querySelector('.btn-setupupdate').style.display = 'none';
+                                }
+
+                                function saveUpdateDetails(event) {
+                                    const group = event.currentTarget.closest('.group');
+                                    var id = group.querySelector('input[name="id"]').value;
+                                    var area = group.querySelector('input[name="area"]').value;
+                                    var position = group.querySelector('input[name="position"]').value;
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "adminemployee?action=updateDetail",
+                                        data: {id: id,area: area, position: position},
+                                        success: function(data) {
+                                            document.querySelector('#server-response').innerHTML = data;
+                                            document.querySelector('#detail-container').classList.remove('active');
+                                        },
+                                        error: function(error) {
+                                            $('#server-response').html(error.responseText);
+                                        }
+                                    });
+                                }
+
+                                function closeDetail() {
+                                    document.querySelector('#detail-container').classList.remove('active');
+                                }
+                            </script>
                         </td>
                     </tr>
                     <%
                         int stt=1;
-                        for(User u : customers) {
+                        for(User u : employees) {
                     %>
                             <tr class="group <%=u.isLocked()?"locked":""%>" id="customer<%=u.getId()%>" onclick="showDetail(event);">
                                 <th scope="row" class="grid-col-0_5 text-center" >
@@ -151,6 +204,9 @@
                                 </td>
                                 <td class="grid-col-1 text-center">
                                     <a href="adminorder?action=orderof&id=<%=u.getId()%>">Đơn hàng</a>
+                                </td>
+                                <td class="grid-col-1 text-center">
+                                    <a href="adminemployee?action=roles&id=<%=u.getId()%>" onclick="showRoles(event);">Xem quyền</a>
                                 </td>
                                 <td class="grid-col-1" onclick="event.stopPropagation();">
                                     <select name="action" onchange="handleChange(event);" data-default="none">
@@ -206,7 +262,7 @@
                     <form action="admincustomer" method="post" style="width: 100%">
                         <p class="confirm-content" style="text-align: center">Xác nhận xoá </br> <span class="object">Nhi</span></p>
                         <input type="text" name="id" hidden>
-                        <input type="text" name="action" value="delete">
+                        <input type="text" name="action" value="delete" hidden>
                         <div class="flex-roww" style="margin-top:20px; justify-content: space-around">
                             <button class="btn  btn-fourth btn-cancel" type="button" onclick="closeModal(event);">Hủy</button>
                             <button class="btn btn-primary btn-confirm" type="submit">Xóa</button>
@@ -221,18 +277,28 @@
             <div class="modal__overlay" onclick="closeModal(event);">
 <%--            <div class="modal__overlay">--%>
                 <div class="modall-content grid-col-6 custom-scroll" style="max-height: 90%;" onclick="event.stopPropagation();">
-                    <form action="admincustomer" method="POST" id="addCustomerForm">
-                        <h4 class="confirm-content" style="text-align: center">Thêm tài khoản khách hàng mơi</h4>
+                    <form action="adminemployee" method="POST" id="addEmployeeForm">
+                        <h4 class="confirm-content" style="text-align: center">Thêm tài nhân viên hàng mơi</h4>
                         <div class="flex-roww" style="justify-content: space-between; margin-top: 10px;">
                             <div class="form-group grid-col-4">
                                 <label>Tên khách hàng</label>
-                                <input type="text" class="form-control" name="name" aria-describedby="emailHelp" placeholder="Nhập tên khách hàng" required="">
+                                <input type="text" class="form-control" name="name" aria-describedby="emailHelp" placeholder="Nhập tên nhân viên" required="">
                             </div>
                         </div>
                         <div class="flex-roww" style="justify-content: space-between; margin-top: 10px;">
                             <div class="form-group grid-col-4">
                                 <label>Email khách hàng</label>
-                                <input type="text" class="form-control" name="email" aria-describedby="emailHelp" placeholder="Nhập email khách hàng" required="">
+                                <input type="text" class="form-control" name="email" aria-describedby="emailHelp" placeholder="Nhập email" required="">
+                            </div>
+                        </div>
+                        <div class="flex-roww" style="justify-content: space-between; margin-top: 10px;">
+                            <div class="form-group grid-col-4">
+                                <label>Chức vụ</label>
+                                <input type="text" class="form-control" name="position" aria-describedby="emailHelp" placeholder="Nhập bộ phận" required="">
+                            </div>
+                            <div class="form-group grid-col-4">
+                                <label>Phòng ban</label>
+                                <input type="text" class="form-control" name="area" aria-describedby="emailHelp" placeholder="Nhập phòng ban" required="">
                             </div>
                         </div>
                         <div class="flex-roww" style="justify-content: space-between; margin-top: 15px;">
@@ -263,10 +329,67 @@
                         const formattedDate = year+'-'+month+'-'+day;
                         console.log(formattedDate);
                         // Gán giá trị ngày cho input date
-                        document.querySelector('#addCustomerForm input[name="dateIn"]').value = formattedDate;
-                        document.querySelector('#addCustomerForm input[name="defaultPassword"]').value = day+""+month+year;
+                        document.querySelector('#addEmployeeForm input[name="dateIn"]').value = formattedDate;
+                        document.querySelector('#addEmployeeForm input[name="defaultPassword"]').value = day+""+month+year;
 
                     </script>
+
+
+                </div>
+            </div>
+        </div>
+        <div class="modall" id="roles-modal">
+            <div class="modal__overlay" onclick="closeModal(event);">
+                <%--            <div class="modal__overlay">--%>
+                <div class="modall-content grid-col-6 custom-scroll group" style="max-height: 90%;" onclick="event.stopPropagation();">
+                    <form action="adminemployee" method="post" id="updateRolesForm">
+                        <h4 class="confirm-content" style="text-align: center">Quyền truy cập</h4>
+                        <p class="text-center"><span class="object">Nhi</span></p>
+                        <input type="text" name="id" hidden>
+                        <input type="text" name="action" value="updateroles" hidden>
+
+                        <div class="flex-roww" style="justify-content: space-around; align-items: start; margin-top: 20px;">
+                            <div id="roles">
+                                <div class="info-container__content">
+                                    <div class="form-check">
+                                        <%--                                <input class="form-check-input" type="checkbox" id="employee"name="employee" value="employee" <%=roles.contains("employee")?"checked":""%>>--%>
+                                        <input class="form-check-input" type="checkbox" id="employee"name="employee" value="employee" disabled>
+                                        <label class="form-check-label" for="employee">
+                                            Nhân viên
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="customer" name="customer" value="customer" disabled>
+                                        <label class="form-check-label" for="customer">
+                                            Khách hàng
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="product" name="product" value="product" disabled>
+                                        <label class="form-check-label" for="product">
+                                            Sản phẩm
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="order" name="order" value="order" disabled>
+                                        <label class="form-check-label" for="order">
+                                            Đơn hàng
+                                        </label>
+                                    </div>
+
+                                </div>
+                                <div class="flex-roww" style="justify-content: end; margin-top: 10px;">
+                                    <button class="btn btn-primary btn-confirm" type="submit" style="margin-left: auto; display: none">Lưu</button>
+                                </div>
+                            </div>
+                            <div class="flex-coll" style="align-items: end;">
+                                <button class="btn btn-primary" type="button" onclick="setupUpdateRoles(event);">Cập nhật</button>
+                                <button class="btn btn-fourth btn-cancel" style="margin-top: 20px;" type="button" onclick="closeModal(event);">Hủy</button>
+                            </div>
+                        </div>
+                    </form>
+
+
 
 
                 </div>
@@ -275,14 +398,86 @@
         <script>
             function closeModal(event) {
                 event.currentTarget.closest(".modall").classList.remove("active");
+
             }
         </script>
         <script>
 
-            function setupAdd(event) {
-                // event.preventDefault();
-                // document.querySelector(".add-form").classList.add("active");
+            // document.querySelector('#updateRolesForm').addEventListener('submit', function(e) {
+            //    e.preventDefault();
+            //    var formData = new FormData(this);
+            //    var action = formData.get("action");
+            //    var id = formData.get("id");
+            //    var employee = formData.get("employee");
+            //    var customer = formData.get("customer");
+            //    var employee = formData.get("employee");
+            //    var employee = formData.get("employee");
+            //    var
+            //     $.ajax({
+            //         type: "POST",
+            //         url: "adminemployee",
+            //         data: formData,
+            //         processData: false, // Bắt buộc khi dùng FormData
+            //         contentType: false,  // Bắt buộc khi dùng FormData
+            //         success: function(data) {
+            //             $('#server-response').html(data);
+            //             hideModal('#roles-modal');
+            //
+            //         },
+            //         error: function(error) {
+            //             $('#server-response').html(error.responseText);
+            //         }
+            //     });
+            // });
+
+            function showRoles(event) {
+                event.preventDefault();
+                const group = event.currentTarget.closest(".group");
+                var name = group.querySelector('.name').innerText;
+                var email = group.querySelector('.email').innerText;
+                var object = name+ "\n" + email;
+                const modal = document.querySelector('#roles-modal');
+                openModal("#roles-modal");
+                modal.querySelector('.object').innerText = object;
+                var url = event.currentTarget.href;
+                $.ajax({
+                    type: "POST",
+                    url: url, // URL servlet
+                    dataType: "json", // nhận JSON
+                    success: function(data) {
+                        console.log(data);
+                        modal.querySelector('input[name="id"]').value = data.id// Truy cập id
+                        var roles = data.roles; // Truy cập roles
+                        console.log(roles);
+                        const checkboxes = modal.querySelectorAll('input[type="checkbox"]');
+                        checkboxes.forEach(function(checkbox) {
+                            if(roles.includes(checkbox.value)){
+                                checkbox.checked=true;
+                            } else {
+                                checkbox.checked=false;
+                            }
+                        });
+                        modal.querySelector('.btn-confirm').style.display = "none";
+
+                    },
+                    error: function(error) {
+                        console.error("Lỗi:", error.responseText);
+                    }
+                });
+
             }
+
+
+            function setupUpdateRoles(event) {
+                const group = event.currentTarget.closest('.group');
+                const inputs = group.querySelectorAll('input');
+                inputs.forEach(function (input) {
+                    input.disabled = false;
+                });
+                group.querySelector('.btn-confirm').style.display = 'block';
+
+            }
+
 
             // xử lý khi action được chọn
             function handleChange(event) {
@@ -297,8 +492,10 @@
                     case "LOCK": {
                         setInfosStatus(group,false);
                         var name = group.querySelector(".name").innerText;
+                        var email = group.querySelector(".email").innerText;
+                        var object = name+ "\n" + email;
                         var id = group.querySelector(".id").innerText;
-                        setupConfirm(id,'#lock-confirm-modal',name);
+                        setupConfirm(id,'#lock-confirm-modal',object);
                         break;
                     }
                     case "UNLOCK": {
@@ -313,41 +510,6 @@
                         var name = group.querySelector(".name").innerText;
                         var id = group.querySelector(".id").innerText;
                         setupConfirm(id,'#delete-confirm-modal',name);
-                        break;
-                    }
-                    case "UPDATEDETAIL" : {
-                        setInfosStatus(group,true);
-                        group.querySelector(".update-detail-btn").classList.add('active');
-                        break;
-                    }
-                    case "LOCKDETAIL": {
-                        setInfosStatus(group,false);
-                        var color = group.querySelector("input[name='color']").value;
-                        var ram = group.querySelector("input[name='ram']").value;
-                        var rom = group.querySelector("input[name='rom']").value;
-                        var object = "Phiên bản: màu: " + color + " - ram: " + ram + "(GB) - rom: " + rom + "(GB)";
-                        var id = group.querySelector('.id').innerText;
-                        setupConfirm(id,'#lock-detail-confirm-modal',object);
-                        break;
-                    }
-                    case "UNLOCKDETAIL": {
-                        setInfosStatus(group,false);
-                        var color = group.querySelector("input[name='color']").value;
-                        var ram = group.querySelector("input[name='ram']").value;
-                        var rom = group.querySelector("input[name='rom']").value;
-                        var object = "Phiên bản: màu: " + color + " - ram: " + ram + "(GB) - rom: " + rom + "(GB)";
-                        var id = group.querySelector('.id').innerText;
-                        setupConfirm(id,'#unlock-detail-confirm-modal',object);
-                        break;
-                    }
-                    case "DELETEDETAIL": {
-                        setInfosStatus(group,false);
-                        var color = group.querySelector("input[name='color']").value;
-                        var ram = group.querySelector("input[name='ram']").value;
-                        var rom = group.querySelector("input[name='rom']").value;
-                        var object = "Phiên bản: màu: " + color + " - ram: " + ram + "(GB) - rom: " + rom + "(GB)";
-                        var id = group.querySelector('.id').innerText;
-                        setupConfirm(id,'#delete-detail-confirm-modal',object);
                         break;
                     }
 
@@ -422,7 +584,7 @@
                 var id = event.currentTarget.querySelector('.product-id .id').innerText;
                 $.ajax({
                     type: "POST",
-                    url: "admincustomer?action=showdetail",
+                    url: "adminemployee?action=showdetail",
                     data: {id: id},
                     success: function(data) {
                         detailContainer.querySelector('#detail-table tbody').innerHTML = data;

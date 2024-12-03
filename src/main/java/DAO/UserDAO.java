@@ -110,7 +110,10 @@ public class UserDAO implements IDAO<User> {
                 String name = rs.getString("name");
                 String email = rs.getString("email");
                 String info = rs.getString("info");
-                user = new User(id,name,email,info);
+                String rolesJson = rs.getString("roles");
+                Gson gson = new Gson();
+                String[] roles = gson.fromJson(rolesJson, String[].class);
+                user = new User(id,name,email,roles,info);
             }
 
             JDBCUtil.closeConnection(conn);
@@ -139,7 +142,7 @@ public class UserDAO implements IDAO<User> {
                 String[] roles = gson.fromJson(rolesJson, String[].class);
                 System.out.println("roles1: " + roles[0]);
 
-                user = new User(id,name,reEmail,roles);
+                user = new User(id,name,reEmail,roles,"");
             }
 
             JDBCUtil.closeConnection(conn);
@@ -191,6 +194,27 @@ public class UserDAO implements IDAO<User> {
         try {
             Connection conn = JDBCUtil.getConnection();
             String sql = "SELECT * FROM `users` WHERE roles IS NULL and avai != ? order by id desc;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1,Constant.DELETE);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()){
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                res.add(new User(id,name,email));
+            }
+            JDBCUtil.closeConnection(conn);
+            return res;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<User> selectEmployees() {
+        ArrayList<User> res = new ArrayList<>();
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "SELECT * FROM `users` WHERE roles IS NOT NULL and avai != ? order by id desc;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,Constant.DELETE);
             ResultSet rs = pst.executeQuery();
@@ -265,6 +289,45 @@ public class UserDAO implements IDAO<User> {
 
             JDBCUtil.closeConnection(conn);
             return re;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int updateRoles(int idin, String roles) {
+        int re=0;
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "update users set roles = ? where id = ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1,roles);
+            pst.setInt(2, idin);
+            re = pst.executeUpdate();
+
+            JDBCUtil.closeConnection(conn);
+            return re;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String selectRoles(int idin) {
+        String re=null;
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "select roles from users where id = ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, idin);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()){
+                String roles = rs.getString("roles");
+                re=roles;
+            }
+
+            JDBCUtil.closeConnection(conn);
+            return re;
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

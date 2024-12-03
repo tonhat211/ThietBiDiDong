@@ -422,6 +422,55 @@ public class OrderDAO implements IDAO<Order> {
             throw new RuntimeException(e);
         }
     }
+
+    public ArrayList<OrderUnit> selectOrderUnitOf(int id) {
+        ArrayList<OrderUnit> res = new ArrayList<>();
+        Map<Order,OrderUnit> maps = new LinkedHashMap<>();
+        ArrayList<Order> orders = selectOrderOf(id);
+        ArrayList<OrderDetail> details = selectDetailByOrders(orders);
+
+        for (Order o : orders) {
+            maps.put(o, new OrderUnit(o));
+        }
+        for(OrderDetail d : details) {
+            int orderID = d.orderId;
+            maps.get(new Order(orderID)).details.add(d);
+        }
+        for (OrderUnit orderUnit : maps.values()) {
+            res.add(orderUnit);
+        }
+
+        return res;
+
+    }
+
+    public ArrayList<Order> selectOrderOf(int userIDin) {
+        ArrayList<Order> res = new ArrayList<>();
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "select * from orders\n" +
+                    " where userID = ? " +
+                    "\n   order by updateTime desc; \n";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, userIDin);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()) {
+                int id = rs.getInt("id");
+                double money = rs.getDouble("money");
+                int userID = rs.getInt("userID");
+                String address = rs.getString("address");
+                LocalDateTime dateSet = rs.getObject("dateSet",LocalDateTime.class);
+                LocalDateTime updateTime = rs.getObject("updateTime",LocalDateTime.class);
+                int status = rs.getInt("status");
+                res.add(new Order(id,money,userID,address,dateSet,updateTime,status));
+            }
+            JDBCUtil.closeConnection(conn);
+            return res;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public static void main(String[] args) {
         ArrayList<OrderUnit> orderunits =  OrderDAO.getInstance().selectOrderUnitByID(-1,"5",0,20);
 //        System.out.println("count: " + OrderDAO.getInstance().selectCountOrderUnitBy(-1));

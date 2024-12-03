@@ -58,7 +58,7 @@ public class HashAlgorism {
         // neu result giong nhau thi la dung
         HashAlgorism md5 = new HashAlgorism();
         long t=System.currentTimeMillis();
-        System.out.println(md5.hash("C:\\Users\\TO NHAT\\Desktop\\banner.jpg"));
+        System.out.println(md5.hash("1234"));
         System.out.println(System.currentTimeMillis()-t);
     }
 }

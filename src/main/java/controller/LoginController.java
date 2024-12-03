@@ -79,6 +79,8 @@ public class LoginController extends HttpServlet {
                 }
                 case "LOGOUT" :{
                     session.removeAttribute("userLogging");
+                    RequestDispatcher rd = getServletContext().getRequestDispatcher("/index");
+                    rd.forward(req, resp);
                     break;
                 }
             }

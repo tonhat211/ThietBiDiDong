@@ -23,7 +23,7 @@ public class OrderController extends HttpServlet {
 
 
 
-        RequestDispatcher rd = getServletContext().getRequestDispatcher("/index.jsp");
+        RequestDispatcher rd = getServletContext().getRequestDispatcher("/order.jsp");
         rd.forward(req, resp);
     }
 

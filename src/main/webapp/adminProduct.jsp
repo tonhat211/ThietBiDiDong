@@ -560,7 +560,7 @@
             </div>
         </div>
 
-        <div class="modall active" id="add-modal">
+        <div class="modall" id="add-modal">
             <div class="modal__overlay" onclick="closeModal(event);">
 <%--            <div class="modal__overlay">--%>
                 <div class="modall-content grid-col-6 custom-scroll" style="max-height: 90%;" onclick="event.stopPropagation();">

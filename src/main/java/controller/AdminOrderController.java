@@ -65,6 +65,23 @@ public class AdminOrderController extends HttpServlet {
                 dispatcher.forward(req, resp);
                 break;
             }
+            case "ORDEROF": {
+                int id = Integer.parseInt(req.getParameter("id"));
+                System.out.println("order of");
+
+                ArrayList<OrderUnit> orderUnits =  OrderDAO.getInstance().selectOrderUnitOf(id);
+//                int numOfOrders = OrderDAO.getInstance().selectCountOrderUnitBy(byStatus);
+//                Integer numOfPages = numOfOrders / Constant.NUM_OF_ITEMS_A_PAGE;
+//                if(numOfOrders % Constant.NUM_OF_ITEMS_A_PAGE != 0) numOfPages++;
+//                req.setAttribute("numOfPages", numOfPages);
+                req.setAttribute("orderUnits", orderUnits);
+                req.setAttribute("title","Đơn hàng của " + id);
+//                req.setAttribute("byStatus", byStatus);
+
+                RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminOrder.jsp");
+                dispatcher.forward(req, resp);
+                break;
+            }
             case "QUERY": {
                 System.out.println("order query");
                 int page = req.getParameter("page")!=null?Integer.parseInt(req.getParameter("page")):0;

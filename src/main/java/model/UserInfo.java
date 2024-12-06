@@ -1,16 +1,15 @@
 package model;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class UserInfo {
-    private LocalDate dateIn;
-    private String phone;
-    private String gender;
-    private LocalDate birthday;
-    private String position;
-    private String area;
+    public LocalDate dateIn;
+    public String phone;
+    public String gender;
+    public LocalDate birthday;
+    public String position;
+    public String area;
 
     public UserInfo() {
     }
@@ -76,6 +75,18 @@ public class UserInfo {
 
     public String getBirthdayAsString() {
         return birthday != null ? birthday.format(DateTimeFormatter.ISO_LOCAL_DATE) : null;
+    }
+
+    @Override
+    public String toString() {
+        return "UserInfo{" +
+                "dateIn=" + dateIn +
+                ", phone='" + phone + '\'' +
+                ", gender='" + gender + '\'' +
+                ", birthday=" + birthday +
+                ", position='" + position + '\'' +
+                ", area='" + area + '\'' +
+                '}';
     }
 
     public String toJson() {

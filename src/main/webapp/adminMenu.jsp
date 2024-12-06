@@ -37,61 +37,49 @@
 </head>
 <body>
 <%
-//    User userLogging = (User) session.getAttribute("userLogging");
-//    userLogging = new User(1,"Minh Nhat","minhnhat@gmail.com");
+    User userLoggingMenu = (User) session.getAttribute("userLogging");
+    String adminMenu = (String) session.getAttribute("adminMenu");
+    if(adminMenu==null) adminMenu="";
 %>
 <aside id="sidebar" class="sidebar grid-col-2">
     <ul class="sidebar-nav" id="sidebar-nav">
         <h3 style="text-align: center">[Admin]</h3>
+        <%if(userLoggingMenu.hasRole("CUSTOMER")) {%>
+            <li class="nav-item">
+                <a class="nav-link <%=adminMenu.equalsIgnoreCase("customer")?"":"collapsed"%>" href="adminmenu?action=admincustomer">
+                    <span>Quản lý khách hàng</span>
+                </a>
+            </li>
+        <%
+            }
+        %>
+        <%if(userLoggingMenu.hasRole("EMPLOYEE")) {%>
         <li class="nav-item ">
-            <a class="nav-link " href="admin_dashboard.html">
-                <!--                <i class="bi bi-grid"></i>-->
-                <span>Thống kê doanh thu</span>
-            </a>
-        </li><!-- End Dashboard Nav -->
-        <li class="nav-item ">
-            <a class="nav-link" href="adminCustomer.html">
-                <!--        <i class="bi bi-person"></i>-->
-                <span>Quản lý khách hàng</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="adminEmployee.html">
-                <!--        <i class="bi bi-person"></i>-->
+            <a class="nav-link <%=adminMenu.equalsIgnoreCase("employee")?"":"collapsed"%>" href="adminmenu?action=adminemployee">
                 <span>Quản lý nhân viên</span>
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="adminProduct.html">
-                <!--        <i class="bi bi-person"></i>-->
+        <%
+            }
+        %>
+        <%if(userLoggingMenu.hasRole("PRODUCT")) {%>
+        <li class="nav-item ">
+            <a class="nav-link <%=adminMenu.equalsIgnoreCase("product")?"":"collapsed"%>" href="adminmenu?action=adminproduct">
                 <span>Quản lý sản phẩm</span>
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="adminmenu?action=adminorder">
-                <!--        <i class="bi bi-person"></i>-->
+        <%
+            }
+        %>
+        <%if(userLoggingMenu.hasRole("ORDER")) {%>
+        <li class="nav-item ">
+            <a class="nav-link <%=adminMenu.equalsIgnoreCase("order")?"":"collapsed"%>" href="adminmenu?action=adminorder">
                 <span>Quản lý đơn hàng</span>
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="adminNews.html">
-                <!--        <i class="bi bi-person"></i>-->
-                <span>Quản lý tin tức</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="adminHomes.html">
-                <!--        <i class="bi bi-person"></i>-->
-                <span>Quản lý trang chủ</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="adminAboutUs.html">
-                <!--        <i class="bi bi-person"></i>-->
-                <span>Nhà phân phối</span>
-            </a>
-        </li>
-
+        <%
+            }
+        %>
     </ul>
 </aside><!-- End Sidebar-->
 </body>

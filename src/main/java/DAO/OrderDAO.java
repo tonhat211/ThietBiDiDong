@@ -288,6 +288,29 @@ public class OrderDAO implements IDAO<Order> {
         }
     }
 
+    public int countByStatus(int statusCondition) {
+        int re=0;
+        String condition = "" ;
+        if(statusCondition!=-1) {
+            condition= "where status = '" + statusCondition + "'";
+        }
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "select count(*) as count from orders " +
+                    " " + condition +";";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()) {
+                re = rs.getInt("count");
+            }
+            JDBCUtil.closeConnection(conn);
+            return re;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public ArrayList<Order> selectOrderByTime(int statusCondition, String time, int offset, int amount) {
         ArrayList<Order> res = new ArrayList<>();
         String condition = "" ;

@@ -14,11 +14,14 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.*;
+import service.EmailService;
+import values.MessageValues;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
@@ -31,16 +34,33 @@ public class AdminCustomerController extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession();
         User userLogging = (User) session.getAttribute("userLogging");
+        if(userLogging==null || !userLogging.hasRole("CUSTOMER")) {
+            String script = Constant.callFunction("changeToProductUrl();" +
+                    "showErrorToast2('"+ MessageValues.NOT_ROLE+"','none');");
 
+            req.setAttribute("script", script);
+            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/product");
+            dispatcher.forward(req, resp);
+            return;
+        }
+        System.out.println("Admin customer");
         String action = req.getParameter("action");
+        if(action==null) {
+            ArrayList<User> customers = UserDAO.getInstance().selectCustomers();
+            req.setAttribute("customers", customers);
+            session.setAttribute("adminMenu", "customer");
+            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminCustomer.jsp");
+            dispatcher.forward(req, resp);
+            return;
+        }
         action = action.toUpperCase();
         switch (action) {
             case "SEARCH": {
-                String idin = req.getParameter("search");
-                ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().searchForAdmin(idin);
-                req.setAttribute("numOfPages", 1);
-                req.setAttribute("productUnits", productUnits);
-                RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminProduct.jsp");
+                System.out.println("search");
+                String searchInput = req.getParameter("search");
+                ArrayList<User> customers = UserDAO.getInstance().searchCustomer(searchInput);
+                req.setAttribute("customers", customers);
+                RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminCustomer.jsp");
                 dispatcher.forward(req, resp);
                 break;
             }
@@ -75,10 +95,10 @@ public class AdminCustomerController extends HttpServlet {
                 int re = UserDAO.getInstance().lockUser(id);
                 String html="";
                 if(re==1) {
-                    html = htmlSuccessToast("khóa khách hàng id: " + id +" thành công!");
+                    html = htmlSuccessToast("khóa id: " + id +" thành công!");
 
                 } else {
-                    html = htmlErrorToast("Khóa khách hàng id: " + id +" thất bại!");
+                    html = htmlErrorToast("Khóa id: " + id +" thất bại!");
                 }
                 resp.getWriter().write(html);
                 break;
@@ -89,10 +109,10 @@ public class AdminCustomerController extends HttpServlet {
                 int re = UserDAO.getInstance().activeUser(id);
                 String html="";
                 if(re==1) {
-                    html = htmlSuccessToast("Mở khóa khách hàng id: " + id +" thành công!");
+                    html = htmlSuccessToast("Mở khóa id: " + id +" thành công!");
 
                 } else {
-                    html = htmlErrorToast("Mở khóa khách hàng id: " + id +" thất bại!");
+                    html = htmlErrorToast("Mở khóa id: " + id +" thất bại!");
                 }
                 resp.getWriter().write(html);
                 break;
@@ -128,6 +148,7 @@ public class AdminCustomerController extends HttpServlet {
             case "ISSUEPASSWORD": {
                 System.out.println("issue customer password");
                 int id = Integer.parseInt(req.getParameter("id"));
+                System.out.println("id:" +id);
                 User user= UserDAO.getInstance().selectById(id);
                 StringBuilder newPasswordTemp= new StringBuilder();
                 for(int i=0;i<8;i++) {
@@ -138,8 +159,9 @@ public class AdminCustomerController extends HttpServlet {
                 String hashedPassword = User.hashPassword(newPassword);
                 int re = UserDAO.getInstance().updatePassword(id,hashedPassword); // cap nhat mat khau trong database
 
-                // code gui mat khau moi ve mail
-                String email  = user.getEmail();
+                EmailService emailService = new EmailService();
+                String mailContent = MessageValues.getGENERATE_NEW_PWD(newPassword);
+                emailService.sendHTML(user.getEmail(),MessageValues.WEB_NAME, mailContent);
 
                 if(re==1) {
                     String html = htmlSuccessToast("Cấp mật khẩu mới thành công!");

@@ -57,6 +57,8 @@
     SaleProgram saleProgram = (SaleProgram) request.getAttribute("saleProgram");
     ArrayList<Comment> comments = (ArrayList<Comment>) request.getAttribute("comments");
     ArrayList<ProductUnit> crossSells = (ArrayList<ProductUnit>) request.getAttribute("crossSells");
+    User userLoggingProductDetail = (User) session.getAttribute("userLogging");
+
 %>
 <div class="content-container product-details-container">
     <div id="toast">
@@ -204,7 +206,7 @@
                 </div>
             </div>
             <div class="grid-col-4" style="padding-left: 20px;">
-                <div> <span class="id-product-detail">12</span></div>
+                <div> <span class="id-product-detail"></span></div>
                 <div class="sub-content">
                     <div class="grid__row option-selector group">
                         <%
@@ -331,12 +333,22 @@
 
                     </div>
                     <div class="grid__row" style="margin: 15px 0;">
+                        <%
+                            if(userLoggingProductDetail==null) {
+                        %>
+                        <a href="login">Hãy đăng nhập để Thêm vào giỏ hàng</a>
+                        <%
+                        } else {
+                        %>
                         <div class="grid-col-6" style="padding-right: 5px">
                             <button class="btn btn-outline-primary btn-add-to-cart" onclick="addToCart(<%=pu.getProductID()%>)"><i class="bi bi-cart-plus"></i>Thêm vào giỏ<span class="flex-coll"></span></button>
                         </div>
-                        <div class="grid-col-6" style="padding-left: 5px">
-                            <button class="btn btn-buy">Mua ngay</button>
-                        </div>
+                        <%
+                            }
+                        %>
+<%--                        <div class="grid-col-6" style="padding-left: 5px">--%>
+<%--                            <button class="btn btn-buy">Mua ngay</button>--%>
+<%--                        </div>--%>
                     </div>
                     <script>
 

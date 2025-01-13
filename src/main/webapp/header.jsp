@@ -41,6 +41,8 @@
 <%
     User userLogging = (User) session.getAttribute("userLogging");
 //    userLogging = new User(1,"Minh Nhat","minhnhat@gmail.com");
+    String currentCategory = (String) session.getAttribute("currentCategory");
+    if (currentCategory==null) currentCategory="SMARTPHONE";
 %>
 
 <div class="header pd10-20">
@@ -100,8 +102,20 @@
                     <li>
                         <a href="profile?action=info" class="li-profile" onclick="manageProfile(event);">Quản lý</a>
                     </li>
+                    <%
+                        if(userLogging.hasAnyRole()) {
+
+                    %>
+                        <li>
+                            <a href="adminmenu?action=init" class="li-profile">Admin</a>
+                        </li>
+                    <%
+                        }
+                    %>
+
                     <li>
-                        <a href="login?action=logout" onclick="logout(event);" class="li-logout">Đăng xuất</a>
+                        <a href="login?action=logout" class="li-logout">Đăng xuất</a>
+<%--                        <a href="login?action=logout" onclick="logout(event);" class="li-logout">Đăng xuất</a>--%>
                     </li>
                 </ul>
                 <%
@@ -113,15 +127,15 @@
     <div class="header_bottom grid__row">
         <ul class="main-menu flex-roww">
             <li>
-                <a href="product"><i class="bi bi-phone"></i>
+                <a href="product?action=init&category=smartphone" class="<%="SMARTPHONE".equalsIgnoreCase(currentCategory)?"active":""%>"><i class="bi bi-phone"></i>
                     Điện thoại</a>
             </li>
             <li>
-                <a href=""><i class="bi bi-tablet-landscape"></i>
+                <a href="product?action=init&category=tablet" class="<%="TABLET".equalsIgnoreCase(currentCategory)?"active":""%>"><i class="bi bi-tablet-landscape"></i>
                     Máy tính bảng</a>
             </li>
             <li>
-                <a href=""><i class="bi bi-laptop"></i>
+                <a href="product?action=init&category=laptop" class="<%="LAPTOP".equalsIgnoreCase(currentCategory)?"active":""%>"><i class="bi bi-laptop"  ></i>
                     Laptop</a>
             </li>
         </ul>
@@ -283,8 +297,6 @@
                     
 	                        const updateInfoForm = document.querySelector('#editInfoForm');
 	                        updateInfoForm.addEventListener('submit', function(e) {
-	                            console.log(this);
-	                            console.log("call submit");
 	                            e.preventDefault();
 	                            var formData = new FormData(this);
 	                            let name = formData.get('name');
@@ -364,7 +376,7 @@
                         <script>
                             document.querySelector("#editPasswordForm").addEventListener('submit', function(event) {
                                 event.preventDefault();
-                                console.log('signup form submit');
+                                console.log('pwd form submit');
                                 var formdata = new FormData(document.querySelector("#editPasswordForm"));
                                 var action = formdata.get("action");
                                 var currentPassword = formdata.get("currentPassword");
@@ -375,7 +387,6 @@
                             function changePwd(action,currentPassword,password,repassword) {
                                 //  nhung loi: mat khau yeu, mat khau khong khop, email da duoc dang ky
                                 const regex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/; //test mat khau: it nhat 8 kí tu, chu thuong, chu hoa
-
                                 if(!regex.test(password)){
                                     console.log("mat khau yeu");
                                     tellWeakPassword("#editPasswordForm .pwd-error","#editPasswordForm .repwd-error",'#editPasswordForm input[name="password"]','#editPasswordForm input[name="repassword"]');

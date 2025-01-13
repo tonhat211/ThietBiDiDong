@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpSession;
 import model.Constant;
 import model.User;
 import model.VerifyCode;
+import service.EmailService;
+import values.MessageValues;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -51,12 +53,13 @@ public class SignupController extends HttpServlet {
                         User user = new User(name,email,hashPassword,info);
                         int re=UserDAO.getInstance().insert(user);
                         if(re!=0) { // insert thanh cong
-
                             // khoi tao otp va insert vao database
                             VerifyCode verifyCode = new VerifyCode(email);
                             String code = VerifyCodeDAO.getInstance().insertNewCode(verifyCode);
+                            EmailService emailService = new EmailService();
+                            String mailContent = MessageValues.getOTP_VERIFY_ACCOUNT_MESSAGE(code);
+                            emailService.sendHTML(email,MessageValues.WEB_NAME, mailContent);
 
-                            // hien tai dang bi loi phan gui mail
 
 
                             String html = renderHtml(email);

@@ -19,6 +19,7 @@
     <script type="text/javascript" src="./assets/js/js_bootstrap4/bootstrap.min.js"></script>
     <script type="text/javascript" src="./assets/js/smartphone.js"></script>
     <script type="text/javascript" src="./assets/js/product.js"></script>
+    <script type="text/javascript" src="./assets/js/toast.js"></script>
 
     <!-- Favicons -->
 
@@ -43,11 +44,15 @@
 <%
     ArrayList<Brand> brands = (ArrayList<Brand>) request.getAttribute("brands");
     ArrayList<ProductUnit> productUnits = (ArrayList<ProductUnit>) request.getAttribute("productUnits");
-
+    String productScript = (String) request.getAttribute("script");
+    if (productScript==null) productScript="";
 %>
 <body>
 <%@ include file="header.jsp" %>
 <div class="content-container">
+    <div id="toast-2"></div>
+
+
     <div class="breadcrumb flex-roww" style="background-color: var(--base-bg-color);padding: 0;">
         <a href="#">Trang chủ </a><p style=";margin-bottom: 0;"> / <span class="total-phone" style="margin-bottom: 0">1000</span> điện thoại</p>
     </div>
@@ -324,6 +329,7 @@
 
 
     </script>
+    <%=productScript%>
 </div>
 
 <%@ include file="footer.jsp" %>

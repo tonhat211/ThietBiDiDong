@@ -38,6 +38,16 @@
     display: block;
 }
 
+.form-error {
+    color: red;
+    width: fit-content;
+    border-radius: 4px;
+    margin: 4px 0;
+    font-size: 14px;
+    background-color: rgba(255, 0, 0, 0.22);
+}
+
+
 .form-group {
     margin-bottom: 5px;
 }

@@ -291,7 +291,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                     "p.avai as avai\n" +
                     "from products p join productdetails d on p.id = d.productID\n" +
                     "\tleft join comments c on c.objectID = p.id\n" +
-                    "    left join saleprograms s on s.objectID = p.id  and s.main=1\n" +
+                    "    left join saleprograms s on s.objectID = p.id\n" +
                     "where s.main=?\n" +
                     "group by p.id\n" +
                     "order by p.prominence desc\n" +
@@ -300,6 +300,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
             pst.setInt(1, main);
             pst.setInt(2, offset);
             pst.setInt(3, amount);
+            System.out.println(pst);
             ResultSet rs = pst.executeQuery();
             while(rs.next()){
                 int id = rs.getInt("id");
@@ -472,7 +473,7 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
         }
     }
     
-    public ArrayList<ProductUnit> selectBySearch(String searchInput,int offset, int amount) {
+    public ArrayList<ProductUnit> selectBySearch(String searchInput) {
         ArrayList<ProductUnit> res = new ArrayList<>();
         String[] tokens = searchInput.split(" ");
         String condition=" where ";
@@ -496,11 +497,8 @@ public class ProductUnitDAO implements IDAO<ProductUnit>{
                     "    left join saleprograms s on s.objectID = p.id  and s.main=1\n" +
                     condition +
                     " group by p.id\n" +
-                    "order by p.prominence desc\n" +
-                    "limit ?,?\n";
+                    "order by p.prominence desc";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setInt(1,offset);
-            pst.setInt(2,amount);
             System.out.println(pst);
             ResultSet rs = pst.executeQuery();
             while(rs.next()){

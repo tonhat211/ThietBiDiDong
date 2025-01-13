@@ -25,6 +25,8 @@
     <link rel="stylesheet" href="./assets/css/css_bootstrap4/bootstrap.min.css">
 
     <link href="./assets/css/base.css" rel="stylesheet">
+    <link href="./assets/css/modal.css" rel="stylesheet">
+
 
     <!-- css tu them   -->
     <link href="./assets/css/login.css" rel="stylesheet">
@@ -40,7 +42,9 @@
     </style>
 </head>
 <body>
+
 <%
+
     String email = (String) request.getAttribute("email");
     String action = (String) request.getAttribute("action");
 %>
@@ -59,7 +63,8 @@
                     <p class="note">Mã sẽ hết hạn trong vòng 5 phút</p>
                 </div>
                 <form action="verify" id="otp-form" style="width: 100%;margin-top: 15px;">
-                    <input type="text" name="action" value="<%=action%>" hidden>
+                    <input type="text" name="action" value="verify" hidden>
+                    <input type="text" name="email" value="<%=email%>" hidden>
                     <div id="OTP_Div" class="group">
                         <input autofocus class="form-control otp-input empty" onkeyup="alter_box(event)" maxlength="1"  required type="number" id="o1" />
                         <input class="form-control otp-input empty" required maxlength="1" type="number" id="o2" onkeyup="alter_box(event)" />
@@ -67,7 +72,7 @@
                         <input class="form-control otp-input empty" required maxlength="1" type="number" id="o4" onkeyup="alter_box(event)" />
                         <input class="form-control otp-input empty" required maxlength="1" type="number" id="o5" onkeyup="alter_box(event)" />
                     </div>
-                    <span class="pwd-error active">Mã xác nhận sai. Vui lòng nhập lại</span>
+                    <span class="form-error"></span>
                     <p style="text-align: center;">Chưa nhận được mã?</p>
                     <div class="flex-coll group" style="justify-content: center;margin-top: 15px;">
                         <p style="text-align: center;" id="countdown-container" class="active" >Vui lòng đợi <span id="countdown">0s</span></p>
@@ -77,20 +82,74 @@
                 </form>
             </div>
         </div>
-        <div class="flex-roww otp-message" style="justify-content: center;align-items: center;">
-            <div class="sub-content form-container" style="height: fit-content;">
-                <div class="flex-coll" style="justify-content: center;margin-top: 20px;">
-                    <p style="width: 100%; font-size: 30px;text-align: center">Thông báo</p>
-                    <p>Xác thực thành công, vui lòng đăng nhập lại.</p>
-                    <a href="login" class="btn btn-login" style="margin-top: 20px;width: 100%;">Đăng nhập</a>
-                </div>
+<%--        <div class="flex-roww otp-message" style="justify-content: center;align-items: center;">--%>
+<%--            <div class="sub-content form-container" style="height: fit-content;">--%>
+<%--                <div class="flex-coll" style="justify-content: center;margin-top: 20px;">--%>
+<%--                    <p style="width: 100%; font-size: 30px;text-align: center">Thông báo</p>--%>
+<%--                    <p>Xác thực thành công, vui lòng đăng nhập lại.</p>--%>
+<%--                    <a href="login" class="btn btn-login" style="margin-top: 20px;width: 100%;">Đăng nhập</a>--%>
+<%--                </div>--%>
 
+<%--            </div>--%>
+<%--        </div>--%>
+    </div>
+    <div class="modall" id="verify-success-modal">
+        <div class="modal__overlay group" onclick="closeModal(event);">
+            <div class="modall-content grid-col-6" onclick="event.stopPropagation();">
+                <p style="width: 100%; font-size: 30px;text-align: center">Thông báo</p>
+                <p>Xác thực thành công, vui lòng đăng nhập lại.</p>
+                <a href="login" class="btn btn-login" style="margin-top: 20px;width: 100%;">Đăng nhập</a>
             </div>
         </div>
     </div>
     <script>
-        countdown(10,'#countdown','#btn-resend');
+        countdown(60,'#countdown','#btn-resend');
+
+        document.querySelector('#otp-form').addEventListener('submit',function(e){
+            e.preventDefault();
+            const form = document.querySelector('#otp-form');
+            // var a = form.querySelector('input[name="a"]').value;
+            var email = form.querySelector('input[name="email"]').value;
+            var action = form.querySelector('input[name="action"]').value;
+
+
+            var o1=form.querySelector('#o1').value;
+            var o2=form.querySelector('#o2').value;
+            var o3=form.querySelector('#o3').value;
+            var o4=form.querySelector('#o4').value;
+            var o5=form.querySelector('#o5').value;
+
+            // var alert_box = form.querySelector('#alert_box');
+            if(o1!="" && o2!="" && o3!="" && o4!="" && o5!=""){
+                var otp = parseInt(o1+""+o2+""+o3+""+o4+""+o5);
+                $.ajax({
+                    url: 'verify',
+                    type: 'POST',
+                    data: {email: email, action: action,code:otp},
+                    success: function(data) {
+                        console.log(data);
+                        $('#verify-code-response').html(data);
+                    },
+                    error: function(error) {
+
+                    }
+                });
+            }
+
+        });
+
+        function tellWrongCode() {
+            document.querySelector('#otp-form .form-error').innerText = "Mã otp sai"
+        }
+        function tellExpiredCode() {
+            document.querySelector('#otp-form .form-error').innerText = "Mã otp hết hạn"
+        }
+
+        function tellVerifySuccessful() {
+            document.querySelector('#verify-success-modal').classList.add('active');
+        }
     </script>
+    <div id="verify-code-response"></div>
 
 </div>
 <%@ include file="footer.jsp" %>

@@ -70,9 +70,9 @@
         <p class="bold-text-7" style="font-size: 25px">Khuyến mãi online</p>
         <div class="flex-roww" style="justify-content: center">
             <p class="promotion-time flex-roww" id="promotion-remaining-time">Chỉ còn
-                <span class="time-component promotion-time_hour hour"></span> :
-                <span class="time-component promotion-time_minute minute"></span> :
-                <span class="time-component promotion-time_second second"></span>
+                <span class="time-component promotion-time_hour hour">__</span> :
+                <span class="time-component promotion-time_minute minute">__</span> :
+                <span class="time-component promotion-time_second second">__</span>
             </p>
         </div>
         <script>

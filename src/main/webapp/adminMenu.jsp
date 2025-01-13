@@ -29,9 +29,6 @@
     <link href="./assets/css/style.css" rel="stylesheet">
     <link href="./assets/css/base.css" rel="stylesheet">
     <link href="./assets/css/modal.css" rel="stylesheet">
-
-
-
     <link href="./assets/css/adminBase.css" rel="stylesheet">
     <link href="./assets/css/adminOrder.css" rel="stylesheet">
 </head>
@@ -41,6 +38,7 @@
     String adminMenu = (String) session.getAttribute("adminMenu");
     if(adminMenu==null) adminMenu="";
 %>
+
 <aside id="sidebar" class="sidebar grid-col-2">
     <ul class="sidebar-nav" id="sidebar-nav">
         <h3 style="text-align: center">[Admin]</h3>

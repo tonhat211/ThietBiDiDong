@@ -274,7 +274,7 @@
                         </td>
                     </tr>
                     <%
-                        int stt=0;
+                        int stt=1;
                         for(ProductUnit p : productUnits) {
                     %>
                             <tr class="group <%=p.isLocked()?"locked":"active"%>" id="product<%=p.getProductID()%>" onclick="showDetail(event);">
@@ -369,7 +369,7 @@
                     <form action="adminproduct" method="post" style="width: 100%">
                         <p class="confirm-content" style="text-align: center">Xác nhận xoá </br> <span class="object">Nhi</span></p>
                         <input type="text" name="id" hidden>
-                        <input type="text" name="action" value="delete">
+                        <input type="text" name="action" value="delete" hidden>
                         <div class="flex-roww" style="margin-top:20px; justify-content: space-around">
                             <button class="btn  btn-fourth btn-cancel" type="button" onclick="closeModal(event);">Hủy</button>
                             <button class="btn btn-primary btn-confirm" type="submit">Xóa</button>

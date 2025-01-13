@@ -57,12 +57,13 @@ function showSuccessToast(messagein,container = '#toast') {
     })
 }
 
-function showErrorToast() {
+function showErrorToast(messagein,container = '#toast') {
+    console.log("error toast");
     toast({
         title: 'Error',
-        message: 'errorrrrrrrr, code cuar banj bij loiox',
+        message: messagein,
         type: 'error',
-        duration: 4000
+        duration: 1000
     })
 }
 
@@ -111,13 +112,15 @@ function playSound(url) {
     audio.play();
 }
 
-function showErrorToast2(messagein) {
-    playSound('assets/sound/error.mp3');
+function showErrorToast2(messagein,sound="sound") {
+    if(sound=="sound") {
+        playSound('assets/sound/error.mp3');
+    }
     toast2({
         title: 'error',
         message: messagein,
         type: 'error',
-        duration: 500
+        duration: 700
     })
 }
 

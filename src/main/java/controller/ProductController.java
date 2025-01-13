@@ -37,18 +37,24 @@ public class ProductController extends HttpServlet {
                 if(category == null || category.isEmpty()) {
                     category = "smartphone";
                 }
-                category = category.toUpperCase();
-                switch (category) {
-                    case "SMARTPHONE": {
-                        ArrayList<Brand> brands = BrandDAO.getInstance().selectByCategory(Constant.SMARTPHONE_CATEGORY);
-                        ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().selectByCategory(Constant.SMARTPHONE_CATEGORY,0,20);
-                        req.setAttribute("category", category);
-                        req.setAttribute("brands", brands);
-                        req.setAttribute("productUnits", productUnits);
-                        RequestDispatcher rd = getServletContext().getRequestDispatcher("/product.jsp");
-                        rd.forward(req, resp);
-                    }
+                int cateID=1;
+                if("SMARTPHONE".equalsIgnoreCase(category)) {
+                    cateID=1;
+                    session.setAttribute("currentCategory","SMARTPHONE");
+                } else if("TABLET".equalsIgnoreCase(category)) {
+                    cateID=2;
+                    session.setAttribute("currentCategory","TABLET");
+                } else if("LAPTOP".equalsIgnoreCase(category)) {
+                    cateID=3;
+                    session.setAttribute("currentCategory","LAPTOP");
                 }
+                ArrayList<Brand> brands = BrandDAO.getInstance().selectByCategory(cateID);
+                ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().selectByCategory(cateID,0,20);
+                req.setAttribute("category", category);
+                req.setAttribute("brands", brands);
+                req.setAttribute("productUnits", productUnits);
+                RequestDispatcher rd = getServletContext().getRequestDispatcher("/product.jsp");
+                rd.forward(req, resp);
                 break;
             }
             case "DETAIL": {
@@ -62,6 +68,8 @@ public class ProductController extends HttpServlet {
                 ArrayList<ProductDetail> details = ProductDetailDAO.getInstance().selectByProductID(id);
                 pu.setDetails(details);
 
+                // tang prominence+1
+                ProductDAO.getInstance().updateProminence(id);
 
                 // lay danh sach san pham mua kem
                 ArrayList<ProductUnit> crossSells = ProductUnitDAO.getInstance().selectCrossSells(id,0,10);
@@ -258,9 +266,9 @@ public class ProductController extends HttpServlet {
             }
             case "SEARCH": {
                 String searchInput = req.getParameter("search-input");
-                ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().selectBySearch(searchInput,0,20);
+                ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().selectBySearch(searchInput);
                 int cateID = Constant.SMARTPHONE_CATEGORY;
-                if(!productUnits.isEmpty()) cateID = productUnits.get(0).getProductID();
+                if(!productUnits.isEmpty()) cateID = productUnits.get(0).cateID;
                 ArrayList<Brand> brands = BrandDAO.getInstance().selectByCategory(cateID);
                 switch (cateID) {
                     case Constant.SMARTPHONE_CATEGORY : category = "SMARTPHONE"; break;

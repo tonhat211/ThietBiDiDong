@@ -217,6 +217,11 @@ public class User {
         else return false;
     }
 
+    public boolean hasAnyRole() {
+        if(this.roles==null) return false;
+        return true;
+    }
+
     public static void main(String[] args) {
 
         LocalDateTime now = LocalDateTime.now();

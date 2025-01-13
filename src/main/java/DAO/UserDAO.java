@@ -138,11 +138,16 @@ public class UserDAO implements IDAO<User> {
                 String reEmail = rs.getString("email");
                 String rolesJson = rs.getString("roles");
                 System.out.println("rolesJson: " + rolesJson);
-                Gson gson = new Gson();
-                String[] roles = gson.fromJson(rolesJson, String[].class);
-                System.out.println("roles1: " + roles[0]);
+                String info = rs.getString("info");
+                if(rolesJson!=null) {
+                    Gson gson = new Gson();
+                    String[] roles = gson.fromJson(rolesJson, String[].class);
+                    System.out.println("roles1: " + roles[0]);
 
-                user = new User(id,name,reEmail,roles,"");
+                    user = new User(id,name,reEmail,roles,info);
+                } else {
+                    user = new User(id,name,reEmail,null,info);
+                }
             }
 
             JDBCUtil.closeConnection(conn);
@@ -210,6 +215,36 @@ public class UserDAO implements IDAO<User> {
         }
     }
 
+    public ArrayList<User> searchCustomer(String searchInput) {
+        ArrayList<User> res = new ArrayList<>();
+        String[] tokens = searchInput.split(" ");
+        String condition="";
+        condition += "(id like '%"+searchInput+"%' or (";
+        for(String token : tokens) {
+            condition+= "name like '%"+token+"%' and ";
+        }
+        condition=condition.substring(0, condition.length()-5);
+        condition+="))";
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "SELECT * FROM `users` WHERE " +condition +" and roles IS NULL and avai != " +Constant.DELETE + " order by id desc;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            System.out.println(pst);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()){
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                res.add(new User(id,name,email));
+            }
+            JDBCUtil.closeConnection(conn);
+            return res;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     public ArrayList<User> selectEmployees() {
         ArrayList<User> res = new ArrayList<>();
         try {
@@ -217,6 +252,35 @@ public class UserDAO implements IDAO<User> {
             String sql = "SELECT * FROM `users` WHERE roles IS NOT NULL and avai != ? order by id desc;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,Constant.DELETE);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()){
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                res.add(new User(id,name,email));
+            }
+            JDBCUtil.closeConnection(conn);
+            return res;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArrayList<User> searchEmployee(String searchInput) {
+        ArrayList<User> res = new ArrayList<>();
+        String[] tokens = searchInput.split(" ");
+        String condition="";
+        condition += "(id like '%"+searchInput+"%' or (";
+        for(String token : tokens) {
+            condition+= "name like '%"+token+"%' and ";
+        }
+        condition=condition.substring(0, condition.length()-5);
+        condition+="))";
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "SELECT * FROM `users` WHERE " +condition +" and roles IS NOT NULL and avai != " +Constant.DELETE + " order by id desc;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            System.out.println(pst);
             ResultSet rs = pst.executeQuery();
             while(rs.next()){
                 int id = rs.getInt("id");
@@ -253,6 +317,21 @@ public class UserDAO implements IDAO<User> {
             String sql = "update users set avai = "+ Constant.ACTIVE+ " where id = ?;";
             PreparedStatement pst = conn.prepareStatement(sql);
             pst.setInt(1,id);
+            re= pst.executeUpdate();
+            JDBCUtil.closeConnection(conn);
+            return re;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int activeUserByEmail(String email) {
+        int re =0;
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "update users set avai = "+ Constant.ACTIVE+ " where email = ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1,email);
             re= pst.executeUpdate();
             JDBCUtil.closeConnection(conn);
             return re;
@@ -324,6 +403,24 @@ public class UserDAO implements IDAO<User> {
                 String roles = rs.getString("roles");
                 re=roles;
             }
+
+            JDBCUtil.closeConnection(conn);
+            return re;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int generateNewPassword(String email, String pwd) {
+        int re=0;
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "update users set password = ? where email = ?;";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1,pwd);
+            pst.setString(2, email);
+            re = pst.executeUpdate();
 
             JDBCUtil.closeConnection(conn);
             return re;

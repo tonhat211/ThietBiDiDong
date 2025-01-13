@@ -42,6 +42,7 @@ public class AdminMenuController extends HttpServlet {
             case "INIT": {
                 System.out.println("menu init");
                 String roles = Arrays.toString(userLogging.getRoles());
+                System.out.println("roles:" +roles);
                 String info = roles.toUpperCase();
                 if(info.contains("CUSTOMER")) {
                     ArrayList<User> customers = UserDAO.getInstance().selectCustomers();
@@ -69,6 +70,13 @@ public class AdminMenuController extends HttpServlet {
                     dispatcher.forward(req, resp);
                 } else {
                     System.out.println("admin chua duoc cap quyen");
+                    ArrayList<Brand> brands = BrandDAO.getInstance().selectByCategory(Constant.SMARTPHONE_CATEGORY);
+                    ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().selectByCategory(Constant.SMARTPHONE_CATEGORY,0,20);
+                    req.setAttribute("category", "SMARTPHONE");
+                    req.setAttribute("brands", brands);
+                    req.setAttribute("productUnits", productUnits);
+                    RequestDispatcher rd = getServletContext().getRequestDispatcher("/product.jsp");
+                    rd.forward(req, resp);
                 }
                 break;
             }
@@ -77,6 +85,12 @@ public class AdminMenuController extends HttpServlet {
                 ArrayList<OrderUnit> orderUnits =  OrderDAO.getInstance().selectOrderUnitByStatus(-1,0,200);
                 req.setAttribute("orderUnits", orderUnits);
                 session.setAttribute("adminMenu", "order");
+                int total = OrderDAO.getInstance().countByStatus(-1);
+                int totalPage = total/Constant.NUM_OF_ITEMS_A_PAGE;
+                if(total%Constant.NUM_OF_ITEMS_A_PAGE!=0) {
+                    totalPage++;
+                }
+                req.setAttribute("totalPage", totalPage);
                 RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminOrder.jsp");
                 dispatcher.forward(req, resp);
                 break;

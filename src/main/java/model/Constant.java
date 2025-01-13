@@ -84,6 +84,14 @@ public class Constant {
         return UNDEFINED;
     }
 
+    public static String callFunction(String method) {
+        String re ="  <script>" +
+                method +
+                "     </script>";
+        return re;
+    }
+
+
 
 
 

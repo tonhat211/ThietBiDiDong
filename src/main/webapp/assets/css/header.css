@@ -89,6 +89,12 @@
 
 }
 
+.main-menu li a.active {
+    background-color: var(--hover-color);
+    border-radius: 10px;
+
+}
+
 .main-menu li a i {
     margin-right: 5px;
 }

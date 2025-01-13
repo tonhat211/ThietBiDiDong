@@ -1,9 +1,6 @@
 package controller;
 
-import DAO.BrandDAO;
-import DAO.ImageDAO;
-import DAO.OrderDAO;
-import DAO.ProductUnitDAO;
+import DAO.*;
 import com.google.gson.*;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -11,6 +8,7 @@ import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.*;
+import values.MessageValues;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,8 +28,24 @@ public class AdminProductController extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession();
         User userLogging = (User) session.getAttribute("userLogging");
+        if(userLogging==null || !userLogging.hasRole("PRODUCT")) {
+            String script = Constant.callFunction("changeToProductUrl();" +
+                    "showErrorToast2('"+ MessageValues.NOT_ROLE+"','none');");
 
+            req.setAttribute("script", script);
+            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/product");
+            dispatcher.forward(req, resp);
+            return;
+        }
         String action = req.getParameter("action");
+        if(action==null) {
+            ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().selectByCategoryForAdmin(Constant.SMARTPHONE_CATEGORY,0,Constant.NUM_OF_ITEMS_A_PAGE);
+            req.setAttribute("productUnits", productUnits);
+            session.setAttribute("adminMenu", "product");
+            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminProduct.jsp");
+            dispatcher.forward(req, resp);
+            return;
+        }
         action = action.toUpperCase();
         switch (action) {
             case "SEARCH": {

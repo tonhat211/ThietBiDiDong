@@ -9,9 +9,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import model.Constant;
 import model.User;
+import service.EmailService;
+import values.MessageValues;
 
 import java.io.IOException;
+import java.util.Random;
 
 @WebServlet("/login")
 public class LoginController extends HttpServlet {
@@ -21,8 +25,6 @@ public class LoginController extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession();
-        
-
         String action = req.getParameter("action");
         if(action == null || action.isEmpty()) {
 
@@ -43,14 +45,16 @@ public class LoginController extends HttpServlet {
                         resp.getWriter().write(html);
                     } else { // thanh cong
                         System.out.println("login success");
-                        String page = req.getParameter("page");
                         String html;
-                        session.setAttribute("userLogging",u);
-                        System.out.println("page: " + page);
-                        html = renderHtml("SUCCESS",page);
-                        if(u.getRoles().length!=0) { //admin
+                        User userLogging = UserDAO.getInstance().selectById(u.getId());
+                        session.setAttribute("userLogging",userLogging);
+                        if(u.getRoles()!= null) { //admin
                             System.out.println("confirm admin");
                             html = callFunction("forward(\"adminmenu?action=init\");");
+                        }
+                        else {
+                            System.out.println("confirm user");
+                            html = callFunction("forward(\"product?action=init&category=smartphone\");");
                         }
                         resp.getWriter().write(html);
                     }
@@ -81,6 +85,21 @@ public class LoginController extends HttpServlet {
                     session.removeAttribute("userLogging");
                     RequestDispatcher rd = getServletContext().getRequestDispatcher("/index");
                     rd.forward(req, resp);
+                    break;
+                }
+                case "PWD": {
+                    String email = req.getParameter("email");
+                    Random rand = new Random();
+                    String newPwd ="";
+                    for(int i=0;i<8; i++) {
+                        newPwd+= Constant.EN_CHARS.charAt(rand.nextInt(Constant.EN_CHARS.length()));
+                    }
+                    String hashPwd = User.hashPassword(newPwd);
+                    UserDAO.getInstance().generateNewPassword(email,hashPwd);
+                    EmailService emailService = new EmailService();
+                    String mailContent = MessageValues.getGENERATE_NEW_PWD(newPwd);
+                    emailService.sendHTML(email,MessageValues.WEB_NAME, mailContent);
+                    resp.sendRedirect("login");
                     break;
                 }
             }

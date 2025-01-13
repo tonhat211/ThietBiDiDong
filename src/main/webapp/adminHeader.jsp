@@ -60,13 +60,13 @@
                 </a><!-- End Profile Iamge Icon -->
 
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
-                    <li class="dropdown-header">
-                        <h6>chuc vu</h6>
-                        <span>phong ban</span>
-                    </li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
+<%--                    <li class="dropdown-header">--%>
+<%--                        <h6>chuc vu</h6>--%>
+<%--                        <span>phong ban</span>--%>
+<%--                    </li>--%>
+<%--                    <li>--%>
+<%--                        <hr class="dropdown-divider">--%>
+<%--                    </li>--%>
 
                     <li>
                         <a class="dropdown-item d-flex align-items-center" href="">

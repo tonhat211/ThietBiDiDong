@@ -79,7 +79,7 @@
         </div><!-- End Page Title -->
         <div class="sub-content">
             <div class="flex-roww" style="justify-content: space-between">
-                <form action="adminproduct" method="get" class="search-bar grid-col-4 ">
+                <form action="adminemployee" method="get" class="search-bar grid-col-4 ">
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" name="search" placeholder="Bạn tìm gì...">
                     <input type="text" name="action" value="search" hidden>
@@ -255,11 +255,28 @@
                 </div>
             </div>
         </div>
+        <div class="modall" id="issue-password-modal">
+            <div class="modal__overlay group" onclick="closeModal(event);">
+                <div class="modall-content grid-col-6" onclick="event.stopPropagation();">
+                    <form action="adminemployee" method="post" style="width: 100%">
+                        <p class="confirm-content" style="text-align: center">Cấp mật khẩu mới</br> <span class="object">Nhi</span></p>
+                        <input type="text" name="id" hidden>
+                        <input type="text" name="action" value="issuepassword" hidden>
+                        <div class="flex-roww" style="margin-top:20px; justify-content: space-around">
+                            <button class="btn  btn-fourth btn-cancel" type="button" onclick="closeModal(event);">Hủy</button>
+                            <button class="btn btn-primary btn-confirm" type="button" onclick="issuepassword(event);">Cấp</button>
+                        </div>
+                    </form>
+                </div>
+
+
+            </div>
+        </div>
         <div class="modall" id="delete-confirm-modal">
             <div class="modal__overlay group" onclick="closeModal(event);">
 
                 <div class="modall-content grid-col-6" onclick="event.stopPropagation();">
-                    <form action="admincustomer" method="post" style="width: 100%">
+                    <form action="adminemployee" method="post" style="width: 100%">
                         <p class="confirm-content" style="text-align: center">Xác nhận xoá </br> <span class="object">Nhi</span></p>
                         <input type="text" name="id" hidden>
                         <input type="text" name="action" value="delete" hidden>
@@ -331,7 +348,22 @@
                         // Gán giá trị ngày cho input date
                         document.querySelector('#addEmployeeForm input[name="dateIn"]').value = formattedDate;
                         document.querySelector('#addEmployeeForm input[name="defaultPassword"]').value = day+""+month+year;
-
+                        function issuepassword(event) {
+                            var id = event.currentTarget.closest('.group').querySelector('input[name="id"]').value;
+                            $.ajax({
+                                type: "POST",
+                                url: "admincustomer?action=issuepassword",
+                                data: {id: id},
+                                success: function(data) {
+                                    $('#server-response').html(data);
+                                    console.log(data);
+                                    hideModal('#issue-password-modal');
+                                },
+                                error: function(error) {
+                                    $('#server-response').html(error.responseText);
+                                }
+                            });
+                        }
                     </script>
 
 
@@ -505,6 +537,13 @@
                         setupConfirm(id,'#unlock-confirm-modal',name);
                         break;
                     }
+                    case "ISSUEPASSWORD": {
+                        setInfosStatus(group,false);
+                        var name = group.querySelector(".name").innerText;
+                        var id = group.querySelector(".id").innerText;
+                        setupConfirm(id,'#issue-password-modal',name);
+                        break;
+                    }
                     case "DELETE": {
                         setInfosStatus(group,false);
                         var name = group.querySelector(".name").innerText;
@@ -612,7 +651,7 @@
                 var id = event.currentTarget.closest('.group').querySelector('input[name="id"]').value;
                 $.ajax({
                     type: "POST",
-                    url: "admincustomer?action=lock",
+                    url: "adminemployee?action=lock",
                     data: {id: id},
                     success: function(data) {
                         document.querySelector('#customer'+id).classList.remove('active');
@@ -632,7 +671,7 @@
                 var id = event.currentTarget.closest('.group').querySelector('input[name="id"]').value;
                 $.ajax({
                     type: "POST",
-                    url: "admincustomer?action=active",
+                    url: "adminemployee?action=active",
                     data: {id: id},
                     success: function(data) {
                         document.querySelector('#customer'+id).classList.remove('locked');

@@ -56,9 +56,6 @@
         String title = (String) request.getAttribute("title");
 
     %>
-    <script>
-        console.log("page: <%=numOfPages%>");
-    </script>
     <main id="main" class="main grid-col-10">
         <div id="toast-2">
 
@@ -195,14 +192,13 @@
                         }
 
                         function updateStatus(id,status) {
-                            var page = document.querySelector(".page-link.active").getAttribute("data-value");
+                            // var page = document.querySelector(".page-link.active").getAttribute("data-value");
                             var byStatus = document.querySelector('select[name="byStatus"]').value;
-                            console.log("update: " + id + " status: " + status + " byStatus: " + byStatus + " page: " + page);
 
                             $.ajax({
                                 type: "POST",
                                 url: "adminorder?action=update",
-                                data: {id: id,status: status,page: page,byStatus:byStatus},
+                                data: {id: id,status: status,byStatus:byStatus},
 
                                 success: function(data) {
                                     $('#order-list-container').html(data);
@@ -273,35 +269,35 @@
                 </div>
 
             </div>
-            <div class="flex-roww" style="justify-content: center;margin-top: 20px">
-                <nav aria-label="Page navigation example" id="order-pagination">
-                    <ul class="pagination group" style="align-items: baseline;">
-                        <li class="page-item-nav">
-                            <a class="page-link" href="#" aria-label="Previous" onclick="previousPage(event)">
-                                <span class="sr-only">Trước</span>
-                            </a>
-                        </li>
+<%--            <div class="flex-roww" style="justify-content: center;margin-top: 20px">--%>
+<%--                <nav aria-label="Page navigation example" id="order-pagination">--%>
+<%--                    <ul class="pagination group" style="align-items: baseline;">--%>
+<%--                        <li class="page-item-nav">--%>
+<%--                            <a class="page-link" href="#" aria-label="Previous" onclick="previousPage(event)">--%>
+<%--                                <span class="sr-only">Trước</span>--%>
+<%--                            </a>--%>
+<%--                        </li>--%>
 
-                        <% for(int i=1;i<=numOfPages;i++) {
+<%--                        <% for(int i=1;i<=numOfPages;i++) {--%>
 
-                        %>
-                            <li class="page-item"><a class="page-link" data-value="<%=i%>" href="#" onclick="queryPage(event)"><%=i%></a></li>
-                            <%=i==1?"<div class=\"flex-roww\" style=\"align-items: baseline\"><i class=\"bi bi-three-dots etc\" style=\"margin: 0 10px;\"></i></div>\n":""%>
-                            <%=i==(numOfPages-1)?"<div class=\"flex-roww\" style=\"align-items: baseline\"><i class=\"bi bi-three-dots etc\" style=\"margin: 0 10px;\"></i></div>\n":""%>
-                        <%
-                            }
-                        %>
+<%--                        %>--%>
+<%--                            <li class="page-item"><a class="page-link" data-value="<%=i%>" href="#" onclick="queryPage(event)"><%=i%></a></li>--%>
+<%--                            <%=i==1?"<div class=\"flex-roww\" style=\"align-items: baseline\"><i class=\"bi bi-three-dots etc\" style=\"margin: 0 10px;\"></i></div>\n":""%>--%>
+<%--                            <%=i==(numOfPages-1)?"<div class=\"flex-roww\" style=\"align-items: baseline\"><i class=\"bi bi-three-dots etc\" style=\"margin: 0 10px;\"></i></div>\n":""%>--%>
+<%--                        <%--%>
+<%--                            }--%>
+<%--                        %>--%>
 
-                        <li class="page-item-nav">
-                            <a class="page-link" href="#" aria-label="Next" onclick="nextPage(event)">
-                                <!--              <span aria-hidden="true">&raquo;</span>-->
-                                <span class="sr-only">Tiếp theo</span>
-                            </a>
-                        </li>
-                    </ul>
+<%--                        <li class="page-item-nav">--%>
+<%--                            <a class="page-link" href="#" aria-label="Next" onclick="nextPage(event)">--%>
+<%--                                <!--              <span aria-hidden="true">&raquo;</span>-->--%>
+<%--                                <span class="sr-only">Tiếp theo</span>--%>
+<%--                            </a>--%>
+<%--                        </li>--%>
+<%--                    </ul>--%>
 
-                </nav>
-            </div>
+<%--                </nav>--%>
+<%--            </div>--%>
 
             <script>
                 function createEtc() {
@@ -309,7 +305,7 @@
                     iconElement.classList.add('bi', 'bi-three-dots');
                     return iconElement;
                 }
-                setUpPagination('#order-pagination');
+                // setUpPagination('#order-pagination');
                 function setUpPagination(id) {
                     console.log("setup pagination");
                     const pagination = document.querySelector(id);

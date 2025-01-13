@@ -81,8 +81,7 @@ public class PaymentController extends HttpServlet {
 //                  xoa khoi gio hang
                     CartUnitDAO.getInstance().deleteOrderedCarts(ids);
                     if(re!=0) {
-                        RequestDispatcher rd = getServletContext().getRequestDispatcher("/index.jsp");
-                        rd.forward(req, resp);
+                        resp.sendRedirect("order");
 
                     }
                     break;

@@ -224,15 +224,23 @@ function getAddressList() {
     });
 }
 
-function logout(event) {
-    event.preventDefault();
-    $.ajax({
-        type: "GET",
-        url: event.currentTarget.href,
-        success: function(data) {
-            window.location.href="product?action=init&&category=smartphone";
-        },
-        error: function(error) {
-        }
-    });
+// function logout(event) {
+//     event.preventDefault();
+//     $.ajax({
+//         type: "GET",
+//         url: event.currentTarget.href,
+//         success: function(data) {
+//             window.location.href="product?action=init&&category=smartphone";
+//         },
+//         error: function(error) {
+//         }
+//     });
+// }
+
+function changeToProductUrl() {
+    const basePath = window.location.pathname.split("/").slice(0, 2).join("/");
+
+    const newPath = '/product'; // Phần path mới bạn muốn thay đổi
+    window.history.pushState(null, '', basePath + newPath);
+
 }

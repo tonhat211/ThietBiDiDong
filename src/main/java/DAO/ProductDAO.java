@@ -38,5 +38,22 @@ public class ProductDAO implements IDAO<Product> {
     public Product selectById(int id) {
         return null;
     }
+    public int updateProminence(int id) {
+        int re=0;
+        try {
+            Connection conn = JDBCUtil.getConnection();
+            String sql = "update products set prominence=prominence+1 " +
+                    " where id = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1,id);
+            System.out.println(pst);
+            re = pst.executeUpdate();
+            JDBCUtil.closeConnection(conn);
+            return re;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 }

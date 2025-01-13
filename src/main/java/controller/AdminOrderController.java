@@ -1,6 +1,7 @@
 package controller;
 
 import DAO.OrderDAO;
+import DAO.UserDAO;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpSession;
 import model.Constant;
 import model.OrderUnit;
 import model.User;
+import values.MessageValues;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,8 +26,24 @@ public class AdminOrderController extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession();
         User userLogging = (User) session.getAttribute("userLogging");
+        if(userLogging==null || !userLogging.hasRole("ORDER")) {
+            String script = Constant.callFunction("changeToProductUrl();" +
+                    "showErrorToast2('"+ MessageValues.NOT_ROLE+"','none');");
 
+            req.setAttribute("script", script);
+            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/product");
+            dispatcher.forward(req, resp);
+            return;
+        }
         String action = req.getParameter("action");
+        if(action==null) {
+            ArrayList<OrderUnit> orderUnits =  OrderDAO.getInstance().selectOrderUnitByStatus(-1,0,200);
+            req.setAttribute("orderUnits", orderUnits);
+            session.setAttribute("adminMenu", "order");
+            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminOrder.jsp");
+            dispatcher.forward(req, resp);
+            return;
+        }
         action = action.toUpperCase();
         switch (action) {
             case "SEARCH": {
@@ -107,12 +125,13 @@ public class AdminOrderController extends HttpServlet {
                     resp.setContentType("text/html");
                     resp.setCharacterEncoding("UTF-8");// Gửi mã lỗi 500
                     String html = "<script>\n" +
-                            "      showErrorToast2(\"Cập nhật trạng thái cho " +id+ " thất bại. Đơn hàng ĐÃ +" + Constant.getStatusString(currentStatus)+" trước đó.\");\n" +
+                            "      showErrorToast2(\"Cập nhật trạng thái cho " +id+ " thất bại. Đơn hàng ĐÃ " + Constant.getStatusString(currentStatus)+" trước đó.\");\n" +
                             "    </script>";
                     resp.getWriter().write(html);
                 } else { //hop le
-                    int page = Integer.parseInt(req.getParameter("page"));
-                    int offset = (page - 1) * Constant.NUM_OF_ITEMS_A_PAGE;
+//                    int page = Integer.parseInt(req.getParameter("page"));
+//                    int offset = (page - 1) * Constant.NUM_OF_ITEMS_A_PAGE;
+                    int offset =0;
                     int re = OrderDAO.getInstance().updateStatus(id, status);
                     if (re == 1) {
                         ArrayList<OrderUnit> orderunits = OrderDAO.getInstance().selectOrderUnitByStatus(byStatus, offset, Constant.NUM_OF_ITEMS_A_PAGE);

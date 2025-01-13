@@ -10,6 +10,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.*;
+import service.EmailService;
+import values.MessageValues;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,16 +28,31 @@ public class AdminEmployeeController extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession();
         User userLogging = (User) session.getAttribute("userLogging");
+        if(userLogging==null || !userLogging.hasRole("EMPLOYEE")) {
+            String script = Constant.callFunction("changeToProductUrl();" +
+                    "showErrorToast2('"+ MessageValues.NOT_ROLE+"','none');");
 
+            req.setAttribute("script", script);
+            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/product");
+            dispatcher.forward(req, resp);
+            return;
+        }
         String action = req.getParameter("action");
+        if(action==null) {
+            ArrayList<User> employees = UserDAO.getInstance().selectEmployees();
+            req.setAttribute("employees", employees);
+            session.setAttribute("adminMenu", "employee");
+            RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminEmployee.jsp");
+            dispatcher.forward(req, resp);
+            return;
+        }
         action = action.toUpperCase();
         switch (action) {
             case "SEARCH": {
-                String idin = req.getParameter("search");
-                ArrayList<ProductUnit> productUnits = ProductUnitDAO.getInstance().searchForAdmin(idin);
-                req.setAttribute("numOfPages", 1);
-                req.setAttribute("productUnits", productUnits);
-                RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminProduct.jsp");
+                String searchInput = req.getParameter("search");
+                ArrayList<User> employees = UserDAO.getInstance().searchEmployee(searchInput);
+                req.setAttribute("employees", employees);
+                RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminEmployee.jsp");
                 dispatcher.forward(req, resp);
                 break;
             }
@@ -132,7 +149,7 @@ public class AdminEmployeeController extends HttpServlet {
                 int re = UserDAO.getInstance().deleteUser(id);
                 if(re==1) {
                     System.out.println("xóa thanh cong");
-                    RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminmenu?action=admincustomer&message=deleteSuccess_"+id);
+                    RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/adminmenu?action=adminemployee&message=deleteSuccess_"+id);
                     dispatcher.forward(req, resp);
                 }
                 break;
@@ -187,8 +204,9 @@ public class AdminEmployeeController extends HttpServlet {
                 String hashedPassword = User.hashPassword(newPassword);
                 int re = UserDAO.getInstance().updatePassword(id,hashedPassword); // cap nhat mat khau trong database
 
-                // code gui mat khau moi ve mail
-                String email  = user.getEmail();
+                EmailService emailService = new EmailService();
+                String mailContent = MessageValues.getGENERATE_NEW_PWD(newPassword);
+                emailService.sendHTML(user.getEmail(),MessageValues.WEB_NAME, mailContent);
 
                 if(re==1) {
                     String html = htmlSuccessToast("Cấp mật khẩu mới thành công!");

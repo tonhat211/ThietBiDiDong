@@ -28,6 +28,7 @@ public class IndexController extends HttpServlet {
         ArrayList<ProductUnit> suggestedProductUnits = ProductUnitDAO.getInstance().selectByCategory(Constant.ALL,0,20);
         LocalTime remaningTime = null;
         if(saledOnlineProductUnits.size()>0) {
+            System.out.println("co sale");
             remaningTime = SaleProgram.getRemainingTime();
         }
         req.setAttribute("saledOnlineProductUnits",saledOnlineProductUnits);

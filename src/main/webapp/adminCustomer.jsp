@@ -79,7 +79,7 @@
         </div><!-- End Page Title -->
         <div class="sub-content">
             <div class="flex-roww" style="justify-content: space-between">
-                <form action="adminproduct" method="get" class="search-bar grid-col-4 ">
+                <form action="admincustomer" method="get" class="search-bar grid-col-4 ">
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" name="search" placeholder="Bạn tìm gì...">
                     <input type="text" name="action" value="search" hidden>
@@ -206,10 +206,27 @@
                     <form action="admincustomer" method="post" style="width: 100%">
                         <p class="confirm-content" style="text-align: center">Xác nhận xoá </br> <span class="object">Nhi</span></p>
                         <input type="text" name="id" hidden>
-                        <input type="text" name="action" value="delete">
+                        <input type="text" name="action" value="delete" hidden>
                         <div class="flex-roww" style="margin-top:20px; justify-content: space-around">
                             <button class="btn  btn-fourth btn-cancel" type="button" onclick="closeModal(event);">Hủy</button>
                             <button class="btn btn-primary btn-confirm" type="submit">Xóa</button>
+                        </div>
+                    </form>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="modall" id="issue-password-modal">
+            <div class="modal__overlay group" onclick="closeModal(event);">
+                <div class="modall-content grid-col-6" onclick="event.stopPropagation();">
+                    <form action="admincustomer" method="post" style="width: 100%">
+                        <p class="confirm-content" style="text-align: center">Cấp mật khẩu mới</br> <span class="object">Nhi</span></p>
+                        <input type="text" name="id" hidden>
+                        <input type="text" name="action" value="issuepassword" hidden>
+                        <div class="flex-roww" style="margin-top:20px; justify-content: space-around">
+                            <button class="btn  btn-fourth btn-cancel" type="button" onclick="closeModal(event);">Hủy</button>
+                            <button class="btn btn-primary btn-confirm" type="button" onclick="issuepassword(event);">Cấp</button>
                         </div>
                     </form>
                 </div>
@@ -222,7 +239,7 @@
 <%--            <div class="modal__overlay">--%>
                 <div class="modall-content grid-col-6 custom-scroll" style="max-height: 90%;" onclick="event.stopPropagation();">
                     <form action="admincustomer" method="POST" id="addCustomerForm">
-                        <h4 class="confirm-content" style="text-align: center">Thêm tài khoản khách hàng mơi</h4>
+                        <h4 class="confirm-content" style="text-align: center">Thêm tài khoản khách hàng mới</h4>
                         <div class="flex-roww" style="justify-content: space-between; margin-top: 10px;">
                             <div class="form-group grid-col-4">
                                 <label>Tên khách hàng</label>
@@ -315,39 +332,11 @@
                         setupConfirm(id,'#delete-confirm-modal',name);
                         break;
                     }
-                    case "UPDATEDETAIL" : {
-                        setInfosStatus(group,true);
-                        group.querySelector(".update-detail-btn").classList.add('active');
-                        break;
-                    }
-                    case "LOCKDETAIL": {
+                    case "ISSUEPASSWORD": {
                         setInfosStatus(group,false);
-                        var color = group.querySelector("input[name='color']").value;
-                        var ram = group.querySelector("input[name='ram']").value;
-                        var rom = group.querySelector("input[name='rom']").value;
-                        var object = "Phiên bản: màu: " + color + " - ram: " + ram + "(GB) - rom: " + rom + "(GB)";
+                        var name = group.querySelector(".name").innerText;
                         var id = group.querySelector('.id').innerText;
-                        setupConfirm(id,'#lock-detail-confirm-modal',object);
-                        break;
-                    }
-                    case "UNLOCKDETAIL": {
-                        setInfosStatus(group,false);
-                        var color = group.querySelector("input[name='color']").value;
-                        var ram = group.querySelector("input[name='ram']").value;
-                        var rom = group.querySelector("input[name='rom']").value;
-                        var object = "Phiên bản: màu: " + color + " - ram: " + ram + "(GB) - rom: " + rom + "(GB)";
-                        var id = group.querySelector('.id').innerText;
-                        setupConfirm(id,'#unlock-detail-confirm-modal',object);
-                        break;
-                    }
-                    case "DELETEDETAIL": {
-                        setInfosStatus(group,false);
-                        var color = group.querySelector("input[name='color']").value;
-                        var ram = group.querySelector("input[name='ram']").value;
-                        var rom = group.querySelector("input[name='rom']").value;
-                        var object = "Phiên bản: màu: " + color + " - ram: " + ram + "(GB) - rom: " + rom + "(GB)";
-                        var id = group.querySelector('.id').innerText;
-                        setupConfirm(id,'#delete-detail-confirm-modal',object);
+                        setupConfirm(id,'#issue-password-modal',name);
                         break;
                     }
 
@@ -480,6 +469,23 @@
                         hideModal('#unlock-confirm-modal');
 
 
+                    },
+                    error: function(error) {
+                        $('#server-response').html(error.responseText);
+                    }
+                });
+            }
+
+            function issuepassword(event) {
+                var id = event.currentTarget.closest('.group').querySelector('input[name="id"]').value;
+                $.ajax({
+                    type: "POST",
+                    url: "admincustomer?action=issuepassword",
+                    data: {id: id},
+                    success: function(data) {
+                        $('#server-response').html(data);
+                        console.log(data);
+                        hideModal('#issue-password-modal');
                     },
                     error: function(error) {
                         $('#server-response').html(error.responseText);

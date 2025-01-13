@@ -25,6 +25,7 @@
 
     <link href="./assets/css/base.css" rel="stylesheet">
     <link href="./assets/css/toast.css" rel="stylesheet">
+    <link href="./assets/css/modal.css" rel="stylesheet">
 
 
     <!-- css tu them   -->
@@ -44,7 +45,7 @@
             <form action="login" id="login-form" style="width: 100%">
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Nhập email" required value="2003tonhat@gmail.com">
+                    <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Nhập email" required value="21130463@st.hcmuaf.edu.vn">
                 </div>
                 <div class="form-group">
                     <label for="password">Mật khẩu</label>
@@ -52,7 +53,7 @@
                     <span class="pwd-error">* Mật khẩu phải trên 8 ký tự</span>
                 </div>
                 <input type="text" name="page" value="<%=request.getAttribute("page")!=null?request.getAttribute("page"):""%>" hidden>
-                <div class="flex-roww" style="justify-content: right;"><a href="" style="font-size: 13px;">Quên mật khẩu</a></div>
+                <div class="flex-roww" style="justify-content: right;"><a href="" onclick="forgetPwd(event);" style="font-size: 13px;">Quên mật khẩu</a></div>
                 <div class="flex-roww" style="justify-content: space-between;margin: 20px 0">
                     <a href="signup" style="font-size: 13px">Chưa có tài khoản. Đăng ký</a>
                     <button type="submit" class="btn btn-login">Đăng nhập</button>
@@ -77,7 +78,38 @@
                 var page = formdata.get("page");
                 login(email, password,page);
             });
+            function forgetPwd(event) {
+                event.preventDefault();
+                openModal2('.forger-pwd-modal');
+            }
+            function openModal2(modal) {
+                const modalElement = document.querySelector(modal);
+                modalElement.classList.add('active');
+            }
         </script>
+    </div>
+    <div id="modal-container2">
+        <div class="modall forger-pwd-modal" style=" background-color: rgba(182, 182, 182, 0.91);">
+            <div class="flex-roww" style="justify-content: center;align-items: center;height: 100vh;">
+                <div class="modall-content sub-content" style="width: 40%; height: fit-content;">
+                    <form action="login">
+                        <input type="text" name="action" value="pwd" hidden>
+                        <h3 style="text-align: center;padding-right: 10px;">Quên mật khẩu</h3>
+                        <p style="font-style: italic;text-align: center">Mật khẩu mới sẽ được gửi đến email của bạn</p>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" class="form-control"  name="email" aria-describedby="emailHelp" placeholder="Nhập email của bạn" required>
+                        </div>
+                        <div class="flex-roww" style="justify-content: space-around;">
+                            <button class="btn btn-outline-primary" type="button" style="margin-top: 30px;" onclick="closeModal('.forger-pwd-modal')">Hủy</button>
+                            <button class="btn btn-primary" type="submit" style="margin-top: 30px;">Lấy mật khẩu</button>
+                        </div>
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
     </div>
     <div id="login-response"></div>
 </div>
